@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_baseline_home_24"
+            android:title="Home"
+            android:checked="true"/>
+        <item
+            android:id="@+id/nav_routes"
+            android:icon="@drawable/ic_routes"
+            android:title="Routes" />
+        <item
+             android:id="@+id/nav_log"
+             android:icon="@drawable/ic_log"
+             android:title="Log" />
+        <item
+            android:id="@+id/nav_drivers"
+            android:icon="@drawable/ic_drivers"
+            android:title="Drivers" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:title="Settings" />
+    </group>
+
+</menu>
