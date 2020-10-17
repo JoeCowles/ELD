@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_alignParentStart="false"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentRight="false"
+    app:layout_constrainedHeight="false"
+    app:layout_constrainedWidth="false"
     tools:context=".ui.HomeFragment">
 
     <pl.pawelkleczkowski.customgauge.CustomGauge
-        android:id="@+id/gauge1"
-        android:layout_width="283dp"
-        android:layout_height="241dp"
+        android:id="@+id/speedGuage"
+        android:layout_width="667dp"
+        android:layout_height="325dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
         android:paddingLeft="20dp"
@@ -33,44 +39,58 @@
 
     <TextView
         android:id="@+id/mphTv"
-        android:layout_width="132dp"
-        android:layout_height="74dp"
+        android:layout_width="241dp"
+        android:layout_height="101dp"
         android:fontFamily="@font/aldrich"
         android:text="0\nMPH"
         android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/gauge1"
-        app:layout_constraintEnd_toEndOf="@+id/gauge1"
-        app:layout_constraintStart_toStartOf="@+id/gauge1"
-        app:layout_constraintTop_toTopOf="@+id/gauge1" />
+        android:textSize="50sp"
+        app:layout_constraintBottom_toBottomOf="@+id/speedGuage"
+        app:layout_constraintEnd_toEndOf="@+id/speedGuage"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="@+id/speedGuage"
+        app:layout_constraintTop_toTopOf="@+id/speedGuage"
+        app:layout_constraintVertical_bias="0.475" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="291dp"
-        android:layout_height="20dp"
+        android:layout_width="504dp"
+        android:layout_height="49dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="281dp"
-        android:layout_height="38dp"
+        android:layout_width="547dp"
+        android:layout_height="50dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/aldrich"
         android:gravity="center"
         android:text="00:00:00"
-        android:textSize="30sp"
+        android:textSize="45dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gauge1" />
+        app:layout_constraintTop_toBottomOf="@+id/speedGuage" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_notification"
+        app:backgroundTintMode="src_over"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="387dp"
-        android:layout_height="321dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/mapViewHome"
+        android:layout_width="609dp"
+        android:layout_height="416dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />

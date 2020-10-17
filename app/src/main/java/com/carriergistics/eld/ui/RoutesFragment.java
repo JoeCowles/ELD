@@ -1,14 +1,28 @@
 package com.carriergistics.eld.ui;
 
+import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.carriergistics.eld.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +35,9 @@ public class RoutesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
+    private MapView mMapView;
+    private GoogleMap googleMap;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -60,9 +77,30 @@ public class RoutesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragment = inflater.inflate(R.layout.fragment_routes, container, false);
-        // This is a test of the version control
-        // This is the master branch
-        return fragment;
+        View view = inflater.inflate(R.layout.fragment_routes, container, false);
+        mMapView = (MapView) view.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                googleMap = mMap;
+                googleMap.setMyLocationEnabled(true);
+                //To add marker
+                LatLng sydney = new LatLng(-34, 151);
+                googleMap.addMarker(new MarkerOptions().position(sydney).title("Title").snippet("Marker Description"));
+                // For zooming functionality
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
+        return view;
     }
+
 }

@@ -1,7 +1,7 @@
-package com.carriergistics.eld.utils;
+package com.carriergistics.eld.bluetooth;
 
 public enum BlueToothStatus {
     CONNECTED,
     CONNECTING,
-    AVAILABLE;
+    AVAILABLE
 }

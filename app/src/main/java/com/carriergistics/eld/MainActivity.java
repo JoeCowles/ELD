@@ -18,7 +18,7 @@ import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.ui.LogFragment;
 import com.carriergistics.eld.ui.RoutesFragment;
 import com.carriergistics.eld.ui.SettingsFragment;
-import com.carriergistics.eld.utils.BluetoothConnector;
+import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.google.android.material.navigation.NavigationView;
 //
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navDrawer;
     private ActionBarDrawerToggle drawerToggle;
     private static Class currentlyInflated;
+    public static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerToggle.syncState();
         mDrawer.addDrawerListener(drawerToggle);
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, new HomeFragment()).commit();
     }
     public void selectDrawerItem(MenuItem menuItem) {
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         setTitle(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
+
     }
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -125,4 +127,5 @@ public class MainActivity extends AppCompatActivity {
     public static String getFragment(){
         return currentlyInflated.getName();
     }
+
 }

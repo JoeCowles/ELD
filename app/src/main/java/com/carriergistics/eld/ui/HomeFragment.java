@@ -1,20 +1,38 @@
 package com.carriergistics.eld.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
-import com.carriergistics.eld.utils.TelematicsData;
+import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import pl.pawelkleczkowski.customgauge.CustomGauge;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,8 +45,12 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private Handler handler;
+    public static  Handler handler;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
     TextView mphTv;
+    CustomGauge speedGuage;
+    private MapView mMapView;
+    private GoogleMap googleMap;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -69,18 +91,88 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mphTv = view.findViewById(R.id.mphTv);
+        speedGuage = view.findViewById(R.id.speedGuage);
+        speedGuage.setStartValue(0);
+        speedGuage.setEndValue(100);
+        boolean perms = checkLocationPermission();
+        while(!perms){
+            perms = checkLocationPermission();
+        }
         handler = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
                 update((TelematicsData) msg.obj);
             }
         };
+        mMapView = (MapView) view.findViewById(R.id.mapViewHome);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                googleMap = mMap;
+                googleMap.setMyLocationEnabled(true);
+                //To add marker
+                LatLng sydney = new LatLng(-34, 151);
+                googleMap.addMarker(new MarkerOptions().position(sydney).title("Title").snippet("Marker Description"));
+                // For zooming functionality
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
         return view;
+    }
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
     private void update(TelematicsData data){
         if(MainActivity.getFragment() == HomeFragment.class.getName()){
-            mphTv.setText(data.getSpeed());
+            Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getSpeed());
+            mphTv.setText(data.getSpeed() + "\n MPH");
+            speedGuage.setValue(data.getSpeed());
         }
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
 }

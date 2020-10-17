@@ -1,4 +1,4 @@
-package com.carriergistics.eld.utils;
+package com.carriergistics.eld.bluetooth;
 
 public class TelematicsData {
     private int speed;
