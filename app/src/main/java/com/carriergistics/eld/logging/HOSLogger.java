@@ -1,8 +1,10 @@
 package com.carriergistics.eld.logging;
 
+import android.os.Message;
 import android.util.Log;
 
 import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.carriergistics.eld.ui.LogFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +30,7 @@ public class HOSLogger {
 
             if(currentHOSEvent.getCode() != HOSEventCodes.DRIVING){
                 // Started driving
+                Log.d("DEBUGGING", "Started driving ----------------------");
                 sendOBDEvent(HOSEventCodes.DRIVING);
             }
         }else{
@@ -36,15 +39,16 @@ public class HOSLogger {
             if(currentHOSEvent.getCode() == HOSEventCodes.DRIVING){
                 //Stopped driving
                 //TODO: Prompt user to choose why they stopped
+                Log.d("DEBUGGING", "Stopped driving ----------------------");
                 sendOBDEvent(HOSEventCodes.OFF_DUTY);
             }
         }
     }
     private static void sendOBDEvent(int code){
         Log.d("DEBUGGING", "Sending event with code: " + code);
-        if(currentHOSEvent != null){
-            HOSEvents.add(currentHOSEvent);
-        }
+        currentHOSEvent.setEndTime(getTime());
+        currentHOSEvent.setType(HOSEventCodes.CHANGE_EVENT_TYPE);
+        HOSEvents.add(currentHOSEvent);
         // TODO: Send Event
         currentHOSEvent = new HOSEvent(code);
         resetTimer();
@@ -59,7 +63,23 @@ public class HOSLogger {
     private static void resetTimer(){
         // TODO: Periodic events
     }
-    public static ArrayList<HOSEvent> getLog(){
-        return HOSEvents;
+    public static HOSLog getLog(){
+        return new HOSLog(HOSEvents);
     }
+    public static HOSLog getDebuggingLog(){
+        HOSLog log = new HOSLog();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(cal.getTime());
+        for(int i = 0; i < 20; i++){
+            cal.add(Calendar.HOUR, 1);
+            HOSEvent event = new HOSEvent();
+            int code = ((i % 2) == 0) ? 1 : 3;
+            event.setCode(code);
+            event.setType(HOSEventCodes.CHANGE_EVENT_TYPE);
+            event.setEndTime(cal.getTime());
+            log.getLog().add(event);
+        }
+        return log;
+    }
+
 }

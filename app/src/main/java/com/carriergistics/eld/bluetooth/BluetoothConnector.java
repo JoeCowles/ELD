@@ -45,45 +45,8 @@ public class BluetoothConnector {
             @Override
             public void run() {
                 TelematicsData data;
-                UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                try {
-                    Log.d("DEBUGGING", device.toString() + " DEVICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                    socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
-                    socket.connect();
-                    Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Didnt disconnect");
-                } catch (IOException e) {
-                    disconnect();
-                    Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Disconnected... Reconnecting");
-                    BluetoothSocket tmp = socket;
-                    Class<?> clazz = tmp.getRemoteDevice().getClass();
-                    Class<?>[] paramTypes = new Class<?>[]{Integer.TYPE};
-                    Method m = null;
-                    try {
-                        Object[] params = new Object[]{Integer.valueOf(1)};
-                        m = clazz.getMethod("createRfcommSocket", paramTypes);
-                        socket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
-                        socket.connect();
-                        fallback = true;
-                        Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Reconnected");
-                    } catch (NoSuchMethodException ex) {
-                        ex.printStackTrace();
-                    } catch (IllegalAccessException ex) {
-                        ex.printStackTrace();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        disconnect();
-                        try {
-                            Thread.currentThread().join();
-                        } catch (InterruptedException interruptedException) {
-                            interruptedException.printStackTrace();
-                        }
-                        Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
-                    } catch (InvocationTargetException ex) {
-                        ex.printStackTrace();
-                    }
-
-                }
                 status = BlueToothStatus.CONNECTED;
+                connect();
                 while (getStatus() == BlueToothStatus.CONNECTED){
                     try {
                         speedCommand.run(socket.getInputStream(), socket.getOutputStream());
@@ -124,6 +87,46 @@ public class BluetoothConnector {
             }
         });
         btRunner.start();
+    }
+    private static void connect(){
+        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+        try {
+            Log.d("DEBUGGING", device.toString() + " DEVICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+            socket.connect();
+            Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Didnt disconnect");
+        } catch (IOException e) {
+            disconnect();
+            Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Disconnected... Reconnecting");
+            BluetoothSocket tmp = socket;
+            Class<?> clazz = tmp.getRemoteDevice().getClass();
+            Class<?>[] paramTypes = new Class<?>[]{Integer.TYPE};
+            Method m = null;
+            try {
+                Object[] params = new Object[]{Integer.valueOf(1)};
+                m = clazz.getMethod("createRfcommSocket", paramTypes);
+                socket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
+                socket.connect();
+                fallback = true;
+                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Reconnected");
+            } catch (NoSuchMethodException ex) {
+                ex.printStackTrace();
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                disconnect();
+                try {
+                    Thread.currentThread().join();
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
+            } catch (InvocationTargetException ex) {
+                ex.printStackTrace();
+            }
+
+        }
     }
 
     public static BlueToothStatus getStatus(){

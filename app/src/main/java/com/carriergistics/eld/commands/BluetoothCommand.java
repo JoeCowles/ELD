@@ -102,7 +102,6 @@ public abstract class BluetoothCommand {
         if (responseDelayInMs != null && responseDelayInMs > 0) {
             Thread.sleep(responseDelayInMs);
         }
-        Log.d("DEBUGGING", "Just sent message .......................");
     }
 
     /**
