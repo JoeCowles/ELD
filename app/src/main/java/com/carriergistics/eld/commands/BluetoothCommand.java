@@ -34,7 +34,7 @@ public abstract class BluetoothCommand {
     protected String cmd = null;
     protected boolean useImperialUnits = false;
     protected String rawData = null;
-    protected Long responseDelayInMs = 1000L;
+    protected Long responseDelayInMs = 500L;
     private long start;
     private long end;
 

@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.carriergistics.eld.commands.MPHCommand;
+import com.carriergistics.eld.commands.RPMCommand;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.utils.DataConverter;
@@ -29,6 +30,7 @@ public class BluetoothConnector {
     private static int mphRaw;
     private static Handler handler;
     private static MPHCommand speedCommand;
+    private static RPMCommand rpmCommand;
     private static BluetoothDevice device;
     public static void connect(String deviceID){
         fallback = false;
@@ -36,6 +38,7 @@ public class BluetoothConnector {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         device  = btAdapter.getRemoteDevice(deviceID);
         speedCommand = new MPHCommand();
+        rpmCommand = new RPMCommand();
         startThread();
     }
 
@@ -50,8 +53,11 @@ public class BluetoothConnector {
                 while (getStatus() == BlueToothStatus.CONNECTED){
                     try {
                         speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        //rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
                         data = new TelematicsData();
                         int speed = DataConverter.speedMPH(speedCommand.getResult());
+                       // int rpm = DataConverter.convertRPM(rpmCommand.getResult());
+                        Log.d("DEBUGGING", rpm + " RPM");
                         data.setSpeed(speed);
                         //data.setSpeed((int)speedCommand.getImperialSpeed());
                         HOSLogger.log(data);
@@ -71,11 +77,6 @@ public class BluetoothConnector {
                     } catch (Exception e){
                         e.printStackTrace();
                        // Log.d("DEBUGGING", speedCommand.getResult());
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
                 try {

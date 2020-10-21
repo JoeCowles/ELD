@@ -1,11 +1,10 @@
 package com.carriergistics.eld.commands;
 
-import com.github.pires.obd.commands.ObdCommand;
 
-public class RPMCommand extends ObdCommand {
+public class RPMCommand extends BluetoothCommand {
     int rpm;
-    public RPMCommand(String command) {
-        super("CGREQ01212");
+    public RPMCommand() {
+        super("CGREQ02213");
     }
 
     @Override

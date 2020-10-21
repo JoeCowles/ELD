@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 
 /**
@@ -25,6 +27,8 @@ public class DriversFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView driverName;
+    private TextView driverName2;
 
     public DriversFragment() {
         // Required empty public constructor
@@ -61,6 +65,13 @@ public class DriversFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_drivers, container, false);
+        View view = inflater.inflate(R.layout.fragment_drivers, container, false);
+        driverName = view.findViewById(R.id.driverNameField1);
+        driverName2 = view.findViewById(R.id.driverNameField2);
+        driverName.setText(MainActivity.currentDriver.getFirst_name() + ", " + MainActivity.currentDriver.getLast_name());
+        if(MainActivity.secondaryDriver != null && !MainActivity.secondaryDriver.getFirst_name().isEmpty()){
+            driverName2.setText(MainActivity.secondaryDriver.getFirst_name() + ", " + MainActivity.secondaryDriver.getLast_name());
+        }
+        return view;
     }
 }

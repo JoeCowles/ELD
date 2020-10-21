@@ -73,7 +73,7 @@ public class HOSLogger {
         for(int i = 0; i < 20; i++){
             cal.add(Calendar.HOUR, 1);
             HOSEvent event = new HOSEvent();
-            int code = ((i % 2) == 0) ? 1 : 3;
+            int code = ((i % 2) == 0) ? HOSEventCodes.DRIVING : HOSEventCodes.OFF_DUTY;
             event.setCode(code);
             event.setType(HOSEventCodes.CHANGE_EVENT_TYPE);
             event.setEndTime(cal.getTime());

@@ -6,6 +6,7 @@ public class Driver {
     private String licenseNum;
     private String first_name;
     private String last_name;
+    private String email;
     private ArrayList<HOSLog> hosLogs;
     public Driver(){}
     public void setLicenseNum(String licenseNum){
@@ -18,6 +19,7 @@ public class Driver {
         this.last_name = last_name;
     }
     public void setLogs(ArrayList<HOSLog> hosLogs){this.hosLogs = hosLogs;}
+    public void setEmail(String email){this.email = email;}
 
     public String getLicenseNum(){
         return licenseNum;
@@ -28,5 +30,7 @@ public class Driver {
     public String getLast_name(){
         return last_name;
     }
+    public String getEmail(){return email;}
+
     public ArrayList<HOSLog> getHOSLogs(){return hosLogs;}
 }

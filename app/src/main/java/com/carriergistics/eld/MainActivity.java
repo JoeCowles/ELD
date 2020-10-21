@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.carriergistics.eld.logging.Driver;
+import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.setup.SetupActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.ui.HomeFragment;
@@ -31,7 +32,10 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-//
+/************************************************************
+   Copyright 2020 Un-boxed Industries
+    Author - Joe Cowles
+ ************************************************************/
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -46,9 +50,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission(Manifest.permission.BLUETOOTH, 100);
-        checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, 100);
-        checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, 100);
-        checkPermission(Manifest.permission.INTERNET, 100);
+        //checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, 100);
+        //checkPermission(Manifest.permission.INTERNET, 100);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,33 +66,42 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerToggle.syncState();
         mDrawer.addDrawerListener(drawerToggle);
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager(); 
         fragmentManager.beginTransaction().replace(R.id.flContent, new HomeFragment()).commit();
         if(!load()){
             setup();
-            save();
         }
     }
+
+    // Check if there is data to load
     private boolean load(){
         Data.init(getApplicationContext());
         ArrayList<Driver> drivers = Data.loadDrivers();
-        if(drivers != null){
+        if(drivers != null && drivers.size() >= 1){
             currentDriver = drivers.get(0);
-            secondaryDriver = drivers.get(1);
+            if(drivers.size() >= 2 && drivers.get(1) != null){
+                secondaryDriver = drivers.get(1);
+            }
             return true;
         }
         return false;
     }
+
+    // Open the setup Activity
     private void setup(){
-        Intent intent = new Intent(this, SetupActivity.class);
+        Intent intent = new Intent(this, InitActivity.class);
         startActivity(intent);
     }
+
+    //  Save all data that needs to be saved
     public static void save(){
         ArrayList<Driver> drivers = new ArrayList<Driver>();
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
         Data.saveDrivers(drivers);
     }
+
+    // Choose fragment based on what item is clicked in drawer
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
@@ -148,12 +160,16 @@ public class MainActivity extends AppCompatActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
     }
+
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+    // Inflate the fragment
     public void switchToFragment(Class fragmentClass){
         try {
             Fragment frag = (Fragment) fragmentClass.newInstance();
@@ -163,12 +179,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
         }
     }
+
+    // Connect to bluetooth device
     public static void connect(String device){
         BluetoothConnector.connect(device);
     }
+
+
+    // Get the current fragment that is inflated
     public static String getFragment(){
         return currentlyInflated.getName();
     }
+
+    // Check to see if perms are allowed, if not then request them
     public void checkPermission(String permission, int requestCode) {
 
         // Checking if permission is not granted
@@ -176,12 +199,11 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this,
                 permission)
                 == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat
-                    .requestPermissions(
-                            MainActivity.this,
-                            new String[]{permission},
-                            requestCode);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION}, requestCode);
         }
+
     }
 
 
