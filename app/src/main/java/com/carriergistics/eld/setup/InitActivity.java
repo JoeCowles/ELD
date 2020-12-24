@@ -7,19 +7,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.utils.Data;
 
 /*
-
     Activity that is activated on first startup. Offers the user the option to either login or sign up
-
 
  */
 public class InitActivity extends AppCompatActivity {
-    Button login;
-    Button signup;
+    TextView login;
+    TextView signup;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

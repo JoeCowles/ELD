@@ -23,6 +23,8 @@ import android.widget.Toast;
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.carriergistics.eld.fueling.FuelingFragment;
+import com.carriergistics.eld.logging.HOSLogger;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import pl.pawelkleczkowski.customgauge.CustomGauge;
 
@@ -48,7 +51,9 @@ public class HomeFragment extends Fragment {
     public static  Handler handler;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
     TextView mphTv;
+    TextView timeDrivenTv;
     CustomGauge speedGuage;
+    FloatingActionButton tempBtn;
     private MapView mMapView;
     private GoogleMap googleMap;
     // TODO: Rename and change types of parameters
@@ -91,6 +96,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mphTv = view.findViewById(R.id.mphTv);
+        timeDrivenTv = view.findViewById(R.id.timeTextView);
         speedGuage = view.findViewById(R.id.speedGuage);
         speedGuage.setStartValue(0);
         speedGuage.setEndValue(100);
@@ -126,6 +132,14 @@ public class HomeFragment extends Fragment {
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
+        tempBtn = view.findViewById(R.id.tempFuelBtn);
+        tempBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkCameraPerms();
+                ((MainActivity)getActivity()).switchToFragment(FuelingFragment.class);
+            }
+        });
         return view;
     }
     public boolean checkLocationPermission() {
@@ -149,10 +163,32 @@ public class HomeFragment extends Fragment {
         }
     }
     private void update(TelematicsData data){
+        Log.d("DEBUGGING", "Update called");
         if(MainActivity.getFragment() == HomeFragment.class.getName()){
-            Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getSpeed());
+            Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getTime());
             mphTv.setText(data.getSpeed() + "\n MPH");
+            timeDrivenTv.setText(data.getTime());
             speedGuage.setValue(data.getSpeed());
+        }
+    }
+    private boolean checkCameraPerms(){
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
         }
     }
     @Override
@@ -175,4 +211,5 @@ public class HomeFragment extends Fragment {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
 }

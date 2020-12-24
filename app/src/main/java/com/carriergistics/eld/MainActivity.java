@@ -18,7 +18,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.carriergistics.eld.bluetooth.BlueToothStatus;
+import com.carriergistics.eld.fueling.FuelingFragment;
 import com.carriergistics.eld.logging.Driver;
+import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.setup.SetupActivity;
 import com.carriergistics.eld.ui.DriversFragment;
@@ -28,15 +31,18 @@ import com.carriergistics.eld.ui.RoutesFragment;
 import com.carriergistics.eld.ui.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.utils.Data;
+import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 /************************************************************
    Copyright 2020 Un-boxed Industries
     Author - Joe Cowles
  ************************************************************/
 public class MainActivity extends AppCompatActivity {
+
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView navDrawer;
@@ -45,19 +51,26 @@ public class MainActivity extends AppCompatActivity {
     public static FragmentManager fragmentManager;
     public static Driver currentDriver;
     public static Driver secondaryDriver;
+    public static ArrayList<Driver> drivers;
+    private static Settings settings;
+    private static boolean gotDisconnected = false;
+    private static MainActivity instance;
+    private static boolean shouldSendBt = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Has been changed to request all perms
         checkPermission(Manifest.permission.BLUETOOTH, 100);
-        //checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, 100);
-        //checkPermission(Manifest.permission.INTERNET, 100);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // This will display an Up icon (<-), we will replace it with hamburger later
+
+        // This will display an Up icon (<-),  will replace it with hamburger later
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navDrawer = (NavigationView) findViewById(R.id.nav_view);
         setupDrawerContent(navDrawer);
@@ -68,15 +81,26 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.addDrawerListener(drawerToggle);
         fragmentManager = getSupportFragmentManager(); 
         fragmentManager.beginTransaction().replace(R.id.flContent, new HomeFragment()).commit();
+        instance = this;
         if(!load()){
             setup();
         }
+        drivers = new ArrayList<>();
+        drivers.add(currentDriver);
+        drivers.add(secondaryDriver);
+        setCurrentDriver(currentDriver);
+        HOSLogger.init(currentDriver);
+
     }
 
     // Check if there is data to load
     private boolean load(){
-        Data.init(getApplicationContext());
-        ArrayList<Driver> drivers = Data.loadDrivers();
+        Data.init(getApplicationContext()); 
+        drivers = Data.loadDrivers();
+        settings = Data.loadSettings();
+        if(settings == null){
+            settings = new Settings();
+        }
         if(drivers != null && drivers.size() >= 1){
             currentDriver = drivers.get(0);
             if(drivers.size() >= 2 && drivers.get(1) != null){
@@ -141,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.closeDrawers();
 
     }
+
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -151,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
     }
@@ -170,21 +196,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Inflate the fragment
-    public void switchToFragment(Class fragmentClass){
+    public void switchToFragment(Class fragmentClass) {
         try {
             Fragment frag = (Fragment) fragmentClass.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, frag).commit();
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
         }
     }
-
-    // Connect to bluetooth device
-    public static void connect(String device){
-        BluetoothConnector.connect(device);
-    }
-
 
     // Get the current fragment that is inflated
     public static String getFragment(){
@@ -201,10 +221,81 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestCode);
         }
 
     }
 
+    private boolean checkCameraPerms(){
+        if (ContextCompat.checkSelfPermission(this.getBaseContext(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        100);
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        100);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void setCurrentDriver(Driver driver){
+        if (driver != null && !currentDriver.equals(driver)) {
+            secondaryDriver = currentDriver;
+            currentDriver = driver;
+            drivers.set(0, currentDriver);
+            drivers.set(1, secondaryDriver);
+            HOSLogger.init(driver);
+        }
+    }
+    //
+    // Method that is run every second. Calls everything that needs to be called periodically
+    //
+    public static void tick(){
+       // Log.d("DEBUGGING", "Ticking");
+        if(BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE){
+            BluetoothConnector.connect(settings.getDeviceAddress());
+            if(gotDisconnected){
+                gotDisconnected = false;
+                // TODO: Disconnected event
+                MainActivity.instance.checkCameraPerms();
+                MainActivity.instance.switchToFragment(FuelingFragment.class);
+            }
+        }else if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
+            gotDisconnected = true;
+            if(shouldSendBt){
+                BluetoothConnector.sendRequests();
+            }
+
+        }
+    }
+    public static void startLogging(){
+        Log.d("DEBUGGING", "LOGGING");
+        Timer timer = new Timer();
+        //timer.scheduleAtFixedRate(new Ticker(), 0, 10);
 
     }
+    public static Settings loadSettings(){
+        settings = Data.loadSettings();
+        return settings;
+    }
+    public static void saveSettings(Settings _settings){
+        settings = _settings;
+        Data.saveSettings(settings);
+    }
+    public static void sendBt(){
+        shouldSendBt = true;
+    }
+    public static void dontSendBt(){
+        shouldSendBt = false;
+    }
+}

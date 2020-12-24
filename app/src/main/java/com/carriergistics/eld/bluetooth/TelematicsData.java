@@ -1,5 +1,7 @@
 package com.carriergistics.eld.bluetooth;
 
+import java.util.Date;
+
 public class TelematicsData {
     private int speed;
     private int milesDriven;
@@ -7,6 +9,7 @@ public class TelematicsData {
     private int rpm;
     private String gear;
     private String runTime;
+    private String time;
     public TelematicsData(){
 
     }
@@ -51,4 +54,11 @@ public class TelematicsData {
         //TODO: Make sure that runtime is only a number with no prefix/suffix
         return Integer.parseInt(runTime);
     }
+    public void setTime(String time){
+        this.time = time;
+    }
+    public String getTime(){
+        return time;
+    }
+
 }

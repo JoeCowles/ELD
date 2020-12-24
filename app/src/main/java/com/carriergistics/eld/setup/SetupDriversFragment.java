@@ -193,6 +193,9 @@ public class SetupDriversFragment extends Fragment {
                 }
             }
         });
+        for(EditText field : secondFields){
+            field.setVisibility(View.INVISIBLE);
+        }
         return view;
     }
     private void load(){

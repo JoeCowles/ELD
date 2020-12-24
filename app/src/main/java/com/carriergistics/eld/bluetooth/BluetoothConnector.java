@@ -8,8 +8,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.commands.MPHCommand;
 import com.carriergistics.eld.commands.RPMCommand;
+import com.carriergistics.eld.commands.SetBluetoothNameCommand;
+import com.carriergistics.eld.commands.SetTimeCommand;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.utils.DataConverter;
@@ -32,70 +35,80 @@ public class BluetoothConnector {
     private static MPHCommand speedCommand;
     private static RPMCommand rpmCommand;
     private static BluetoothDevice device;
-    public static void connect(String deviceID){
+    private static int reconnectAttempts = 0;
+    private static String name = "hc-05";
+    private static String password = "1234";
+    public static boolean connect(String deviceID){
         fallback = false;
         status = BlueToothStatus.CONNECTING;
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         device  = btAdapter.getRemoteDevice(deviceID);
         speedCommand = new MPHCommand();
         rpmCommand = new RPMCommand();
-        startThread();
+        if(connect()){
+            status = BlueToothStatus.CONNECTED;
+            Log.d("DEBUGGING", "Started to log ..................................................");
+            MainActivity.startLogging();
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
-    private static void startThread() {
-
-        Thread btRunner = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                TelematicsData data;
-                status = BlueToothStatus.CONNECTED;
-                connect();
-                while (getStatus() == BlueToothStatus.CONNECTED){
-                    try {
-                        speedCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        //rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        data = new TelematicsData();
-                        int speed = DataConverter.speedMPH(speedCommand.getResult());
-                       // int rpm = DataConverter.convertRPM(rpmCommand.getResult());
-                        Log.d("DEBUGGING", rpm + " RPM");
-                        data.setSpeed(speed);
-                        //data.setSpeed((int)speedCommand.getImperialSpeed());
-                        HOSLogger.log(data);
-                        Message message = Message.obtain();
-                        message.obj = data;
-                        HomeFragment.handler.sendMessage(message);
-                    } catch (InterruptedIOException e){
-                        Log.e("ERROR", "Connection interupted, " + e.getMessage());
-                    } catch (IOException e){
-                        disconnect();
-                        connect(device.getAddress());
-                        try {
-                            Thread.currentThread().join();
-                        } catch (InterruptedException interruptedException) {
-                            interruptedException.printStackTrace();
-                        }
-                    } catch (Exception e){
-                        e.printStackTrace();
-                       // Log.d("DEBUGGING", speedCommand.getResult());
-                    }
+    public static void sendRequests() {
+        TelematicsData data;
+        if (getStatus() == BlueToothStatus.CONNECTED){
+            try {
+                speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
+                data = new TelematicsData();
+                int speed = DataConverter.speedMPH(speedCommand.getResult());
+                int rpm = DataConverter.convertRPM(rpmCommand.getResult());
+                Log.d("DEBUGGING", rpm + " RPM");
+                data.setSpeed(speed);
+                Message message = Message.obtain();
+                message.obj = data;
+                HOSLogger.handler.sendMessage(message);
+                reconnectAttempts = 0;
+            } catch (InterruptedIOException e){
+                Log.e("ERROR", "Connection interupted, " + e.getMessage());
+            } catch (IOException e){
+                disconnect();
+                connect(device.getAddress());
+                reconnectAttempts++;
+                if(reconnectAttempts >= 5){
+                    reconnectAttempts = 0;
+                    TelematicsData stopped = new TelematicsData();
+                    stopped.setSpeed(0);
+                    stopped.setRpm(0);
+                    Message message = Message.obtain();
+                    message.obj = stopped;
+                    HOSLogger.handler.sendMessage(message);
+                    status = BlueToothStatus.AVAILABLE;
                 }
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
-                }
+            } catch (Exception e){
+                e.printStackTrace();
             }
-        });
-        btRunner.start();
+        }else{
+            /*try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
+            }*/
+        }
+
     }
-    private static void connect(){
+    private static boolean connect(){
+        boolean connected = false;
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
         try {
             Log.d("DEBUGGING", device.toString() + " DEVICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
             socket.connect();
             Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Didnt disconnect");
+            connected = true;
         } catch (IOException e) {
             disconnect();
             Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Disconnected... Reconnecting");
@@ -109,6 +122,7 @@ public class BluetoothConnector {
                 socket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
                 socket.connect();
                 fallback = true;
+                connected = true;
                 Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Reconnected");
             } catch (NoSuchMethodException ex) {
                 ex.printStackTrace();
@@ -117,17 +131,18 @@ public class BluetoothConnector {
             } catch (IOException ex) {
                 ex.printStackTrace();
                 disconnect();
-                try {
+                connected = false;
+                /*try {
                     Thread.currentThread().join();
                 } catch (InterruptedException interruptedException) {
                     interruptedException.printStackTrace();
-                }
-                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
+                }*/
             } catch (InvocationTargetException ex) {
                 ex.printStackTrace();
             }
 
         }
+        return connected;
     }
 
     public static BlueToothStatus getStatus(){
@@ -140,6 +155,32 @@ public class BluetoothConnector {
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
+        }
+    }
+    public static void renameDevice(String _name) throws IOException {
+        name = _name;
+        SetBluetoothNameCommand command = new SetBluetoothNameCommand(socket.getOutputStream());
+        try {
+            command.run(name, password, socket.getInputStream());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void renameDevice(String _name, String password) throws IOException {
+        name = _name;
+        SetBluetoothNameCommand command = new SetBluetoothNameCommand(socket.getOutputStream());
+        try {
+            command.run(name, password, socket.getInputStream());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void setTime(String time) throws IOException {
+        SetTimeCommand cmd = new SetTimeCommand(socket.getOutputStream());
+        try{
+            cmd.run(time, socket.getInputStream());
+        }catch (InterruptedException e){
+            e.printStackTrace();
         }
     }
 }

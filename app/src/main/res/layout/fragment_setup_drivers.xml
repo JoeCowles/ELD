@@ -14,136 +14,144 @@
         android:fontFamily="@font/aldrich"
         android:text="Sign up"
         android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/signupBtn"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/etDriverFirstName"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="First name"
-            android:textAlignment="center" />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/etDriverLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Last name"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="First name"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etDriverID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Driver's license ID#"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Last name"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:text="Email"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Driver's license ID#"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:text="Password"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="Email"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:text="confirm"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="Password"
+                android:textAlignment="center" />
 
-        <Switch
-            android:id="@+id/secondDriverSw"
-            android:layout_width="match_parent"
-            android:layout_height="97dp"
-            android:fontFamily="@font/aldrich"
-            android:text="Secondary Driver"
-            android:textAlignment="center"
-            android:textSize="30sp" />
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="confirm"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etDriverFirstName2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="First name"
-            android:textAlignment="center" />
+            <Switch
+                android:id="@+id/secondDriverSw"
+                android:layout_width="match_parent"
+                android:layout_height="97dp"
+                android:fontFamily="@font/aldrich"
+                android:text="Secondary Driver"
+                android:textAlignment="center"
+                android:textSize="30sp" />
 
-        <EditText
-            android:id="@+id/etDriverLastName2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Last name"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverFirstName2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="First name"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etDriverID2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Driver's license ID#"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverLastName2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Last name"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etEmail2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:text="Email"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etDriverID2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Driver's license ID#"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etPassword2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:text="Password"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etEmail2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="Email"
+                android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/etConfirmPassword2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:text="confirm"
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/etPassword2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="Password"
+                android:textAlignment="center" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/etConfirmPassword2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="confirm"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

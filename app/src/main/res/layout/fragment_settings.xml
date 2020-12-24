@@ -11,10 +11,55 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="104dp"
+            android:fontFamily="@font/aldrich"
+            android:text="Bluetooth Device"
+            android:textAlignment="center"
+            android:textSize="50sp" />
+
         <Button
             android:id="@+id/selectDeviceBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Select Device" />
+
+        <EditText
+            android:id="@+id/deviceName"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/renameBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rename" />
+
+        <EditText
+            android:id="@+id/etBluePassword"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Password"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/setPasswordBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Password" />
+
+        <Button
+            android:id="@+id/setTimeBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Time" />
     </LinearLayout>
 </FrameLayout>

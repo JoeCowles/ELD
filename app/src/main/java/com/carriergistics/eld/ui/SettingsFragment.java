@@ -8,16 +8,26 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
+import com.carriergistics.eld.bluetooth.BluetoothConnector;
+import com.carriergistics.eld.commands.SetTimeCommand;
+import com.carriergistics.eld.utils.Settings;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -31,6 +41,11 @@ public class SettingsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static String device;
     private Button selectDeviceBtn;
+    private Button setName;
+    private Button setPassword;
+    private EditText etName;
+    private EditText etPassword;
+    private Button setTimeBtn;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -80,12 +95,53 @@ public class SettingsFragment extends Fragment {
                 selectDevice();
             }
         });
+        etName = view.findViewById(R.id.deviceName);
+        etPassword = view.findViewById(R.id.etBluePassword);
+        setName = view.findViewById(R.id.renameBtn);
+        setPassword = view.findViewById(R.id.setPasswordBtn);
+        setName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    BluetoothConnector.renameDevice(etName.getText().toString(), MainActivity.loadSettings().getDevicePassword());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        setTimeBtn = view.findViewById(R.id.setTimeBtn);
+        setTimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                Date date = cal.getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("MM,dd,yyyy,hh,mm,ss");
+                String time = sdf.format(date);
+                Log.d("DEBUGGING", "Sending time: " + time);
+               try {
+                    BluetoothConnector.setTime(time);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        etPassword.setText(MainActivity.loadSettings().getDevicePassword());
+        setPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    BluetoothConnector.renameDevice(MainActivity.loadSettings().getDeviceName(),etPassword.getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         return view;
     }
     private void selectDevice(){
         ArrayList deviceStrs = new ArrayList();
+        final ArrayList names = new ArrayList();
         final ArrayList devices = new ArrayList();
-
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
         if (pairedDevices.size() > 0)
@@ -94,6 +150,7 @@ public class SettingsFragment extends Fragment {
             {
                 deviceStrs.add(device.getName() + "\n" + device.getAddress());
                 devices.add(device.getAddress());
+                names.add(device.getName());
             }
         }
 
@@ -111,11 +168,29 @@ public class SettingsFragment extends Fragment {
                 int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
                 String deviceAddress = devices.get(position).toString();
                 device = deviceAddress;
-                MainActivity.connect(device);
+                if(BluetoothConnector.connect(device)){
+                    makeText("Connected");
+                    setDevice(names.get(position).toString(), device);
+                }else{
+                    makeText("Couldn't connect!");
+                    Log.d("DEBUGGING", "Made toast that I couldnt connect");
+                }
             }
         });
 
         alertDialog.setTitle("Choose Bluetooth device");
         alertDialog.show();
+    }
+    private void makeText(String text){
+        Toast.makeText(getActivity().getBaseContext(), text, Toast.LENGTH_SHORT).show();
+    }
+    public void setDevice(String name, String address){
+        etName.setText(name);
+        etPassword.setText("1234");
+        Settings settings = new Settings();
+        settings.setDeviceName(name);
+        settings.setDevicePassword("1234");
+        settings.setDeviceAddress(address);
+        MainActivity.saveSettings(settings);
     }
 }

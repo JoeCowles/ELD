@@ -14,7 +14,7 @@
 
         <ScrollView
             android:id="@+id/linLayoutRoutes"
-            android:layout_width="618dp"
+            android:layout_width="match_parent"
             android:layout_height="382dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -26,12 +26,19 @@
                 android:id="@+id/routeList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/startRouteBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Route" />
+            </LinearLayout>
         </ScrollView>
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView"
-            android:layout_width="614dp"
+            android:layout_width="match_parent"
             android:layout_height="480dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

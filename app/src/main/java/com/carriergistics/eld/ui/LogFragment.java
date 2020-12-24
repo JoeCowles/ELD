@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.logging.HOSEvent;
@@ -105,7 +106,6 @@ public class LogFragment extends Fragment {
                 return mFormat.format(new Date(millis));
             }
         });
-
         YAxis leftAxis = graph.getAxisLeft();
         leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         leftAxis.setTextColor(ColorTemplate.getHoloBlue());

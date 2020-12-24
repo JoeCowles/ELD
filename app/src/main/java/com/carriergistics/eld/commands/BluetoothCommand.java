@@ -203,6 +203,23 @@ public abstract class BluetoothCommand {
          */
         //kills multiline.. rawData = rawData.substring(rawData.lastIndexOf(13) + 1);
         rawData = rawData.replaceAll("\\s", "");//removes all [ \t\n\x0B\f\r]
+        boolean isData = false;
+        String temp = "";
+        if(!rawData.contains("!") && rawData.contains("OK")) {
+            //TODO: Good acknowedgement
+            rawData = "";
+        }else if(rawData.contains("!")){
+            rawData.replace("GC", "");
+            for(char ch : rawData.toCharArray()){
+                if(ch == '!'){
+                    isData = !isData;
+                }
+                if(isData && ch != '!'){
+                    temp += ch;
+                }
+            }
+            rawData = temp;
+        }
     }
 
     void checkForErrors() {
@@ -353,7 +370,11 @@ public abstract class BluetoothCommand {
      * @since 1.0-RC12
      */
     public final String getCommandPID() {
-        return cmd.substring(3);
+        if(rawData != null && !rawData.isEmpty()){
+            return rawData.substring(5,6);
+        }else{
+            return "";
+        }
     }
 
     @Override

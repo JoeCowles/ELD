@@ -23,7 +23,7 @@ public class Data {
         String toSave = gson.toJson(drivers);
         SharedPreferences sharedPreference = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreference.edit();
-        Log.d("DEBUGGING", "Saving........................" + toSave);
+        //Log.d("DEBUGGING", "Saving........................" + toSave);
         editor.putString("Drivers", toSave);
         editor.commit();
     }
@@ -31,7 +31,7 @@ public class Data {
         String json = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).getString("Drivers", "");
         ArrayList<Driver> drivers = gson.fromJson(json, new TypeToken<List<Driver>>(){}.getType());
         if(drivers == null || drivers.isEmpty()){
-            Log.d("DEBUGGING", "COULDNT FIND DATA.....................................................");
+            //Log.d("DEBUGGING", "COULDNT FIND DATA.....................................................");
             return new ArrayList<Driver>();
         }else{
             return drivers;
@@ -52,6 +52,22 @@ public class Data {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString("Company", gson.toJson(company));
+    }
+    public static void saveSettings(Settings settings){
+        SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        editor.putString("Settings", gson.toJson(settings));
+    }
+    public static Settings loadSettings(){
+        Settings settings;
+        Gson gson = new Gson();
+        SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        settings = gson.fromJson(sharedPreferences.getString("Settings", ""), Settings.class);
+        if(settings == null){
+            return new Settings();
+        }
+        return settings;
     }
     private static void setContext(Context con){
         context = con;

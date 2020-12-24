@@ -1,10 +1,15 @@
 package com.carriergistics.eld.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -12,9 +17,11 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.carriergistics.eld.R;
+import com.carriergistics.eld.logging.HOSLogger;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -38,6 +45,8 @@ public class RoutesFragment extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
     private MapView mMapView;
     private GoogleMap googleMap;
+    Button startRoute;
+    LocationManager locationManager;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -79,6 +88,8 @@ public class RoutesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_routes, container, false);
         mMapView = (MapView) view.findViewById(R.id.mapView);
+        startRoute = view.findViewById(R.id.startRouteBtn);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         try {
@@ -98,6 +109,18 @@ public class RoutesFragment extends Fragment {
                 // For zooming functionality
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
+        startRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                long lat = (long) locationGPS.getLatitude();
+                long lon = (long) locationGPS.getLongitude();
+                HOSLogger.newRoute(lat, lon);
             }
         });
         return view;

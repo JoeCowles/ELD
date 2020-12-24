@@ -94,7 +94,7 @@ public class CompanyInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_company_info, container, false);
-        company = Data.loadCompany();
+        //company = Data.loadCompany();
         nextBtn = view.findViewById(R.id.setupNextBtn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
