@@ -2,10 +2,10 @@ package com.carriergistics.eld.commands;
 
 import com.github.pires.obd.commands.ObdCommand;
 
-public class MPHCommand extends BluetoothCommand{
+public class SpeedCommand extends BluetoothCommand{
     private int metricSpeed;
 
-    public MPHCommand() {
+    public SpeedCommand() {
         super("CGREQ01212");
     }
 

@@ -9,12 +9,11 @@ import android.os.Message;
 import android.util.Log;
 
 import com.carriergistics.eld.MainActivity;
-import com.carriergistics.eld.commands.MPHCommand;
+import com.carriergistics.eld.commands.SpeedCommand;
 import com.carriergistics.eld.commands.RPMCommand;
 import com.carriergistics.eld.commands.SetBluetoothNameCommand;
 import com.carriergistics.eld.commands.SetTimeCommand;
 import com.carriergistics.eld.logging.HOSLogger;
-import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.utils.DataConverter;
 
 import java.io.IOException;
@@ -26,13 +25,13 @@ import java.util.UUID;
 public class BluetoothConnector {
     private static BluetoothSocket socket;
     private static BluetoothSocket fallbackSocket;
-    private static BlueToothStatus status;
+    private static BlueToothStatus status = BlueToothStatus.AVAILABLE;
     private static String rpm;
     private static String gear, runTime;
     private static boolean fallback;
     private static int mphRaw;
     private static Handler handler;
-    private static MPHCommand speedCommand;
+    private static SpeedCommand speedCommand;
     private static RPMCommand rpmCommand;
     private static BluetoothDevice device;
     private static int reconnectAttempts = 0;
@@ -43,12 +42,10 @@ public class BluetoothConnector {
         status = BlueToothStatus.CONNECTING;
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         device  = btAdapter.getRemoteDevice(deviceID);
-        speedCommand = new MPHCommand();
+        speedCommand = new SpeedCommand();
         rpmCommand = new RPMCommand();
         if(connect()){
             status = BlueToothStatus.CONNECTED;
-            Log.d("DEBUGGING", "Started to log ..................................................");
-            MainActivity.startLogging();
             return true;
         }else{
             return false;
@@ -61,12 +58,18 @@ public class BluetoothConnector {
         if (getStatus() == BlueToothStatus.CONNECTED){
             try {
                 speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                //Thread.sleep(100);
                 rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
                 data = new TelematicsData();
+                Log.d("DEBUGGING", DataConverter.speedMPH(speedCommand.getResult())+ "speed from bluetooth");
+                Log.d("DEBUGGING", DataConverter.convertRPM(rpmCommand.getResult()) + "rpm from bluetooth");
+
                 int speed = DataConverter.speedMPH(speedCommand.getResult());
                 int rpm = DataConverter.convertRPM(rpmCommand.getResult());
+
                 Log.d("DEBUGGING", rpm + " RPM");
                 data.setSpeed(speed);
+                data.setRpm(rpm);
                 Message message = Message.obtain();
                 message.obj = data;
                 HOSLogger.handler.sendMessage(message);
@@ -157,7 +160,7 @@ public class BluetoothConnector {
             Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
         }
     }
-    public static void renameDevice(String _name) throws IOException {
+    /*public static void renameDevice(String _name) throws IOException {
         name = _name;
         SetBluetoothNameCommand command = new SetBluetoothNameCommand(socket.getOutputStream());
         try {
@@ -165,9 +168,10 @@ public class BluetoothConnector {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-    public static void renameDevice(String _name, String password) throws IOException {
+    }*/
+    public static void renameDevice(String _name, String _password) throws IOException {
         name = _name;
+        password = _password;
         SetBluetoothNameCommand command = new SetBluetoothNameCommand(socket.getOutputStream());
         try {
             command.run(name, password, socket.getInputStream());

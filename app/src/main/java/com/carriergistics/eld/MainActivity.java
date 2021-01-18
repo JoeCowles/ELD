@@ -30,6 +30,7 @@ import com.carriergistics.eld.ui.LogFragment;
 import com.carriergistics.eld.ui.RoutesFragment;
 import com.carriergistics.eld.ui.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
+import com.carriergistics.eld.ui.StoppedFragment;
 import com.carriergistics.eld.utils.Data;
 import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 
 /************************************************************
-   Copyright 2020 Un-boxed Industries
+   Copyright 2020 Unboxed Industries
     Author - Joe Cowles
  ************************************************************/
 public class MainActivity extends AppCompatActivity {
@@ -54,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Driver> drivers;
     private static Settings settings;
     private static boolean gotDisconnected = false;
-    private static MainActivity instance;
+    public static MainActivity instance;
     private static boolean shouldSendBt = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navDrawer = (NavigationView) findViewById(R.id.nav_view);
         setupDrawerContent(navDrawer);
+
         drawerToggle = setupDrawerToggle();
         // Setup toggle to display hamburger icon with nice animation
         drawerToggle.setDrawerIndicatorEnabled(true);
@@ -82,15 +85,20 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager(); 
         fragmentManager.beginTransaction().replace(R.id.flContent, new HomeFragment()).commit();
         instance = this;
+        currentlyInflated = HomeFragment.class;
+
         if(!load()){
+
             setup();
+
         }
+
         drivers = new ArrayList<>();
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
         HOSLogger.init(currentDriver);
-
+        startLogging();
     }
 
     // Check if there is data to load
@@ -178,37 +186,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
+
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
+
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
+
     }
 
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
+
     }
 
     // Inflate the fragment
     public void switchToFragment(Class fragmentClass) {
+
         try {
+
             Fragment frag = (Fragment) fragmentClass.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, frag).commit();
+
         } catch (Exception e) {
+
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
+
         }
+
     }
 
     // Get the current fragment that is inflated
     public static String getFragment(){
+
         return currentlyInflated.getName();
+
     }
 
     // Check to see if perms are allowed, if not then request them
@@ -228,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkCameraPerms(){
+
         if (ContextCompat.checkSelfPermission(this.getBaseContext(),
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -246,56 +269,87 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return true;
         }
+
     }
 
     public void setCurrentDriver(Driver driver){
+
         if (driver != null && !currentDriver.equals(driver)) {
+
             secondaryDriver = currentDriver;
             currentDriver = driver;
             drivers.set(0, currentDriver);
             drivers.set(1, secondaryDriver);
             HOSLogger.init(driver);
+
         }
+
     }
+
     //
-    // Method that is run every second. Calls everything that needs to be called periodically
+    // Method that is runs periodically. Calls everything that needs to be called periodically
     //
     public static void tick(){
-       // Log.d("DEBUGGING", "Ticking");
+
         if(BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE){
-            BluetoothConnector.connect(settings.getDeviceAddress());
+            Log.d("DEBUGGING", "Device address is " + settings.getDeviceAddress());
+            if(settings !=  null && !settings.getDeviceAddress().isEmpty()) {
+                Log.d("DEBUGGING", "Connecting to the device with this address: " + settings.getDeviceAddress());
+                BluetoothConnector.connect(settings.getDeviceAddress());
+            }
+
             if(gotDisconnected){
+
                 gotDisconnected = false;
                 // TODO: Disconnected event
                 MainActivity.instance.checkCameraPerms();
-                MainActivity.instance.switchToFragment(FuelingFragment.class);
+                MainActivity.instance.switchToFragment(StoppedFragment.class);
+
             }
+
         }else if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
+
             gotDisconnected = true;
             if(shouldSendBt){
+
                 BluetoothConnector.sendRequests();
+
             }
 
         }
     }
+
     public static void startLogging(){
+
         Log.d("DEBUGGING", "LOGGING");
         Timer timer = new Timer();
-        //timer.scheduleAtFixedRate(new Ticker(), 0, 10);
+        timer.scheduleAtFixedRate(new Ticker(), 0, 1);
 
     }
     public static Settings loadSettings(){
+
         settings = Data.loadSettings();
         return settings;
+
     }
     public static void saveSettings(Settings _settings){
+
         settings = _settings;
         Data.saveSettings(settings);
+
     }
     public static void sendBt(){
+
         shouldSendBt = true;
+
     }
     public static void dontSendBt(){
+
         shouldSendBt = false;
+
     }
+    public static void stoppedDriving(){
+        MainActivity.instance.switchToFragment(StoppedFragment.class);
+    }
+
 }

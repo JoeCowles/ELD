@@ -113,11 +113,11 @@ public class SettingsFragment extends Fragment {
         setTimeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: get time from server
                 Calendar cal = Calendar.getInstance();
                 Date date = cal.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("MM,dd,yyyy,hh,mm,ss");
                 String time = sdf.format(date);
-                Log.d("DEBUGGING", "Sending time: " + time);
                try {
                     BluetoothConnector.setTime(time);
                 } catch (IOException e) {
@@ -144,10 +144,8 @@ public class SettingsFragment extends Fragment {
         final ArrayList devices = new ArrayList();
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0)
-        {
-            for (BluetoothDevice device : pairedDevices)
-            {
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
                 deviceStrs.add(device.getName() + "\n" + device.getAddress());
                 devices.add(device.getAddress());
                 names.add(device.getName());
@@ -173,7 +171,6 @@ public class SettingsFragment extends Fragment {
                     setDevice(names.get(position).toString(), device);
                 }else{
                     makeText("Couldn't connect!");
-                    Log.d("DEBUGGING", "Made toast that I couldnt connect");
                 }
             }
         });
@@ -186,7 +183,7 @@ public class SettingsFragment extends Fragment {
     }
     public void setDevice(String name, String address){
         etName.setText(name);
-        etPassword.setText("1234");
+        etPassword.setHint("Password");
         Settings settings = new Settings();
         settings.setDeviceName(name);
         settings.setDevicePassword("1234");

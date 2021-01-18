@@ -165,7 +165,7 @@ public class HomeFragment extends Fragment {
     private void update(TelematicsData data){
         Log.d("DEBUGGING", "Update called");
         if(MainActivity.getFragment() == HomeFragment.class.getName()){
-            Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getTime());
+            Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getSpeed());
             mphTv.setText(data.getSpeed() + "\n MPH");
             timeDrivenTv.setText(data.getTime());
             speedGuage.setValue(data.getSpeed());

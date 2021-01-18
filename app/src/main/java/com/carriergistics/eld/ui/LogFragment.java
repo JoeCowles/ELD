@@ -138,7 +138,7 @@ public class LogFragment extends Fragment {
         });
         YAxis rightAxis = graph.getAxisRight();
         rightAxis.setEnabled(false);
-        setData(HOSLogger.getLog());
+        setData(HOSLogger.getHOSLog());
         return view;
     }
     private void setData(HOSLog eventLog) {

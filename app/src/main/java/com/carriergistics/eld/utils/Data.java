@@ -52,19 +52,22 @@ public class Data {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         editor.putString("Company", gson.toJson(company));
+        editor.commit();
     }
     public static void saveSettings(Settings settings){
         SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        editor.putString("Settings", gson.toJson(settings));
+        editor.putString("SettingsSaved", gson.toJson(settings));
+        editor.commit();
     }
     public static Settings loadSettings(){
         Settings settings;
         Gson gson = new Gson();
         SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
-        settings = gson.fromJson(sharedPreferences.getString("Settings", ""), Settings.class);
+        settings = gson.fromJson(sharedPreferences.getString("SettingsSaved", ""), Settings.class);
         if(settings == null){
+            Log.d("DEBUGGING", "COULDNT FIND DATA.....................................................");
             return new Settings();
         }
         return settings;

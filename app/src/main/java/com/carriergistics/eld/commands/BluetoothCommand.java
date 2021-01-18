@@ -34,7 +34,7 @@ public abstract class BluetoothCommand {
     protected String cmd = null;
     protected boolean useImperialUnits = false;
     protected String rawData = null;
-    protected Long responseDelayInMs = 500L;
+    protected Long responseDelayInMs = 50L;
     private long start;
     private long end;
 
@@ -177,6 +177,15 @@ public abstract class BluetoothCommand {
         // read until '>' arrives OR end of stream reached
         char c;
         // -1 or 10 if the end of the stream is reached
+        int reconnectAttempts = 0;
+        while(in.available() <= 0 && reconnectAttempts < 50){
+            try{
+                Thread.sleep(50);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            reconnectAttempts++;
+        }
         if(in.available() > 0) {
 
             while (((b = (byte) in.read()) > -1) && b != 10){
@@ -195,7 +204,7 @@ public abstract class BluetoothCommand {
             Log.d("DEBUGGING", "No Message");
         }
         rawData = res.toString().replaceAll("SEARCHING", "");
-
+        Log.d("DEBUGGING", "Raw data from bt: " + rawData);
         /*
          * Data may have echo or informative text like "INIT BUS..." or similar.
          * The response ends with two carriage return characters. So we need to take
@@ -208,6 +217,8 @@ public abstract class BluetoothCommand {
         if(!rawData.contains("!") && rawData.contains("OK")) {
             //TODO: Good acknowedgement
             rawData = "";
+            readRawData(in);
+            return;
         }else if(rawData.contains("!")){
             rawData.replace("GC", "");
             for(char ch : rawData.toCharArray()){

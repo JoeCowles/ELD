@@ -18,22 +18,32 @@ public class SetTimeCommand {
     }
     public boolean run(String time, InputStream in) throws IOException, InterruptedException {
         MainActivity.dontSendBt();
+        Thread.sleep(3000);
         String command = "CGCMD01";
         command += calcChecksum(command);
+        Log.d("DEBUGGING", "Sending: " + command);
         output.write((command+"\r").getBytes());
         output.flush();
         this.in = in;
-        Log.d("DEBUGGING", "Setting time");
         input = waitForGoodResponse();
 
         if(input.contains("OK")){
             String response = "CG!" + time + "!";
             response += calcChecksum(response) + "";
             output.write((response + "\r").getBytes());
-            Log.d("DEBUGGING", response);
+            Log.d("DEBUGGING", response + " Sent");
+        }else{
+            input = waitForGoodResponse();
+            if(input.contains("OK")){
+                String response = "CG!" + time + "!";
+                response += calcChecksum(response) + "";
+                output.write((response + "\r").getBytes());
+                Log.d("DEBUGGING", response + " Sent");
+            }
         }
 
         input = waitForGoodResponse();
+
         MainActivity.sendBt();
         if(input != null){
             return true;
@@ -75,7 +85,6 @@ public class SetTimeCommand {
             sum += toCalc.charAt(i);
         }
         sum %= 255;
-        Log.d("DEBUGGING", "Checksum: "+ sum);
         return sum;
     }
     private String waitForGoodResponse() throws IOException, InterruptedException {
