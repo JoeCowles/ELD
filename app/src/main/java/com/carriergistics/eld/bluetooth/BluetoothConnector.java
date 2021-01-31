@@ -24,13 +24,7 @@ import java.util.UUID;
 
 public class BluetoothConnector {
     private static BluetoothSocket socket;
-    private static BluetoothSocket fallbackSocket;
     private static BlueToothStatus status = BlueToothStatus.AVAILABLE;
-    private static String rpm;
-    private static String gear, runTime;
-    private static boolean fallback;
-    private static int mphRaw;
-    private static Handler handler;
     private static SpeedCommand speedCommand;
     private static RPMCommand rpmCommand;
     private static BluetoothDevice device;
@@ -38,7 +32,6 @@ public class BluetoothConnector {
     private static String name = "hc-05";
     private static String password = "1234";
     public static boolean connect(String deviceID){
-        fallback = false;
         status = BlueToothStatus.CONNECTING;
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         device  = btAdapter.getRemoteDevice(deviceID);
@@ -58,16 +51,12 @@ public class BluetoothConnector {
         if (getStatus() == BlueToothStatus.CONNECTED){
             try {
                 speedCommand.run(socket.getInputStream(), socket.getOutputStream());
-                //Thread.sleep(100);
                 rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
                 data = new TelematicsData();
-                Log.d("DEBUGGING", DataConverter.speedMPH(speedCommand.getResult())+ "speed from bluetooth");
-                Log.d("DEBUGGING", DataConverter.convertRPM(rpmCommand.getResult()) + "rpm from bluetooth");
 
                 int speed = DataConverter.speedMPH(speedCommand.getResult());
                 int rpm = DataConverter.convertRPM(rpmCommand.getResult());
 
-                Log.d("DEBUGGING", rpm + " RPM");
                 data.setSpeed(speed);
                 data.setRpm(rpm);
                 Message message = Message.obtain();
@@ -93,13 +82,6 @@ public class BluetoothConnector {
             } catch (Exception e){
                 e.printStackTrace();
             }
-        }else{
-            /*try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + e.getMessage());
-            }*/
         }
 
     }
@@ -107,14 +89,11 @@ public class BluetoothConnector {
         boolean connected = false;
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
         try {
-            Log.d("DEBUGGING", device.toString() + " DEVICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
             socket.connect();
-            Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Didnt disconnect");
             connected = true;
         } catch (IOException e) {
             disconnect();
-            Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Disconnected... Reconnecting");
             BluetoothSocket tmp = socket;
             Class<?> clazz = tmp.getRemoteDevice().getClass();
             Class<?>[] paramTypes = new Class<?>[]{Integer.TYPE};
@@ -124,9 +103,7 @@ public class BluetoothConnector {
                 m = clazz.getMethod("createRfcommSocket", paramTypes);
                 socket = (BluetoothSocket) m.invoke(tmp.getRemoteDevice(), params);
                 socket.connect();
-                fallback = true;
                 connected = true;
-                Log.d("DEBUGGING", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Reconnected");
             } catch (NoSuchMethodException ex) {
                 ex.printStackTrace();
             } catch (IllegalAccessException ex) {
@@ -135,11 +112,6 @@ public class BluetoothConnector {
                 ex.printStackTrace();
                 disconnect();
                 connected = false;
-                /*try {
-                    Thread.currentThread().join();
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
-                }*/
             } catch (InvocationTargetException ex) {
                 ex.printStackTrace();
             }

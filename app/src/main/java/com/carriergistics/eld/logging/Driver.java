@@ -1,6 +1,10 @@
 package com.carriergistics.eld.logging;
 
+import com.carriergistics.eld.MainActivity;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Driver {
     private String licenseNum;
@@ -9,6 +13,8 @@ public class Driver {
     private String email;
     private HOSLog hosLog;
     private ArrayList<TimePeriod> log;
+    private ArrayList<Day> week;
+    private boolean currentDriver;
 
     private Status status;
     public Driver(){}
@@ -45,5 +51,26 @@ public class Driver {
 
     public void setLog(ArrayList<TimePeriod> log) {
         this.log = log;
+    }
+
+    protected Date getTime(){
+        // TODO: get time from api
+        return MainActivity.getTime();
+    }
+
+    public ArrayList<Day> getWeek() {
+        return week;
+    }
+
+    public void setWeek(ArrayList<Day> week) {
+        this.week = week;
+    }
+
+    public boolean isCurrentDriver() {
+        return currentDriver;
+    }
+
+    public void setCurrentDriver(boolean currentDriver) {
+        this.currentDriver = currentDriver;
     }
 }

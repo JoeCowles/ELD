@@ -4,18 +4,18 @@ import java.util.Date;
 
 public class TimePeriod {
 
-    private int status;
+    private Status status;
     private Date startTime;
     private Date endTime;
     // duration of the time period in seconds
-    private int duration;
+    private long duration = 0;
 
 
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -33,13 +33,22 @@ public class TimePeriod {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+        calcDuration();
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    private void setDuration(long duration) {
         this.duration = duration;
     }
+
+    private void calcDuration(){
+        if(startTime != null){
+            setDuration(Math.abs(getStartTime().getTime() - getEndTime().getTime())/1000);
+        }
+
+    }
+
 }

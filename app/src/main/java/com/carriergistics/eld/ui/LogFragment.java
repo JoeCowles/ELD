@@ -16,6 +16,8 @@ import com.carriergistics.eld.logging.HOSEvent;
 import com.carriergistics.eld.logging.HOSEventCodes;
 import com.carriergistics.eld.logging.HOSLog;
 import com.carriergistics.eld.logging.HOSLogger;
+import com.carriergistics.eld.logging.Status;
+import com.carriergistics.eld.logging.TimePeriod;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -28,6 +30,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +50,7 @@ public class LogFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    static XAxis xAxis;
     public LogFragment() {
         // Required empty public constructor
     }
@@ -87,7 +90,7 @@ public class LogFragment extends Fragment {
         Legend l = graph.getLegend();
         l.setEnabled(false);
 
-        XAxis xAxis = graph.getXAxis();
+        xAxis = graph.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
         xAxis.setTextSize(10f);
         xAxis.setTextColor(Color.WHITE);
@@ -95,14 +98,15 @@ public class LogFragment extends Fragment {
         xAxis.setDrawGridLines(true);
         xAxis.setTextColor(Color.rgb(255, 192, 56));
         xAxis.setCenterAxisLabels(true);
-        xAxis.setGranularity(1f); // one hour
+        xAxis.setGranularity(0.01f);
+
         xAxis.setValueFormatter(new ValueFormatter() {
 
             private final SimpleDateFormat mFormat = new SimpleDateFormat("MMM/dd HH:mm", Locale.ENGLISH);
 
             @Override
             public String getFormattedValue(float value) {
-                long millis = TimeUnit.HOURS.toMillis((long) value);
+                long millis = TimeUnit.MINUTES.toMillis((long)value);
                 return mFormat.format(new Date(millis));
             }
         });
@@ -138,25 +142,73 @@ public class LogFragment extends Fragment {
         });
         YAxis rightAxis = graph.getAxisRight();
         rightAxis.setEnabled(false);
-        setData(HOSLogger.getHOSLog());
+        setData(HOSLogger.getLog());
         return view;
     }
-    private void setData(HOSLog eventLog) {
+    private void setData(ArrayList<TimePeriod> eventLog) {
         ArrayList<Entry> values = new ArrayList<>();
+
+        Date start = Calendar.getInstance().getTime();
+
+        Date end = eventLog.get(eventLog.size()-2).getEndTime();
+        int i = eventLog.size() -1;
+        while(end == null){
+            end = eventLog.get(i).getEndTime();
+            i--;
+            if(i == 0 && eventLog.get(0).getEndTime() == null){
+                return;
+            }
+        }
+        for(TimePeriod t : eventLog){
+            if(t.getStartTime().before(start)){
+                start = t.getStartTime();
+            }else if(t.getEndTime() != null && t.getEndTime().after(end)){
+                end = t.getEndTime();
+            }
+        }
+        xAxis.mAxisRange = (float) ((end.getTime() - start.getTime()));
         if(eventLog != null){
             try{
-                for(HOSEvent event : eventLog.getLog()){
-                    if(event.getType() == HOSEventCodes.CHANGE_EVENT_TYPE){
-                        values.add(new Entry(TimeUnit.MILLISECONDS.toHours(event.getEndTime().getTime()), event.getCode()));
+                for(TimePeriod event : eventLog){
+
+                    if(event.getDuration() == 0 || event.getDuration() > 300){
+                        switch (event.getStatus()){
+                            case DRIVING:
+                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.DRIVING));
+                                if(event.getEndTime() != null){
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.DRIVING));
+                                }
+                                break;
+                            case STOPPED:
+                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.OFF_DUTY));
+                                if(event.getEndTime() != null) {
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.OFF_DUTY));
+                                }
+                                break;
+                            case FUELING:
+                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.ON_DUTY_NOT_DRIVING));
+                                if(event.getEndTime() != null) {
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.ON_DUTY_NOT_DRIVING));
+                                }
+                                break;
+                            case SLEEPING:
+                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.SLEEPING));
+                                if(event.getEndTime() != null) {
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.SLEEPING));
+                                }
+                                break;
+                        }
                     }
-                    Log.d("DEBUGGING", "Found event: " + event.getCode() + " " + event.getEndTime());
+
+
+                    Log.d("DEBUGGING", "Found event: " + event.getStatus() + " " + event.getStartTime() + " - " + event.getEndTime());
                 }
             }catch (NullPointerException e){
                 e.printStackTrace();
             }
         }
         // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(values, "DataSet 1");
+        LineDataSet set1 = new LineDataSet(values, "Driver 1");
         set1.setAxisDependency(YAxis.AxisDependency.LEFT);
         set1.setColor(ColorTemplate.getHoloBlue());
         set1.setValueTextColor(ColorTemplate.getHoloBlue());
@@ -173,6 +225,7 @@ public class LogFragment extends Fragment {
         data.setValueTextSize(9f);
         // set data
         graph.setData(data);
+        
     }
 
 }

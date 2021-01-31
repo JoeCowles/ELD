@@ -204,7 +204,7 @@ public abstract class BluetoothCommand {
             Log.d("DEBUGGING", "No Message");
         }
         rawData = res.toString().replaceAll("SEARCHING", "");
-        Log.d("DEBUGGING", "Raw data from bt: " + rawData);
+        //Log.d("DEBUGGING", "Raw data from bt: " + rawData);
         /*
          * Data may have echo or informative text like "INIT BUS..." or similar.
          * The response ends with two carriage return characters. So we need to take

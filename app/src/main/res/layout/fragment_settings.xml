@@ -1,65 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SettingsFragment">
+    tools:context=".settings.SettingsFragment">
 
-    <LinearLayout
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/settingsTabs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="104dp"
-            android:fontFamily="@font/aldrich"
-            android:text="Bluetooth Device"
-            android:textAlignment="center"
-            android:textSize="50sp" />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/settingsViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="850dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsTabs" />
 
-        <Button
-            android:id="@+id/selectDeviceBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select Device" />
-
-        <EditText
-            android:id="@+id/deviceName"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/renameBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Rename" />
-
-        <EditText
-            android:id="@+id/etBluePassword"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Password"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/setPasswordBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set Password" />
-
-        <Button
-            android:id="@+id/setTimeBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set Time" />
-    </LinearLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

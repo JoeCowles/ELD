@@ -107,7 +107,7 @@ public class CompanyInfoFragment extends Fragment {
 
             }
         });
-
+        company = new Company();
         layout = view.findViewById(R.id.companyFragLayout);
 
         // All the text fields
@@ -167,6 +167,7 @@ public class CompanyInfoFragment extends Fragment {
     private String getLastValue(){
         return lastEditValue;
     }
+
     private boolean checkForErrors(){
         company.setName(companyName.getText().toString());
         company.setAddress(companyAddress.getText().toString());

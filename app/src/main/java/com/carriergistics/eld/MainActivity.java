@@ -16,19 +16,17 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
-import com.carriergistics.eld.fueling.FuelingFragment;
 import com.carriergistics.eld.logging.Driver;
 import com.carriergistics.eld.logging.HOSLogger;
+import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.setup.InitActivity;
-import com.carriergistics.eld.setup.SetupActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.ui.LogFragment;
 import com.carriergistics.eld.ui.RoutesFragment;
-import com.carriergistics.eld.ui.SettingsFragment;
+import com.carriergistics.eld.settings.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.ui.StoppedFragment;
 import com.carriergistics.eld.utils.Data;
@@ -36,6 +34,8 @@ import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 
 /************************************************************
@@ -98,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
         HOSLogger.init(currentDriver);
+
         startLogging();
+
     }
 
     // Check if there is data to load
@@ -280,6 +282,10 @@ public class MainActivity extends AppCompatActivity {
             currentDriver = driver;
             drivers.set(0, currentDriver);
             drivers.set(1, secondaryDriver);
+            currentDriver.setCurrentDriver(true);
+            secondaryDriver.setCurrentDriver(false);
+            HOSLogger.save(Status.STOPPED);
+            Data.saveDrivers(drivers);
             HOSLogger.init(driver);
 
         }
@@ -302,8 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
                 gotDisconnected = false;
                 // TODO: Disconnected event
-                MainActivity.instance.checkCameraPerms();
-                MainActivity.instance.switchToFragment(StoppedFragment.class);
+                stoppedDriving();
 
             }
 
@@ -326,30 +331,52 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(new Ticker(), 0, 1);
 
     }
+
     public static Settings loadSettings(){
 
         settings = Data.loadSettings();
         return settings;
 
     }
+
     public static void saveSettings(Settings _settings){
 
         settings = _settings;
         Data.saveSettings(settings);
 
     }
+
     public static void sendBt(){
 
         shouldSendBt = true;
 
     }
+
     public static void dontSendBt(){
 
         shouldSendBt = false;
 
     }
+
     public static void stoppedDriving(){
+        MainActivity.instance.checkCameraPerms();
         MainActivity.instance.switchToFragment(StoppedFragment.class);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        HOSLogger.save(Status.STOPPED);
+        Data.saveDrivers(drivers);
+    }
+
+    // TODO: get time from api
+    public static Date getTime(){
+        return Calendar.getInstance().getTime();
+    }
+
+    private void updateTime(){
+
     }
 
 }

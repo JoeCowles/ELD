@@ -27,12 +27,11 @@ import static android.app.Activity.RESULT_OK;
  */
 public class FuelingFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     public static final int PHOTO = 100;
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ImageView photoView;
@@ -49,7 +48,6 @@ public class FuelingFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment FuelingFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static FuelingFragment newInstance(String param1, String param2) {
         FuelingFragment fragment = new FuelingFragment();
         Bundle args = new Bundle();

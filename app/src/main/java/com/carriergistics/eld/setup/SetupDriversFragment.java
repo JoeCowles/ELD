@@ -199,6 +199,7 @@ public class SetupDriversFragment extends Fragment {
         return view;
     }
     private void load(){
+        Data.init(this.getContext());
         drivers = Data.loadDrivers();
     }
     private void save(){

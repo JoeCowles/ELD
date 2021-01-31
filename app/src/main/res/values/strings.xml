@@ -22,6 +22,8 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="tab_text_1">Company</string>
     <string name="tab_text_2">Driver(s)</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="Drivers">Drivers</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>

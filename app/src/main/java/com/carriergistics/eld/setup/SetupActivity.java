@@ -28,7 +28,6 @@ public class SetupActivity extends AppCompatActivity {
     public static void setTab(int tab){
         if(tab == 2){
             ((CompanyInfoFragment)SectionsPagerAdapter.fragment).save();
-        }else{
         }
         viewPager.setCurrentItem(tab);
     }

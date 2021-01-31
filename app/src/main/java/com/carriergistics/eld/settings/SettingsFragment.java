@@ -1,4 +1,4 @@
-package com.carriergistics.eld.ui;
+package com.carriergistics.eld.settings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -7,8 +7,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +20,11 @@ import android.widget.Toast;
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
-import com.carriergistics.eld.commands.SetTimeCommand;
+import com.carriergistics.eld.setup.SectionsPagerAdapter;
 import com.carriergistics.eld.utils.Settings;
+import com.google.android.material.tabs.TabLayout;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -48,7 +45,7 @@ public class SettingsFragment extends Fragment {
     private Button setTimeBtn;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private ViewPager viewPager;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -88,7 +85,13 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        selectDeviceBtn = view.findViewById(R.id.selectDeviceBtn);
+        com.carriergistics.eld.settings.SectionsPagerAdapter sectionsPagerAdapter = new com.carriergistics.eld.settings.SectionsPagerAdapter(getContext(), getActivity().getSupportFragmentManager());
+        viewPager = view.findViewById(R.id.settingsViewPager);
+        viewPager.setAdapter(sectionsPagerAdapter);
+        TabLayout tabs = view.findViewById(R.id.settingsTabs);
+        tabs.setupWithViewPager(viewPager);
+
+        /*selectDeviceBtn = view.findViewById(R.id.selectDeviceBtn);
         selectDeviceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,11 +116,8 @@ public class SettingsFragment extends Fragment {
         setTimeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: get time from server
-                Calendar cal = Calendar.getInstance();
-                Date date = cal.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("MM,dd,yyyy,hh,mm,ss");
-                String time = sdf.format(date);
+                String time = sdf.format(MainActivity.getTime());
                try {
                     BluetoothConnector.setTime(time);
                 } catch (IOException e) {
@@ -135,49 +135,10 @@ public class SettingsFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
         return view;
     }
-    private void selectDevice(){
-        ArrayList deviceStrs = new ArrayList();
-        final ArrayList names = new ArrayList();
-        final ArrayList devices = new ArrayList();
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                deviceStrs.add(device.getName() + "\n" + device.getAddress());
-                devices.add(device.getAddress());
-                names.add(device.getName());
-            }
-        }
 
-        // show list
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1,
-                deviceStrs.toArray(new String[deviceStrs.size()]));
-
-        alertDialog.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.dismiss();
-                int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                String deviceAddress = devices.get(position).toString();
-                device = deviceAddress;
-                if(BluetoothConnector.connect(device)){
-                    makeText("Connected");
-                    setDevice(names.get(position).toString(), device);
-                }else{
-                    makeText("Couldn't connect!");
-                }
-            }
-        });
-
-        alertDialog.setTitle("Choose Bluetooth device");
-        alertDialog.show();
-    }
     private void makeText(String text){
         Toast.makeText(getActivity().getBaseContext(), text, Toast.LENGTH_SHORT).show();
     }
