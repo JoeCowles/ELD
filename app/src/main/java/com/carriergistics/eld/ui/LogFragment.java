@@ -1,16 +1,21 @@
 package com.carriergistics.eld.ui;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.logging.HOSEvent;
 import com.carriergistics.eld.logging.HOSEventCodes;
@@ -35,6 +40,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static com.carriergistics.eld.logging.Status.DRIVING;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link LogFragment#newInstance} factory method to
@@ -47,6 +54,7 @@ public class LogFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static LineChart graph;
+    private static LinearLayout list;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -89,7 +97,7 @@ public class LogFragment extends Fragment {
         graph = view.findViewById(R.id.graphingLog);
         Legend l = graph.getLegend();
         l.setEnabled(false);
-
+        list = view.findViewById(R.id.logEventList);
         xAxis = graph.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
         xAxis.setTextSize(10f);
@@ -134,7 +142,7 @@ public class LogFragment extends Fragment {
                         sValue = "DRIVING";
                         break;
                     case HOSEventCodes.ON_DUTY_NOT_DRIVING:
-                        sValue = "FUELING";
+                        sValue = "ON_DUTY";
                         break;
                 }
                 return sValue;
@@ -149,16 +157,7 @@ public class LogFragment extends Fragment {
         ArrayList<Entry> values = new ArrayList<>();
 
         Date start = Calendar.getInstance().getTime();
-
-        Date end = eventLog.get(eventLog.size()-2).getEndTime();
-        int i = eventLog.size() -1;
-        while(end == null){
-            end = eventLog.get(i).getEndTime();
-            i--;
-            if(i == 0 && eventLog.get(0).getEndTime() == null){
-                return;
-            }
-        }
+        Date end = MainActivity.getTime();
         for(TimePeriod t : eventLog){
             if(t.getStartTime().before(start)){
                 start = t.getStartTime();
@@ -166,6 +165,7 @@ public class LogFragment extends Fragment {
                 end = t.getEndTime();
             }
         }
+        Log.d("DEBUGGING", start.toString() + " " + end.toString() + " ");
         xAxis.mAxisRange = (float) ((end.getTime() - start.getTime()));
         if(eventLog != null){
             try{
@@ -198,10 +198,11 @@ public class LogFragment extends Fragment {
                                 }
                                 break;
                         }
+                        Log.d("DEBUGGING", "Found event: " + event.getStatus() + " " + event.getStartTime() + " - " + event.getEndTime());
                     }
 
 
-                    Log.d("DEBUGGING", "Found event: " + event.getStatus() + " " + event.getStartTime() + " - " + event.getEndTime());
+
                 }
             }catch (NullPointerException e){
                 e.printStackTrace();
@@ -225,7 +226,49 @@ public class LogFragment extends Fragment {
         data.setValueTextSize(9f);
         // set data
         graph.setData(data);
-        
+        // TODO: switch to 24 hr system
+        for(int t = eventLog.size() -1; t > 0; t--){
+            TimePeriod tp = eventLog.get(t);
+            LinearLayout layout = new LinearLayout(getActivity());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM     HH:mm");
+            TextView tv = new TextView(getActivity());
+            tv.setText(tp.getStatus().toString());
+            layout.addView(tv);
+            TextView startTime = new TextView(getActivity());
+            if(tp.getStatus() == DRIVING){
+                startTime.setText("\t \t \t \t \t \t \t \t \t \t  " + sdf.format(tp.getStartTime()) + " - ");
+                startTime.setTypeface(Typeface.DEFAULT_BOLD);
+            }else{
+                startTime.setText("\t \t \t \t \t \t \t \t \t \t" + sdf.format(tp.getStartTime()) + " - ");
+                startTime.setTypeface(Typeface.DEFAULT_BOLD);
+            }
+            sdf = new SimpleDateFormat("HH:mm     dd/MM    ");
+            TextView endTime = new TextView(getActivity());
+            if(tp.getEndTime() != null){
+                endTime.setText(sdf.format(tp.getEndTime())+"\t\t\t\t\t");
+                endTime.setTypeface(Typeface.DEFAULT_BOLD);
+            }else{
+                endTime.setText("now                     \t\t\t\t\t");
+                endTime.setTypeface(Typeface.DEFAULT_BOLD);
+            }
+            layout.addView(startTime);
+            layout.addView(endTime);
+            if(t % 2 == 0){
+                layout.setBackgroundColor(Color.GRAY);
+            }else {
+                layout.setBackgroundColor(Color.WHITE);
+            }
+            Button editBtn = new Button(getActivity());
+            editBtn.setText("Edit");
+            editBtn.setRight(100);
+            layout.addView(editBtn);
+            if(tp.getStatus() == DRIVING){
+                editBtn.setEnabled(false);
+            }
+            list.addView(layout);
+
+        }
+
     }
 
 }

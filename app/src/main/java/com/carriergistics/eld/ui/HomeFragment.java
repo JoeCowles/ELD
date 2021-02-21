@@ -2,8 +2,10 @@ package com.carriergistics.eld.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,14 +19,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.bluetooth.TelematicsData;
-import com.carriergistics.eld.fueling.FuelingFragment;
-import com.carriergistics.eld.logging.HOSLogger;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -50,10 +50,10 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     public static  Handler handler;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 100;
-    TextView mphTv;
-    TextView timeDrivenTv;
-    CustomGauge speedGuage;
-    FloatingActionButton tempBtn;
+    private TextView timeDrivenTv;
+    private CustomGauge timeGuage;
+    private Button statusBtn;
+    private int speed = 0;
     private MapView mMapView;
     private GoogleMap googleMap;
     // TODO: Rename and change types of parameters
@@ -95,11 +95,11 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        mphTv = view.findViewById(R.id.mphTv);
-        timeDrivenTv = view.findViewById(R.id.timeTextView);
-        speedGuage = view.findViewById(R.id.speedGuage);
-        speedGuage.setStartValue(0);
-        speedGuage.setEndValue(100);
+        timeGuage = view.findViewById(R.id.homeTimeGuage);
+        timeGuage.setStartValue(0);
+        timeGuage.setEndValue(100);
+        timeDrivenTv = view.findViewById(R.id.timeTv);
+        statusBtn = view.findViewById(R.id.homeStatusBtn);
         boolean perms = checkLocationPermission();
         while(!perms){
             perms = checkLocationPermission();
@@ -132,12 +132,41 @@ public class HomeFragment extends Fragment {
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
-        tempBtn = view.findViewById(R.id.tempFuelBtn);
-        tempBtn.setOnClickListener(new View.OnClickListener() {
+        statusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkCameraPerms();
-                ((MainActivity)getActivity()).switchToFragment(FuelingFragment.class);
+                AlertDialog.Builder builder;
+                Log.d("Debugging", "Button clicked: " + speed);
+                if(speed > 5) {
+                    builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("You must stop the truck to change your status!")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                     dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.setTitle("Warning!");
+                    alert.show();
+                }else{
+                    builder = new AlertDialog.Builder(getActivity());
+                    int checked = 0;
+                    // Todo: find a better way of determining if the driver is driving
+                    if(speed > 5){
+                        checked = 2;
+                    }
+                    builder.setSingleChoiceItems(new String[]{"Off Duty", "On duty", "Driving", "Begin personal use"}, checked, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+
             }
         });
         return view;
@@ -166,9 +195,9 @@ public class HomeFragment extends Fragment {
         Log.d("DEBUGGING", "Update called");
         if(MainActivity.getFragment() == HomeFragment.class.getName()){
             Log.d("DEBUGGING", "GOT RESPONSE FROM BLUETOOTH>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + data.getSpeed());
-            mphTv.setText(data.getSpeed() + "\n MPH");
             timeDrivenTv.setText(data.getTime());
-            speedGuage.setValue(data.getSpeed());
+            timeGuage.setValue( ((int)  (((double) data.getTimeSecs()/28800) * 100)));
+            speed = data.getSpeed();
         }
     }
     private boolean checkCameraPerms(){

@@ -10,6 +10,7 @@ public class TelematicsData {
     private String gear;
     private String runTime;
     private String time;
+    private int timeSecs;
     public TelematicsData(){
 
     }
@@ -61,4 +62,11 @@ public class TelematicsData {
         return time;
     }
 
+    public int getTimeSecs() {
+        return timeSecs;
+    }
+
+    public void setTimeSecs(int timeSecs) {
+        this.timeSecs = timeSecs;
+    }
 }

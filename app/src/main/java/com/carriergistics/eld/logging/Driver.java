@@ -15,6 +15,10 @@ public class Driver {
     private ArrayList<TimePeriod> log;
     private ArrayList<Day> week;
     private boolean currentDriver;
+    private int secsTillBreak;
+    private double hrsInCycle;
+    private int secsDrivenToday;
+    private int concurrentSecsDriven;
 
     private Status status;
     public Driver(){}
@@ -72,5 +76,37 @@ public class Driver {
 
     public void setCurrentDriver(boolean currentDriver) {
         this.currentDriver = currentDriver;
+    }
+
+    public int getSecsDrivenToday() {
+        return secsDrivenToday;
+    }
+
+    public void setSecsDrivenToday(int secsDrivenToday) {
+        this.secsDrivenToday = secsDrivenToday;
+    }
+
+    public int getSecsTillBreak() {
+        return secsTillBreak;
+    }
+
+    public void setSecsTillBreak(int secsTillBreak) {
+        this.secsTillBreak = secsTillBreak;
+    }
+
+    public double getHrsInCycle() {
+        return hrsInCycle;
+    }
+
+    public void setHrsInCycle(double hrsInCycle) {
+        this.hrsInCycle = hrsInCycle;
+    }
+
+    public int getConcurrentSecsDriven() {
+        return concurrentSecsDriven;
+    }
+
+    public void setConcurrentSecsDriven(int concurrentSecsDriven) {
+        this.concurrentSecsDriven = concurrentSecsDriven;
     }
 }

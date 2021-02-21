@@ -13,79 +13,42 @@
     tools:context=".ui.HomeFragment">
 
     <pl.pawelkleczkowski.customgauge.CustomGauge
-        android:id="@+id/speedGuage"
-        android:layout_width="667dp"
-        android:layout_height="325dp"
+        android:id="@+id/homeTimeGuage"
+        android:layout_width="350dp"
+        android:layout_height="388dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
         android:paddingLeft="20dp"
         android:paddingTop="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="20dp"
-        app:gaugeEndValue="1000"
-        app:gaugePointEndColor="@color/colorPrimary"
+        app:gaugeDividerColor="@color/green"
+        app:gaugeEndValue="100"
+        app:gaugePointEndColor="@color/red"
         app:gaugePointSize="6"
-        app:gaugePointStartColor="#ec591b"
-        app:gaugeStartAngle="135"
+        app:gaugePointStartColor="@color/green"
+        app:gaugeStartAngle="270"
         app:gaugeStartValue="0"
-        app:gaugeStrokeCap="ROUND"
-        app:gaugeStrokeColor="@color/colorAccent"
+        app:gaugeStrokeCap="FLAT"
         app:gaugeStrokeWidth="10dp"
-        app:gaugeSweepAngle="270"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:gaugeSweepAngle="360"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/mphTv"
-        android:layout_width="241dp"
-        android:layout_height="101dp"
+        android:id="@+id/timeTv"
+        android:layout_width="294dp"
+        android:layout_height="81dp"
         android:fontFamily="@font/aldrich"
-        android:text="0\nMPH"
+        android:text="00:00"
         android:textAlignment="center"
-        android:textSize="50sp"
-        app:layout_constraintBottom_toBottomOf="@+id/speedGuage"
-        app:layout_constraintEnd_toEndOf="@+id/speedGuage"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="@+id/speedGuage"
-        app:layout_constraintTop_toTopOf="@+id/speedGuage"
-        app:layout_constraintVertical_bias="0.475" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="504dp"
-        android:layout_height="49dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextView" />
-
-    <TextView
-        android:id="@+id/timeTextView"
-        android:layout_width="547dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/aldrich"
-        android:gravity="center"
-        android:text="00:00:00"
-        android:textSize="45dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/speedGuage" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_notification"
-        app:backgroundTint="@color/colorPrimary"
-        app:backgroundTintMode="src_over"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/homeTimeGuage"
+        app:layout_constraintEnd_toEndOf="@+id/homeTimeGuage"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="@+id/homeTimeGuage"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapViewHome"
@@ -94,17 +57,40 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+        app:layout_constraintTop_toBottomOf="@+id/homeTimeGuage" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/tempFuelBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:clickable="true"
-        android:src="@drawable/ic_baseline_local_gas_station_24"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="362dp"
+        android:layout_height="71dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Time till break:"
+        android:textAlignment="center"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/homeTimeGuage"
+        app:layout_constraintEnd_toEndOf="@+id/homeTimeGuage"
+        app:layout_constraintStart_toStartOf="@+id/homeTimeGuage"
+        app:layout_constraintTop_toTopOf="@+id/homeTimeGuage"
+        app:layout_constraintVertical_bias="0.434" />
+
+    <Button
+        android:id="@+id/homeStatusBtn"
+        android:layout_width="0dp"
+        android:layout_height="82dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Status"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/homeTimeGuage"
+        app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="137dp"
+        android:layout_height="106dp"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 

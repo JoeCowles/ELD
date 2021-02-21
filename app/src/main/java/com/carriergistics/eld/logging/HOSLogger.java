@@ -28,10 +28,12 @@ public class HOSLogger {
 
     static TelematicsData data;
     static Date currentTime;
+
+
     static int secsDrivenToday;
     static double hoursDrivenThisWeek = 0;
     static int concurrentSecsDriven = 0;
-
+    private static int secsTillBreak;
     public static Handler handler;
 
 
@@ -133,6 +135,7 @@ public class HOSLogger {
             driverStatus = new TimePeriod();
             driverStatus.setStartTime(currentTime);
             driverStatus.setStatus(Status.STOPPED);
+            log.add(driverStatus);
         }
         /*
 
@@ -226,7 +229,7 @@ public class HOSLogger {
     }
     /*
     *
-    *            Method gets called every second by AlertChecker task. Checks for any upcoming violations
+    *            Method gets called when data comes in from bt
     *
      */
     public static void checkAlerts(){
@@ -235,7 +238,9 @@ public class HOSLogger {
         int mins = 0;
         int secs = 0;
         Date dayAgo = addHoursToDate(currentTime, -24);
-
+        String timeTillBreak = "";
+        secsTillBreak = 28800;
+        // TODO: Find what cycle the driver is on, and alert them accordingly
         //  Check for Day limit approaching
         secsDrivenToday = 0;
         for(TimePeriod period : log){
@@ -299,7 +304,30 @@ public class HOSLogger {
         time += secs < 10 ? "0" : "";
         time += secs;
 
-        data.setTime(time);
+        secsTillBreak -= secs;
+        secsTillBreak -= mins * 60;
+        secsTillBreak -= hours * 60 * 60;
+
+        data.setTimeSecs(secsTillBreak);
+
+        mins = secsTillBreak / 60;
+        secsTillBreak %= 60;
+        hours = mins / 60;
+        mins %= 60;
+
+        timeTillBreak = hours < 10 ? "0" : "";
+        timeTillBreak += hours + ":";
+        timeTillBreak += mins < 10 ? "0" : "";
+        timeTillBreak += mins;
+        if(mins < 0 || hours < 0){
+            timeTillBreak = "00:00";
+        }
+        data.setTime(timeTillBreak);
+
+        currentDriver.setSecsTillBreak(secsTillBreak);
+        currentDriver.setSecsDrivenToday(secsDrivenToday);
+        currentDriver.setConcurrentSecsDriven(concurrentSecsDriven);
+
         Message msg = Message.obtain();
         msg.setTarget(HomeFragment.handler);
         msg.obj = data;
@@ -339,11 +367,33 @@ public class HOSLogger {
     public static ArrayList<TimePeriod> getLog(){
         ArrayList<TimePeriod> temp = new ArrayList<TimePeriod>();
         for(TimePeriod t : log){
-            if(t.getEndTime() == null || t.getEndTime().after(addHoursToDate(getTime(), -24))){
-                temp.add(t);
+            // Make sure that the event was within 24 hrs
+            if(t.getEndTime() == null && (t.getStartTime() != null && t.getStartTime().after(addHoursToDate(getTime(), -24))) || (t.getEndTime()!= null && t.getEndTime().after(addHoursToDate(getTime(), -24)))){
+                if(t.getStartTime().after(addHoursToDate(getTime(), -24))){
+                    temp.add(t);
+                }
             }
         }
         return temp;
+    }
+
+    /*
+            Getters for finding HOS info such as time till next break, time in cycle, etc
+     */
+    public static int getConcurrentSecsDriven() {
+        return concurrentSecsDriven;
+    }
+
+    public static int getSecsTillBreak() {
+        return secsTillBreak;
+    }
+
+    public static int getSecsDrivenToday() {
+        return secsDrivenToday;
+    }
+
+    public static double getHoursDrivenThisWeek() {
+        return hoursDrivenThisWeek;
     }
 
 }
