@@ -9,10 +9,13 @@ import android.os.Message;
 import android.util.Log;
 
 import com.carriergistics.eld.MainActivity;
+import com.carriergistics.eld.commands.FuelEconCommand;
+import com.carriergistics.eld.commands.FuelLevelCommand;
 import com.carriergistics.eld.commands.SpeedCommand;
 import com.carriergistics.eld.commands.RPMCommand;
 import com.carriergistics.eld.commands.SetBluetoothNameCommand;
 import com.carriergistics.eld.commands.SetTimeCommand;
+import com.carriergistics.eld.commands.VinCommand;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.utils.DataConverter;
 
@@ -94,6 +97,7 @@ public class BluetoothConnector {
             connected = true;
         } catch (IOException e) {
             disconnect();
+            connected = false;
             BluetoothSocket tmp = socket;
             Class<?> clazz = tmp.getRemoteDevice().getClass();
             Class<?>[] paramTypes = new Class<?>[]{Integer.TYPE};
@@ -106,14 +110,20 @@ public class BluetoothConnector {
                 connected = true;
             } catch (NoSuchMethodException ex) {
                 ex.printStackTrace();
+                disconnect();
+                connected = false;
             } catch (IllegalAccessException ex) {
                 ex.printStackTrace();
+                disconnect();
+                connected = false;
             } catch (IOException ex) {
                 ex.printStackTrace();
                 disconnect();
                 connected = false;
             } catch (InvocationTargetException ex) {
                 ex.printStackTrace();
+                disconnect();
+                connected = false;
             }
 
         }
@@ -158,5 +168,38 @@ public class BluetoothConnector {
         }catch (InterruptedException e){
             e.printStackTrace();
         }
+    }
+    public static String getVinNum(){
+        VinCommand vinCommand = new VinCommand();
+        try {
+            vinCommand.run(socket.getInputStream(),socket.getOutputStream());
+        } catch (IOException e) {
+            return "Couldn't retrieve";
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return vinCommand.getResult();
+    }
+    public static String getFuelLevel(){
+        FuelLevelCommand fuelCmd = new FuelLevelCommand();
+        try {
+            fuelCmd.run(socket.getInputStream(),socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return fuelCmd.getResult();
+    }
+    public static String getFuelEcon(){
+        FuelEconCommand fuelCmd = new FuelEconCommand();
+        try {
+            fuelCmd.run(socket.getInputStream(),socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return fuelCmd.getResult();
     }
 }

@@ -1,27 +1,48 @@
 package com.carriergistics.eld.logging;
 
+import android.graphics.Bitmap;
+
 import com.carriergistics.eld.MainActivity;
+import com.carriergistics.eld.utils.DataConverter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class Driver {
+
     private String licenseNum;
     private String first_name;
     private String last_name;
     private String email;
+
+    // Might eliminate this, and use time periods, or might use this and eliminate time periods
     private HOSLog hosLog;
-    private ArrayList<TimePeriod> log;
-    private ArrayList<Day> week;
+
     private boolean currentDriver;
+
+    // Logging variables
+    private int secsLeftDrivingToday;
     private int secsTillBreak;
     private double hrsInCycle;
     private int secsDrivenToday;
     private int concurrentSecsDriven;
+    private int secsLeftInBreak;
+
+    private ArrayList<TimePeriod> log;
+    private ArrayList<Day> days;
+
+    // Used to convert secs to time Strings
+    private int secs, mins, hrs;
 
     private Status status;
-    public Driver(){}
+
+    private Bitmap signature;
+
+    public Driver(){
+        days = new ArrayList<Day>();
+        log = new ArrayList<TimePeriod>();
+    }
     public void setLicenseNum(String licenseNum){
         this.licenseNum = licenseNum;
     }
@@ -62,12 +83,12 @@ public class Driver {
         return MainActivity.getTime();
     }
 
-    public ArrayList<Day> getWeek() {
-        return week;
+    public ArrayList<Day> getDays() {
+        return days;
     }
 
-    public void setWeek(ArrayList<Day> week) {
-        this.week = week;
+    public void setDays(ArrayList<Day> days) {
+        this.days = days;
     }
 
     public boolean isCurrentDriver() {
@@ -109,4 +130,47 @@ public class Driver {
     public void setConcurrentSecsDriven(int concurrentSecsDriven) {
         this.concurrentSecsDriven = concurrentSecsDriven;
     }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public int getSecsLeftDrivingToday() {
+        return secsLeftDrivingToday;
+    }
+
+    public void setSecsLeftDrivingToday(int secsLeftDrivingToday) {
+        this.secsLeftDrivingToday = secsLeftDrivingToday;
+    }
+
+    public Bitmap getSignature() {
+        return signature;
+    }
+
+    public void setSignature(Bitmap signature) {
+        this.signature = signature;
+    }
+
+    public int getSecsLeftInBreak() {
+        return secsLeftInBreak;
+    }
+
+    public void setSecsLeftInBreak(int secsLeftInBreak) {
+        this.secsLeftInBreak = secsLeftInBreak;
+    }
+    public String getConcurrentTimeDriven(){
+        return DataConverter.secsToTime(concurrentSecsDriven);
+    }
+    public String getTimeTillBreak(){
+        return DataConverter.secsToTime(secsTillBreak);
+    }
+    public String getTimeLeftInBreak(){
+        return DataConverter.secsToTime(secsLeftInBreak);
+    }
+    public String getTimeDrivenToday(){
+        return DataConverter.secsToTime(secsDrivenToday);
+    }
+
+
+
 }

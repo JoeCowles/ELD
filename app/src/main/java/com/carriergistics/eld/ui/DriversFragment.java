@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
+
+import pl.pawelkleczkowski.customgauge.CustomGauge;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,12 +27,19 @@ public class DriversFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private static final int HRS_14 = 50400;
+    private static final int HRS_11 = 39600;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private TextView driverName;
-    private TextView driverName2;
-
+    private CustomGauge breakGuage;
+    private CustomGauge shiftGuage;
+    private CustomGauge driveTimeGuage;
+    private TextView driveTimeTv;
+    private TextView shiftTv;
+    private TextView breakTv;
     public DriversFragment() {
         // Required empty public constructor
     }
@@ -66,6 +76,48 @@ public class DriversFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_drivers, container, false);
+        driverName = view.findViewById(R.id.driverNameTv);
+        driverName.setText(MainActivity.currentDriver.getFirst_name() + " " + MainActivity.currentDriver.getLast_name());
+
+        breakGuage = view.findViewById(R.id.driverBreakGuage);
+        breakGuage.setStartValue(28800);
+        breakGuage.setEndValue(0);
+        breakGuage.setValue(28800 - MainActivity.currentDriver.getSecsTillBreak());
+
+        shiftGuage = view.findViewById(R.id.driverShiftGuage);
+        shiftGuage.setStartValue(0);
+        shiftGuage.setEndValue(HRS_14);
+        shiftGuage.setValue((HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()));
+
+        driveTimeGuage = view.findViewById(R.id.driverDriveTimeGuage);
+        driveTimeGuage.setStartValue(0);
+        driveTimeGuage.setEndValue(HRS_11);
+        driveTimeGuage.setValue(HRS_11 - MainActivity.currentDriver.getSecsDrivenToday());
+
+        breakTv = view.findViewById(R.id.driverBreakTv);
+        int mins = MainActivity.currentDriver.getSecsTillBreak() / 60;
+        int hours = mins / 60;
+        mins %= 60;
+        String breakTime = (hours < 10) ? "0" + hours + ":": hours + ":";
+        breakTime += (mins < 10) ? "0" + mins : mins + "";
+        breakTv.setText(breakTime);
+
+        shiftTv = view.findViewById(R.id.driverShiftTv);
+        Log.d("DEBUGGING", (double)(HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()) / HRS_14+ "------------");
+        mins = (HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()) / 60;
+        hours = mins / 60;
+        mins %= 60;
+        String shiftTime = (hours < 10) ? "0" + hours + ":": hours + ":";
+        shiftTime += (mins < 10) ? "0" + mins : mins + "";
+        shiftTv.setText(shiftTime);
+
+        driveTimeTv = view.findViewById(R.id.driverDriveTimeTv);
+        mins = (HRS_11 - MainActivity.currentDriver.getSecsDrivenToday()) / 60;
+        hours = mins / 60;
+        mins %= 60;
+        String driveTime = (hours < 10) ? "0" + hours + ":": hours + ":";
+        driveTime += (mins < 10) ? "0" + mins : mins + "";
+        driveTimeTv.setText(driveTime);
 
         return view;
     }

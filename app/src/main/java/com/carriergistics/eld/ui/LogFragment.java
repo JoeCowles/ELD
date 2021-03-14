@@ -5,6 +5,9 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,6 +36,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,10 +55,12 @@ public class LogFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "date";
     private static final String ARG_PARAM2 = "param2";
     private static LineChart graph;
     private static LinearLayout list;
+    public static String date;
+    private static int id = 4000;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -85,7 +91,8 @@ public class LogFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            date = getArguments().getString(ARG_PARAM1);
+            Log.d("DEBUGGING", "got date: " + date);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -95,19 +102,21 @@ public class LogFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_log, container, false);
         graph = view.findViewById(R.id.graphingLog);
+        graph.setMarker(null);
         Legend l = graph.getLegend();
         l.setEnabled(false);
         list = view.findViewById(R.id.logEventList);
+        list.setPadding(0, 20, 0, 20);
         xAxis = graph.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
         xAxis.setTextSize(10f);
+        xAxis.setEnabled(true);
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawAxisLine(false);
         xAxis.setDrawGridLines(true);
         xAxis.setTextColor(Color.rgb(255, 192, 56));
         xAxis.setCenterAxisLabels(true);
         xAxis.setGranularity(0.01f);
-
         xAxis.setValueFormatter(new ValueFormatter() {
 
             private final SimpleDateFormat mFormat = new SimpleDateFormat("MMM/dd HH:mm", Locale.ENGLISH);
@@ -133,16 +142,16 @@ public class LogFragment extends Fragment {
                 String sValue = "";
                 switch((int) value){
                     case HOSEventCodes.OFF_DUTY:
-                        sValue = "OFF_DUTY";
+                        sValue = "OFF";
                         break;
                     case HOSEventCodes.SLEEPING:
-                        sValue = "SLEEPING";
+                        sValue = "SB";
                         break;
                     case HOSEventCodes.DRIVING:
-                        sValue = "DRIVING";
+                        sValue = "D";
                         break;
                     case HOSEventCodes.ON_DUTY_NOT_DRIVING:
-                        sValue = "ON_DUTY";
+                        sValue = "ON";
                         break;
                 }
                 return sValue;
@@ -150,7 +159,19 @@ public class LogFragment extends Fragment {
         });
         YAxis rightAxis = graph.getAxisRight();
         rightAxis.setEnabled(false);
-        setData(HOSLogger.getLog());
+        if(date != null && !date.isEmpty()){
+
+            try {
+                setData(HOSLogger.getLog(date));
+            } catch (ParseException e) {
+                setData(HOSLogger.getLog());
+                e.printStackTrace();
+            }
+        }
+        else{
+            setData(HOSLogger.getLog());
+        }
+
         return view;
     }
     private void setData(ArrayList<TimePeriod> eventLog) {
@@ -165,36 +186,43 @@ public class LogFragment extends Fragment {
                 end = t.getEndTime();
             }
         }
-        Log.d("DEBUGGING", start.toString() + " " + end.toString() + " ");
         xAxis.mAxisRange = (float) ((end.getTime() - start.getTime()));
         if(eventLog != null){
             try{
                 for(TimePeriod event : eventLog){
-
-                    if(event.getDuration() == 0 || event.getDuration() > 300){
+                    // If it is the current event, or it lasted more than 1 min
+                    if((event.getDuration() == 0 || event.getDuration() > 60) && event.getStatus() != null){
                         switch (event.getStatus()){
                             case DRIVING:
                                 values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.DRIVING));
                                 if(event.getEndTime() != null){
                                     values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.DRIVING));
+                                }else{
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(MainActivity.getTime().getTime()), HOSEventCodes.DRIVING));
                                 }
                                 break;
-                            case STOPPED:
-                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.OFF_DUTY));
-                                if(event.getEndTime() != null) {
-                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.OFF_DUTY));
-                                }
-                                break;
-                            case FUELING:
+                            case ON_DUTY:
                                 values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.ON_DUTY_NOT_DRIVING));
                                 if(event.getEndTime() != null) {
                                     values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.ON_DUTY_NOT_DRIVING));
+                                }else{
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(MainActivity.getTime().getTime()), HOSEventCodes.ON_DUTY_NOT_DRIVING));
+                                }
+                                break;
+                            case OFF_DUTY:
+                                values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.OFF_DUTY));
+                                if(event.getEndTime() != null) {
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.OFF_DUTY));
+                                }else{
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(MainActivity.getTime().getTime()), HOSEventCodes.OFF_DUTY));
                                 }
                                 break;
                             case SLEEPING:
                                 values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getStartTime().getTime()), HOSEventCodes.SLEEPING));
                                 if(event.getEndTime() != null) {
                                     values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(event.getEndTime().getTime()), HOSEventCodes.SLEEPING));
+                                }else{
+                                    values.add(new Entry(TimeUnit.MILLISECONDS.toMinutes(MainActivity.getTime().getTime()), HOSEventCodes.SLEEPING));
                                 }
                                 break;
                         }
@@ -229,46 +257,87 @@ public class LogFragment extends Fragment {
         // TODO: switch to 24 hr system
         for(int t = eventLog.size() -1; t > 0; t--){
             TimePeriod tp = eventLog.get(t);
-            LinearLayout layout = new LinearLayout(getActivity());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM     HH:mm");
+            CardView view = new CardView(getContext());
+            ConstraintLayout con = new ConstraintLayout(getContext());
+            con.setId(id);
+            id++;
+
+            ConstraintSet set = new ConstraintSet();
+            set.clone(con);
+            if(tp == null){
+                break;
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd     HH:mm");
             TextView tv = new TextView(getActivity());
-            tv.setText(tp.getStatus().toString());
-            layout.addView(tv);
+            tv.setText(tp.getStatus() + "");
+            tv.setId(id);
+            tv.setTextSize(20);
+            id++;
             TextView startTime = new TextView(getActivity());
+            startTime.setId(id);
+            startTime.setTextSize(20);
+            id++;
             if(tp.getStatus() == DRIVING){
-                startTime.setText("\t \t \t \t \t \t \t \t \t \t  " + sdf.format(tp.getStartTime()) + " - ");
+                startTime.setText(sdf.format(tp.getStartTime()) + " - ");
                 startTime.setTypeface(Typeface.DEFAULT_BOLD);
             }else{
-                startTime.setText("\t \t \t \t \t \t \t \t \t \t" + sdf.format(tp.getStartTime()) + " - ");
+                startTime.setText(sdf.format(tp.getStartTime())+ " - ");
                 startTime.setTypeface(Typeface.DEFAULT_BOLD);
             }
-            sdf = new SimpleDateFormat("HH:mm     dd/MM    ");
+            sdf = new SimpleDateFormat("HH:mm     MM/dd     ");
             TextView endTime = new TextView(getActivity());
+            endTime.setId(id);
+            endTime.setTextSize(20);
+            id++;
             if(tp.getEndTime() != null){
-                endTime.setText(sdf.format(tp.getEndTime())+"\t\t\t\t\t");
+                endTime.setText(sdf.format(tp.getEndTime()));
                 endTime.setTypeface(Typeface.DEFAULT_BOLD);
+
             }else{
-                endTime.setText("now                     \t\t\t\t\t");
+                endTime.setText("now\t\t\t\t\t\t\t\t");
                 endTime.setTypeface(Typeface.DEFAULT_BOLD);
             }
-            layout.addView(startTime);
-            layout.addView(endTime);
+
             if(t % 2 == 0){
-                layout.setBackgroundColor(Color.GRAY);
+                con.setBackgroundColor(Color.GRAY);
             }else {
-                layout.setBackgroundColor(Color.WHITE);
+                con.setBackgroundColor(Color.WHITE);
             }
             Button editBtn = new Button(getActivity());
+            editBtn.setId(id);
+            id++;
             editBtn.setText("Edit");
-            editBtn.setRight(100);
-            layout.addView(editBtn);
+
             if(tp.getStatus() == DRIVING){
                 editBtn.setEnabled(false);
             }
-            list.addView(layout);
+            list.addView(view);
+            view.addView(con);
+            con.addView(editBtn);
+            con.addView(startTime);
+            con.addView(endTime);
+            con.addView(tv);
+
+            set.clone(con);
+            set.connect(tv.getId(), ConstraintSet.LEFT, con.getId(), ConstraintSet.LEFT);
+            set.applyTo(con);
+            set.clone(con);
+            set.connect(editBtn.getId(), ConstraintSet.RIGHT, con.getId(), ConstraintSet.RIGHT);
+            set.applyTo(con);
+            set.clone(con);
+            set.connect(endTime.getId(), ConstraintSet.RIGHT, editBtn.getId(), ConstraintSet.LEFT);
+            set.applyTo(con);
+            set.clone(con);
+            set.connect(startTime.getId(), ConstraintSet.RIGHT, endTime.getId(), ConstraintSet.LEFT);
+            set.applyTo(con);
 
         }
 
     }
-
+    public static void setDate(String _date){
+        date = _date;
+    }
+    public String getDate(){
+        return date;
+    }
 }

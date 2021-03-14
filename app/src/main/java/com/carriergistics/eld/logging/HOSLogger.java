@@ -11,8 +11,11 @@ import com.carriergistics.eld.Ticker;
 import com.carriergistics.eld.bluetooth.TelematicsData;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.ui.StoppedFragment;
+import com.carriergistics.eld.utils.DataConverter;
 
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,11 +25,12 @@ public class HOSLogger {
 
     static HOSLog currentHOSLog;
     static ArrayList<TimePeriod> log;
+    static Day currentDay;
     private static Driver currentDriver;
     static TimePeriod driverStatus;
     static HOSEvent currentHOSEvent;
 
-    static TelematicsData data;
+    public static TelematicsData data;
     static Date currentTime;
 
 
@@ -35,7 +39,7 @@ public class HOSLogger {
     static int concurrentSecsDriven = 0;
     private static int secsTillBreak;
     public static Handler handler;
-
+    private static int secsLeftBreak;
 
     private static int lastSpeed = 0;
     private static int rpmGlitched = 0;
@@ -60,6 +64,10 @@ public class HOSLogger {
             currentHOSLog = new HOSLog();
             currentDriver.setHosLog(currentHOSLog);
         }
+        if(driver.getDays() == null){
+            currentDriver.setDays(new ArrayList<Day>());
+        }
+
         if(driver.getLog() != null){
             log = driver.getLog();
 
@@ -69,14 +77,14 @@ public class HOSLogger {
             }else{
                 driverStatus = new TimePeriod();
                 driverStatus.setStartTime(getTime());
-                driverStatus.setStatus(Status.STOPPED);
+                driverStatus.setStatus(Status.ON_DUTY);
                 log.add(driverStatus);
             }
         }else{
             log = new ArrayList<TimePeriod>();
             driverStatus = new TimePeriod();
             driverStatus.setStartTime(getTime());
-            driverStatus.setStatus(Status.STOPPED);
+            driverStatus.setStatus(Status.ON_DUTY);
             log.add(driverStatus);
             driver.setLog(log);
         }
@@ -88,34 +96,37 @@ public class HOSLogger {
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
                 log((TelematicsData) msg.obj);
-                checkAlerts();
+                //checkAlerts();
             }
         };
-
+        boolean sameDay = false;
+        for(Day day : driver.getDays()){
+            try {
+                    if(DataConverter.sameDayNoTime(MainActivity.getTime(), day.getDate())){
+                        sameDay = true;
+                        currentDay = day;
+                    }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        if(!sameDay){
+            currentDay = new Day(getTime());
+        }
     }
     // Determines if the driver is driving, then deals with it accordingly
     public static void log(TelematicsData _data){
         
         currentTime = getTime();
         data = _data;
-        // Throw out any glitched data
-        // TODO: Remove
-        if(data.getSpeed() == 6){
-            data.setSpeed(lastSpeed);
-        }
-        // TD -----------------
+
         if(driverStatus == null){
             driverStatus = new TimePeriod();
             driverStatus.setStartTime(getTime());
-            driverStatus.setStatus(Status.STOPPED);
+            driverStatus.setStatus(Status.ON_DUTY);
             log.add(driverStatus);
         }
-        if(Math.abs(data.getSpeed() - lastSpeed) > 20){
 
-            lastSpeed = data.getSpeed();
-
-            return;
-        }
         if(data.getRpm() <= 0){
             if(rpmGlitched < 4){
                 rpmGlitched++;
@@ -134,7 +145,7 @@ public class HOSLogger {
         if(driverStatus == null){
             driverStatus = new TimePeriod();
             driverStatus.setStartTime(currentTime);
-            driverStatus.setStatus(Status.STOPPED);
+            driverStatus.setStatus(Status.ON_DUTY);
             log.add(driverStatus);
         }
         /*
@@ -142,7 +153,7 @@ public class HOSLogger {
                     Proccess the info coming from the ECU
 
          */
-        if(data.getSpeed() >= 10) {
+        if(data.getSpeed() >= 5) {
 
             // DRIVING
 
@@ -154,7 +165,16 @@ public class HOSLogger {
                 driverStatus = new TimePeriod();
                 driverStatus.setStartTime(currentTime);
                 driverStatus.setStatus(Status.DRIVING);
+                currentDriver.setStatus(Status.DRIVING);
                 log.add(driverStatus);
+                currentDay.addTimePeriod(driverStatus);
+                if(currentDriver.getDays() != null && currentDriver.getDays().size() > 0){
+                    if(currentDriver.getDays().get(currentDriver.getDays().size() -1).getTimePeriods() == null){
+                        currentDriver.getDays().get(currentDriver.getDays().size() -1).setTimePeriods(new ArrayList<TimePeriod>());
+                    }
+                    currentDriver.getDays().get(currentDriver.getDays().size() -1).addTimePeriod(driverStatus);
+
+                }
             }
         }else{
 
@@ -167,11 +187,15 @@ public class HOSLogger {
                 sendOBDEvent(HOSEventCodes.OFF_DUTY);
                 driverStatus.setEndTime(currentTime);
                 driverStatus = new TimePeriod();
-                driverStatus.setStatus(Status.STOPPED);
+                driverStatus.setStatus(Status.ON_DUTY);
                 driverStatus.setStartTime(currentTime);
+                currentDay.addTimePeriod(driverStatus);
                 log.add(driverStatus);
                 MainActivity.stoppedDriving();
-
+                currentDriver.setStatus(Status.ON_DUTY);
+                if(currentDriver.getDays() != null && currentDriver.getDays().size() > 0){
+                    currentDriver.getDays().get(currentDriver.getDays().size() -1).addTimePeriod(driverStatus);
+                }
             }
         }
     }
@@ -220,7 +244,7 @@ public class HOSLogger {
             event = new TimePeriod();
             event.setStartTime(cal.getTime());
             cal.add(Calendar.MINUTE, 30);
-            Status code = ((i % 2) == 0) ? Status.DRIVING : Status.STOPPED;
+            Status code = ((i % 2) == 0) ? Status.DRIVING : Status.ON_DUTY;
             event.setStatus(code);
             event.setEndTime(cal.getTime());
             log.add(event);
@@ -229,7 +253,7 @@ public class HOSLogger {
     }
     /*
     *
-    *            Method gets called when data comes in from bt
+    *            Method gets called periodically
     *
      */
     public static void checkAlerts(){
@@ -239,15 +263,24 @@ public class HOSLogger {
         int secs = 0;
         Date dayAgo = addHoursToDate(currentTime, -24);
         String timeTillBreak = "";
+        // TODO: Constants
+        // 8 hrs
         secsTillBreak = 28800;
+        // 30 mins
+        secsLeftBreak = 1800;
+        // 11 hrs
+        int secsLeftDrivingToday = 39600;
         // TODO: Find what cycle the driver is on, and alert them accordingly
         //  Check for Day limit approaching
         secsDrivenToday = 0;
         for(TimePeriod period : log){
-            if(period.getStartTime().after(dayAgo) && period.getDuration() > 0){
+            // if the event started within 24hrs ago, then add it
+            if(period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.DRIVING){
                 secsDrivenToday += period.getDuration();
-            }else if(period.getStartTime().after(dayAgo)){
+            }else if(period.getStartTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
                 secsDrivenToday += (currentTime.getTime() - period.getStartTime().getTime())/1000;
+            }else if(period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
+                secsDrivenToday += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
             }
         }
         if((double)(secsDrivenToday / 3600) >= 10.5){
@@ -255,8 +288,8 @@ public class HOSLogger {
         }
 
         // Check for weekly hour limit, don't if the driver hasn't even driven 3 days in the past week
-        if(currentDriver.getWeek() != null && currentDriver.getWeek().size() > 3){
-            for(Day day : currentDriver.getWeek()){
+        if(currentDriver.getDays() != null && currentDriver.getDays().size() > 3){
+            for(Day day : currentDriver.getDays()){
                 hoursDrivenThisWeek += day.getSecsDrivenToday() / 3600;
             }
             // TODO: Alert driver about time driven this week
@@ -289,49 +322,35 @@ public class HOSLogger {
             }
         //}
         //TODO: Alert driver of necessary upcoming break
-
-
-        secs = concurrentSecsDriven;
-        mins = secs / 60;
-        secs %= 60;
-        hours = mins / 60;
-        mins %= 60;
-
-        String time = hours < 10 ? "0" : "";
-        time += hours + ":";
-        time += mins < 10 ? "0" : "";
-        time += mins + ":";
-        time += secs < 10 ? "0" : "";
-        time += secs;
-
-        secsTillBreak -= secs;
-        secsTillBreak -= mins * 60;
-        secsTillBreak -= hours * 60 * 60;
-
-        data.setTimeSecs(secsTillBreak);
-
-        mins = secsTillBreak / 60;
-        secsTillBreak %= 60;
-        hours = mins / 60;
-        mins %= 60;
-
-        timeTillBreak = hours < 10 ? "0" : "";
-        timeTillBreak += hours + ":";
-        timeTillBreak += mins < 10 ? "0" : "";
-        timeTillBreak += mins;
-        if(mins < 0 || hours < 0){
-            timeTillBreak = "00:00";
+        // If the driver is not driving, then calculate how long is left in their break
+        if(driverStatus.getStatus() != Status.DRIVING){
+            for(int i = currentDriver.getLog().size()-1; i > 0; i--){
+                if(currentDriver.getLog().get(i).getStatus() != Status.DRIVING){
+                    if(currentDriver.getLog().get(i).getDuration() != 0){
+                        secsLeftBreak -= currentDriver.getLog().get(i).getDuration();
+                    }else if(currentDriver.getLog().get(i).getEndTime() == null){
+                        secsLeftBreak -= getTime().getTime()/1000 - (currentDriver.getLog().get(i).getStartTime().getTime()/1000);
+                    }
+                }else{
+                    break;
+                }
+            }
         }
-        data.setTime(timeTillBreak);
+
+        secsTillBreak -= concurrentSecsDriven;
 
         currentDriver.setSecsTillBreak(secsTillBreak);
+
+
+        secsLeftDrivingToday -= secsDrivenToday;
+
+        secsLeftDrivingToday = (secsLeftDrivingToday < 0) ? 0 : secsLeftDrivingToday;
+        secsLeftBreak = (secsLeftBreak < 0) ? 0 : secsLeftBreak;
+
         currentDriver.setSecsDrivenToday(secsDrivenToday);
         currentDriver.setConcurrentSecsDriven(concurrentSecsDriven);
-
-        Message msg = Message.obtain();
-        msg.setTarget(HomeFragment.handler);
-        msg.obj = data;
-        HomeFragment.handler.sendMessage(msg);
+        currentDriver.setSecsLeftDrivingToday(secsLeftDrivingToday);
+        currentDriver.setSecsLeftInBreak(secsLeftBreak);
 
     }
 
@@ -357,6 +376,7 @@ public class HOSLogger {
         driverStatus = new TimePeriod();
         driverStatus.setStatus(status);
         driverStatus.setStartTime(getTime());
+        currentDriver.setStatus(status);
         if(log != null){
             log.add(driverStatus);
             currentDriver.setLog(log);
@@ -377,6 +397,53 @@ public class HOSLogger {
         return temp;
     }
 
+    public static ArrayList<TimePeriod> getLog(String date) throws ParseException {
+        Log.d("LOGGING", "The log was requested for day: " + date);
+        ArrayList<TimePeriod> temp = new ArrayList<TimePeriod>();
+        SimpleDateFormat sdf = new SimpleDateFormat("  EEE MMM dd, yyyy");
+        Date day = sdf.parse(date);
+        for(TimePeriod t : log){
+            // Make sure that the event was within 24 hrs of the day
+            if( t.getEndTime() != null && DataConverter.sameDayNoTime(day, t.getEndTime())){
+                if(DataConverter.sameDayNoTime(t.getStartTime(), day)){
+                    temp.add(t);
+                }else{
+                    TimePeriod tp = new TimePeriod();
+                    tp.setStartTime(day);
+                    tp.setEndTime(t.getEndTime());
+                    tp.setStatus(t.getStatus());
+                    temp.add(tp);
+                }
+            }
+        }
+        return temp;
+    }
+
+    public static ArrayList<TimePeriod> getLog(Date day) throws ParseException {
+        ArrayList<TimePeriod> temp = new ArrayList<TimePeriod>();
+        for(TimePeriod t : log){
+            // Make sure that the event was within 24 hrs of the day
+            if( t.getEndTime() != null && DataConverter.sameDayNoTime(day, t.getEndTime())){
+                if(DataConverter.sameDayNoTime(t.getStartTime(), day)){
+                    temp.add(t);
+                }else{
+                    TimePeriod tp = new TimePeriod();
+                    tp.setStartTime(day);
+                    tp.setEndTime(t.getEndTime());
+                    tp.setStatus(t.getStatus());
+                    temp.add(tp);
+                }
+            }
+        }
+        return temp;
+    }
+
+    public static void startOnDuty(){
+        save(Status.ON_DUTY);
+    }
+    public static void startOffDuty(){
+        save(Status.OFF_DUTY);
+    }
     /*
             Getters for finding HOS info such as time till next break, time in cycle, etc
      */
@@ -395,5 +462,6 @@ public class HOSLogger {
     public static double getHoursDrivenThisWeek() {
         return hoursDrivenThisWeek;
     }
+
 
 }

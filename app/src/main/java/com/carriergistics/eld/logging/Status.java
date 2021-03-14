@@ -2,9 +2,8 @@ package com.carriergistics.eld.logging;
 
 public enum Status {
     DRIVING,
-    ON_BREAK,
-    STOPPED, // On duty, not driving
-    ON_DUTY_NOT_DRIVING,
+    ON_DUTY,
     FUELING,
-    SLEEPING
+    SLEEPING,
+    OFF_DUTY
 }

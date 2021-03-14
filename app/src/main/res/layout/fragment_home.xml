@@ -17,19 +17,16 @@
         android:layout_width="350dp"
         android:layout_height="388dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="4dp"
         android:paddingLeft="20dp"
         android:paddingTop="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="20dp"
-        app:gaugeDividerColor="@color/green"
-        app:gaugeEndValue="100"
-        app:gaugePointEndColor="@color/red"
-        app:gaugePointSize="6"
+        app:gaugeEndValue="0"
+        app:gaugePointEndColor="@color/green"
         app:gaugePointStartColor="@color/green"
         app:gaugeStartAngle="270"
-        app:gaugeStartValue="0"
-        app:gaugeStrokeCap="FLAT"
+        app:gaugeStartValue="100"
+        app:gaugeStrokeCap="BUTT"
         app:gaugeStrokeWidth="10dp"
         app:gaugeSweepAngle="360"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +44,7 @@
         app:layout_constraintEnd_toEndOf="@+id/homeTimeGuage"
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="@+id/homeTimeGuage"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/homeTimeLabel"
         app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.gms.maps.MapView
@@ -60,7 +57,7 @@
         app:layout_constraintTop_toBottomOf="@+id/homeTimeGuage" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/homeTimeLabel"
         android:layout_width="362dp"
         android:layout_height="71dp"
         android:fontFamily="@font/aldrich"
@@ -73,25 +70,28 @@
         app:layout_constraintTop_toTopOf="@+id/homeTimeGuage"
         app:layout_constraintVertical_bias="0.434" />
 
-    <Button
+    <ImageView
         android:id="@+id/homeStatusBtn"
         android:layout_width="0dp"
-        android:layout_height="82dp"
-        android:fontFamily="@font/aldrich"
-        android:text="Status"
-        android:textSize="30sp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/onbutton"
+        app:layout_constraintBottom_toTopOf="@+id/mapViewHome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/homeTimeGuage"
-        app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView8"
-        android:layout_width="137dp"
-        android:layout_height="106dp"
-        android:src="@drawable/ic_baseline_arrow_back_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/homeOffBtn"
+        android:layout_width="422dp"
+        android:layout_height="561dp"
+        android:src="@drawable/offbutton"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/homeTimeGuage"
+        app:layout_constraintEnd_toEndOf="@+id/homeTimeGuage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/homeTimeGuage" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

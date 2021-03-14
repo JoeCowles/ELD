@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".dvir.AddVehicleFragment">
+
+
+    <Button
+        android:id="@+id/vehicleBackBtn"
+        android:layout_width="208dp"
+        android:layout_height="82dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Back"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="343dp"
+        android:layout_height="365dp"
+        android:src="@drawable/carriergisticssemi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/vehicleVinET"
+        android:layout_width="350dp"
+        android:layout_height="79dp"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint="VIN"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <ImageView
+        android:id="@+id/vehicleGetVinBtn"
+        android:layout_width="60dp"
+        android:layout_height="66dp"
+        android:src="@drawable/ic_baseline_vin"
+        app:layout_constraintBottom_toBottomOf="@+id/vehicleVinET"
+        app:layout_constraintStart_toEndOf="@+id/vehicleVinET"
+        app:layout_constraintTop_toTopOf="@+id/vehicleVinET" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName2"
+        android:layout_width="350dp"
+        android:layout_height="88dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vehicleVinET" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="366dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Truck is safe to drive"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2"
+        tools:checked="true" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="208dp"
+        android:layout_height="82dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Save"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

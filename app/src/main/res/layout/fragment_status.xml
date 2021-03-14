@@ -4,27 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".dvir.DvirFragment">
+    tools:context=".ui.StatusFragment">
 
-    <ImageView
-        android:id="@+id/dvirAddVehicleBtn"
-        android:layout_width="123dp"
-        android:layout_height="106dp"
-        android:elevation="10dp"
-        android:src="@drawable/ic_baseline_add_circle_24"
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="228dp"
+        android:layout_height="193dp"
+        android:src="@drawable/onbutton"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="725dp"
-        android:layout_height="103dp"
-        android:fontFamily="@font/aldrich"
-        android:text="Vehicle"
-        android:textAlignment="center"
-        android:textSize="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

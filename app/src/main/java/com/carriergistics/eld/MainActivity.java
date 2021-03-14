@@ -18,21 +18,27 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
+import com.carriergistics.eld.commands.BluetoothCommand;
+import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.Driver;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.ui.DriversFragment;
+import com.carriergistics.eld.dvir.DvirFragment;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.ui.LogFragment;
+import com.carriergistics.eld.ui.LogViewerFragment;
 import com.carriergistics.eld.ui.RoutesFragment;
 import com.carriergistics.eld.settings.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.ui.StoppedFragment;
 import com.carriergistics.eld.utils.Data;
+import com.carriergistics.eld.utils.DataConverter;
 import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,14 +63,17 @@ public class MainActivity extends AppCompatActivity {
     private static boolean gotDisconnected = false;
     public static MainActivity instance;
     private static boolean shouldSendBt = true;
+    private static Date currentTime;
+    private static Fragment fragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        updateTime();
         // Has been changed to request all perms
         checkPermission(Manifest.permission.BLUETOOTH, 100);
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -82,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerToggle.syncState();
         mDrawer.addDrawerListener(drawerToggle);
-        fragmentManager = getSupportFragmentManager(); 
-        fragmentManager.beginTransaction().replace(R.id.flContent, new HomeFragment()).commit();
+        fragmentManager = getSupportFragmentManager();
+        fragment = HomeFragment.newInstance("","");
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
         instance = this;
         currentlyInflated = HomeFragment.class;
 
@@ -98,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
         HOSLogger.init(currentDriver);
-
+        HOSLogger.startOnDuty();
         startLogging();
 
     }
@@ -138,20 +148,22 @@ public class MainActivity extends AppCompatActivity {
     // Choose fragment based on what item is clicked in drawer
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
         Class fragmentClass;
         switch(menuItem.getItemId()) {
             case R.id.nav_routes:
                 fragmentClass = RoutesFragment.class;
                 break;
             case R.id.nav_log:
-                fragmentClass = LogFragment.class;
+                fragmentClass = LogViewerFragment.class;
                 break;
             case R.id.nav_drivers:
                 fragmentClass = DriversFragment.class;
                 break;
             case R.id.nav_settings:
                 fragmentClass = SettingsFragment.class;
+                break;
+            case R.id.nav_dvir:
+                fragmentClass = DvirFragment.class;
                 break;
             default:
                 fragmentClass = HomeFragment.class;
@@ -216,9 +228,9 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            Fragment frag = (Fragment) fragmentClass.newInstance();
+            fragment = (Fragment) fragmentClass.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, frag).commit();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
 
         } catch (Exception e) {
 
@@ -227,7 +239,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    public void switchToFragment(Class fragmentClass, String paramName, String param) {
 
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+            if(fragmentClass == LogFragment.class){
+                fragment = LogFragment.newInstance(param, "");
+            }
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Bundle bundle = new Bundle();
+            bundle.putString(paramName, param);
+            fragment.setArguments(bundle);
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
+        } catch (Exception e) {
+
+            Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
+
+        }
+
+    }
     // Get the current fragment that is inflated
     public static String getFragment(){
 
@@ -246,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestCode);
         }
 
@@ -284,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
             drivers.set(1, secondaryDriver);
             currentDriver.setCurrentDriver(true);
             secondaryDriver.setCurrentDriver(false);
-            HOSLogger.save(Status.STOPPED);
+            HOSLogger.save(Status.ON_DUTY);
             Data.saveDrivers(drivers);
             HOSLogger.init(driver);
 
@@ -296,12 +328,16 @@ public class MainActivity extends AppCompatActivity {
     // Method that is runs periodically. Calls everything that needs to be called periodically
     //
     public static void tick(){
-
+        updateTime();
+        Log.d("DEBUGGING", "TICK---------------");
+        if(fragment != null && fragment.getClass() == HomeFragment.class){
+            ((HomeFragment) fragment).update();
+        }
         if(BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE){
             Log.d("DEBUGGING", "Device address is " + settings.getDeviceAddress());
             if(settings !=  null && !settings.getDeviceAddress().isEmpty()) {
-                Log.d("DEBUGGING", "Connecting to the device with this address: " + settings.getDeviceAddress());
-                BluetoothConnector.connect(settings.getDeviceAddress());
+                Log.d("DEBUGGING", "Connecting to the device with address: " + settings.getDeviceAddress());
+                connectBt();
             }
 
             if(gotDisconnected){
@@ -311,24 +347,54 @@ public class MainActivity extends AppCompatActivity {
                 stoppedDriving();
 
             }
-
+            HOSLogger.checkAlerts();
         }else if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
-
+            HOSLogger.checkAlerts();
             gotDisconnected = true;
             if(shouldSendBt){
-
                 BluetoothConnector.sendRequests();
-
+                //Log.d("DEBUGGING", BluetoothConnector.getFuelLevel());
             }
 
         }
+        try {
+            if(dayChanged()){
+                Day today = new Day(DataConverter.removeTime(getTime()));
+                currentDriver.getDays().add(today);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void connectBt() {
+        Thread connector = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BluetoothConnector.connect(settings.getDeviceAddress());
+            }
+        });
+        connector.start();
     }
 
     public static void startLogging(){
 
         Log.d("DEBUGGING", "LOGGING");
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new Ticker(), 0, 1);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    tick();
+                }
+            }
+        });
+        thread.start();
 
     }
 
@@ -366,17 +432,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        HOSLogger.save(Status.STOPPED);
+        HOSLogger.save(currentDriver.getStatus());
         Data.saveDrivers(drivers);
     }
 
     // TODO: get time from api
     public static Date getTime(){
-        return Calendar.getInstance().getTime();
+        return currentTime;
     }
 
-    private void updateTime(){
-
+    private static void updateTime(){
+        currentTime = Calendar.getInstance().getTime();
     }
+    public static boolean dayChanged() throws ParseException {
+        if(currentDriver.getDays() == null || currentDriver.getDays().size() <= 0){
+            return true;
+        }else{
+            // Get the last date logged
+            Date date = currentDriver.getDays().get(currentDriver.getDays().size() - 1).getDate();
+            if(DataConverter.sameDayNoTime(date, getTime())){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+
 
 }

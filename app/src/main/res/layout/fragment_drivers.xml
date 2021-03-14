@@ -9,7 +9,7 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/driverSavebtn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,7 +17,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
+
 
             <TextView
                 android:id="@+id/textView2"
@@ -38,17 +40,200 @@
                 android:textSize="36sp"
                 android:textStyle="bold" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <pl.pawelkleczkowski.customgauge.CustomGauge
+                    android:id="@+id/driverBreakGuage"
+                    android:layout_width="324dp"
+                    android:layout_height="250dp"
+                    android:layout_centerHorizontal="true"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="20dp"
+                    app:gaugeEndValue="0"
+                    app:gaugePointEndColor="@color/green"
+                    app:gaugePointStartColor="@color/green"
+                    app:gaugeStartAngle="270"
+                    app:gaugeStartValue="100"
+                    app:gaugeStrokeCap="BUTT"
+                    app:gaugeStrokeWidth="10dp"
+                    app:gaugeSweepAngle="360"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/driverBreakTv"
+                    android:layout_width="141dp"
+                    android:layout_height="51dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/driverBreakGuage"
+                    app:layout_constraintEnd_toEndOf="@+id/driverBreakGuage"
+                    app:layout_constraintHorizontal_bias="0.502"
+                    app:layout_constraintStart_toStartOf="@+id/driverBreakGuage"
+                    app:layout_constraintTop_toTopOf="@+id/driverBreakGuage"
+                    app:layout_constraintVertical_bias="0.738" />
+
+                <pl.pawelkleczkowski.customgauge.CustomGauge
+                    android:id="@+id/driverCycleGuage"
+                    android:layout_width="324dp"
+                    android:layout_height="244dp"
+                    android:layout_centerHorizontal="true"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="20dp"
+                    app:gaugeEndValue="0"
+                    app:gaugePointEndColor="@color/green"
+                    app:gaugePointStartColor="@color/green"
+                    app:gaugeStartAngle="270"
+                    app:gaugeStartValue="100"
+                    app:gaugeStrokeCap="BUTT"
+                    app:gaugeStrokeWidth="10dp"
+                    app:gaugeSweepAngle="360"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/breakTv"
+                    android:layout_width="157dp"
+                    android:layout_height="50dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="Break in:"
+                    android:textAlignment="center"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/driverBreakGuage"
+                    app:layout_constraintEnd_toEndOf="@+id/driverBreakGuage"
+                    app:layout_constraintHorizontal_bias="0.502"
+                    app:layout_constraintStart_toStartOf="@+id/driverBreakGuage"
+                    app:layout_constraintTop_toTopOf="@+id/driverBreakGuage"
+                    app:layout_constraintVertical_bias="0.44" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <pl.pawelkleczkowski.customgauge.CustomGauge
+                    android:id="@+id/driverShiftGuage"
+                    android:layout_width="324dp"
+                    android:layout_height="244dp"
+                    android:layout_centerHorizontal="true"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="20dp"
+                    app:gaugeEndValue="0"
+                    app:gaugePointEndColor="@color/green"
+                    app:gaugePointStartColor="@color/green"
+                    app:gaugeStartAngle="270"
+                    app:gaugeStartValue="100"
+                    app:gaugeStrokeCap="BUTT"
+                    app:gaugeStrokeWidth="10dp"
+                    app:gaugeSweepAngle="360"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="164dp"
+                    android:layout_height="43dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="Shift left:"
+                    android:textAlignment="center"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/driverShiftGuage"
+                    app:layout_constraintEnd_toEndOf="@+id/driverShiftGuage"
+                    app:layout_constraintStart_toStartOf="@+id/driverShiftGuage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.412" />
+
+                <TextView
+                    android:id="@+id/driverShiftTv"
+                    android:layout_width="114dp"
+                    android:layout_height="42dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="@+id/driverShiftGuage"
+                    app:layout_constraintStart_toStartOf="@+id/driverShiftGuage"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <pl.pawelkleczkowski.customgauge.CustomGauge
+                    android:id="@+id/driverDriveTimeGuage"
+                    android:layout_width="324dp"
+                    android:layout_height="244dp"
+                    android:layout_centerHorizontal="true"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="20dp"
+                    app:gaugeEndValue="0"
+                    app:gaugePointEndColor="@color/green"
+                    app:gaugePointStartColor="@color/green"
+                    app:gaugeStartAngle="270"
+                    app:gaugeStartValue="100"
+                    app:gaugeStrokeCap="BUTT"
+                    app:gaugeStrokeWidth="10dp"
+                    app:gaugeSweepAngle="360"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="160dp"
+                    android:layout_height="75dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="Drive time left:"
+                    android:textAlignment="center"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/driverDriveTimeGuage"
+                    app:layout_constraintStart_toStartOf="@+id/driverDriveTimeGuage"
+                    app:layout_constraintTop_toTopOf="@+id/driverDriveTimeGuage"
+                    app:layout_constraintVertical_bias="0.304" />
+
+                <TextView
+                    android:id="@+id/driverDriveTimeTv"
+                    android:layout_width="140dp"
+                    android:layout_height="42dp"
+                    android:fontFamily="@font/aldrich"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="@+id/driverDriveTimeGuage"
+                    app:layout_constraintStart_toStartOf="@+id/driverDriveTimeGuage"
+                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="83dp"
+                android:fontFamily="@font/aldrich"
+                android:text="Driver Team"
+                android:textAlignment="center"
+                android:textSize="50dp" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="392dp"
+                android:layout_height="59dp"
+                android:text="Add Driver"
+                android:textSize="24sp" />
+
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/driverSavebtn"
-        android:layout_width="245dp"
-        android:layout_height="73dp"
-        android:fontFamily="@font/aldrich"
-        android:text="Save"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
