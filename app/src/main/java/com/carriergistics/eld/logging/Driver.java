@@ -28,6 +28,8 @@ public class Driver {
     private int secsDrivenToday;
     private int concurrentSecsDriven;
     private int secsLeftInBreak;
+    private int secsInShift;
+    private int secsLeftInShift;
 
     private ArrayList<TimePeriod> log;
     private ArrayList<Day> days;
@@ -158,6 +160,23 @@ public class Driver {
     public void setSecsLeftInBreak(int secsLeftInBreak) {
         this.secsLeftInBreak = secsLeftInBreak;
     }
+
+    public int getSecsInShift() {
+        return secsInShift;
+    }
+
+    public void setSecsInShift(int secsInShift) {
+        this.secsInShift = secsInShift;
+    }
+
+    public int getSecsLeftInShift() {
+        return secsLeftInShift;
+    }
+
+    public void setSecsLeftInShift(int secsLeftInShift) {
+        this.secsLeftInShift = secsLeftInShift;
+    }
+
     public String getConcurrentTimeDriven(){
         return DataConverter.secsToTime(concurrentSecsDriven);
     }
@@ -170,7 +189,17 @@ public class Driver {
     public String getTimeDrivenToday(){
         return DataConverter.secsToTime(secsDrivenToday);
     }
-
-
+    public String getTimeLeftDrivingToday(){
+        return DataConverter.secsToTime(secsLeftDrivingToday);
+    }
+    public String getTimeLeftInShift(){
+        if(secsLeftInShift <= 0){
+            return DataConverter.secsToTime(0);
+        }
+        return DataConverter.secsToTime(secsLeftInShift);
+    }
+    public String getTimeInShift(){
+        return DataConverter.secsToTime(secsInShift);
+    }
 
 }

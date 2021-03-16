@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment {
                     builder.setSingleChoiceItems(new String[]{"Off Duty", "On duty", "Driving", "Begin personal use"}, checked, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
+
                             //TODO: Check if owner allows personal use
                             switch(which){
                                 case 0:
@@ -197,6 +197,7 @@ public class HomeFragment extends Fragment {
                                 case 3:
                                     break;
                             }
+                            dialog.cancel();
                         }
                     });
                     AlertDialog alert = builder.create();
@@ -241,13 +242,21 @@ public class HomeFragment extends Fragment {
                 timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsTillBreak() / 28800) * 100)));
             }else if(MainActivity.currentDriver.getStatus() == Status.ON_DUTY){
                 // 1800 = 30 mins
-                timeLabel.setText("Break:");
-                if(MainActivity.currentDriver.getSecsLeftInBreak() <= 0){
-                    timeGuage.setValue(100);
-                }else{
+                Log.d("DEBUGGING", "Time Left in break: " + MainActivity.currentDriver.getSecsLeftInBreak());
+                if(MainActivity.currentDriver.getSecsLeftInBreak() > 0){
+                    timeLabel.setText("Break:");
                     timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
+                    timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
+                }else{
+                    timeLabel.setText("Left in shift:");
+                    if(MainActivity.currentDriver.getSecsLeftInShift() > 0){
+                        timeGuage.setValue((int) (((double) MainActivity.currentDriver.getSecsLeftInShift()/50400) * 100));
+                    }else{
+                        timeGuage.setValue(0);
+                    }
+                    timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInShift().substring(0,5));
                 }
-                timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
+
             }else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
                 // 1800 = 30 mins
                 timeLabel.setText("Break:");

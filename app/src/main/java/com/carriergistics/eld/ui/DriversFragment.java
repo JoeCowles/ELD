@@ -83,41 +83,34 @@ public class DriversFragment extends Fragment {
         breakGuage.setStartValue(28800);
         breakGuage.setEndValue(0);
         breakGuage.setValue(28800 - MainActivity.currentDriver.getSecsTillBreak());
-
+        if(MainActivity.currentDriver.getSecsTillBreak() <= 0){
+            breakGuage.setValue(0);
+        }
         shiftGuage = view.findViewById(R.id.driverShiftGuage);
         shiftGuage.setStartValue(0);
         shiftGuage.setEndValue(HRS_14);
-        shiftGuage.setValue((HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()));
-
+        shiftGuage.setValue((HRS_14 - MainActivity.currentDriver.getSecsInShift()));
+        if(MainActivity.currentDriver.getSecsLeftInShift() <= 0){
+            shiftGuage.setValue(0);
+        }
         driveTimeGuage = view.findViewById(R.id.driverDriveTimeGuage);
         driveTimeGuage.setStartValue(0);
         driveTimeGuage.setEndValue(HRS_11);
         driveTimeGuage.setValue(HRS_11 - MainActivity.currentDriver.getSecsDrivenToday());
-
+        if(MainActivity.currentDriver.getSecsLeftDrivingToday() <= 0){
+            driveTimeGuage.setValue(0);
+        }
         breakTv = view.findViewById(R.id.driverBreakTv);
-        int mins = MainActivity.currentDriver.getSecsTillBreak() / 60;
-        int hours = mins / 60;
-        mins %= 60;
-        String breakTime = (hours < 10) ? "0" + hours + ":": hours + ":";
-        breakTime += (mins < 10) ? "0" + mins : mins + "";
-        breakTv.setText(breakTime);
+
+        breakTv.setText(MainActivity.currentDriver.getTimeTillBreak());
 
         shiftTv = view.findViewById(R.id.driverShiftTv);
         Log.d("DEBUGGING", (double)(HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()) / HRS_14+ "------------");
-        mins = (HRS_14 - MainActivity.currentDriver.getSecsDrivenToday()) / 60;
-        hours = mins / 60;
-        mins %= 60;
-        String shiftTime = (hours < 10) ? "0" + hours + ":": hours + ":";
-        shiftTime += (mins < 10) ? "0" + mins : mins + "";
-        shiftTv.setText(shiftTime);
+        shiftTv.setText(MainActivity.currentDriver.getTimeLeftInShift());
 
         driveTimeTv = view.findViewById(R.id.driverDriveTimeTv);
-        mins = (HRS_11 - MainActivity.currentDriver.getSecsDrivenToday()) / 60;
-        hours = mins / 60;
-        mins %= 60;
-        String driveTime = (hours < 10) ? "0" + hours + ":": hours + ":";
-        driveTime += (mins < 10) ? "0" + mins : mins + "";
-        driveTimeTv.setText(driveTime);
+
+        driveTimeTv.setText(MainActivity.currentDriver.getTimeLeftDrivingToday().substring(0,5));
 
         return view;
     }

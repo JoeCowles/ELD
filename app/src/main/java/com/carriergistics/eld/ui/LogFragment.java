@@ -1,16 +1,16 @@
 package com.carriergistics.eld.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +20,7 @@ import android.widget.TextView;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
-import com.carriergistics.eld.logging.HOSEvent;
 import com.carriergistics.eld.logging.HOSEventCodes;
-import com.carriergistics.eld.logging.HOSLog;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.logging.TimePeriod;
@@ -174,7 +172,7 @@ public class LogFragment extends Fragment {
 
         return view;
     }
-    private void setData(ArrayList<TimePeriod> eventLog) {
+    private void setData(final ArrayList<TimePeriod> eventLog) {
         ArrayList<Entry> values = new ArrayList<>();
 
         Date start = Calendar.getInstance().getTime();
@@ -256,7 +254,8 @@ public class LogFragment extends Fragment {
         graph.setData(data);
         // TODO: switch to 24 hr system
         for(int t = eventLog.size() -1; t > 0; t--){
-            TimePeriod tp = eventLog.get(t);
+            final TimePeriod tp = eventLog.get(t);
+            final int index = t;
             CardView view = new CardView(getContext());
             ConstraintLayout con = new ConstraintLayout(getContext());
             con.setId(id);
@@ -307,6 +306,46 @@ public class LogFragment extends Fragment {
             editBtn.setId(id);
             id++;
             editBtn.setText("Edit");
+            editBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    int checked = 0;
+                    if(tp.getStatus() == Status.ON_DUTY){
+                        checked = 1;
+                    }
+                    builder.setTitle("Edit event").setSingleChoiceItems(new String[]{"Off duty", "On Duty", "Driving"}, checked, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch(which){
+                                case 0:
+                                    eventLog.get(index).setStatus(Status.OFF_DUTY);
+                                    // If it is the current time period, then set the driver's status
+                                    if(tp.getEndTime() == null){
+                                        MainActivity.currentDriver.setStatus(Status.OFF_DUTY);
+                                    }
+                                break;
+                                case 1:
+                                    eventLog.get(index).setStatus(Status.ON_DUTY);
+                                    if(tp.getEndTime() == null){
+                                        MainActivity.currentDriver.setStatus(Status.ON_DUTY);
+                                    }
+                                break;
+                                case 2:
+                                    eventLog.get(index).setStatus(Status.DRIVING);
+                                    if(tp.getEndTime() == null){
+                                        MainActivity.currentDriver.setStatus(Status.DRIVING);
+                                    }
+                                break;
+                            }
+                            refresh();
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
 
             if(tp.getStatus() == DRIVING){
                 editBtn.setEnabled(false);
@@ -339,5 +378,8 @@ public class LogFragment extends Fragment {
     }
     public String getDate(){
         return date;
+    }
+    private void refresh(){
+        getFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 }

@@ -70,10 +70,16 @@ public class BluetoothConnector {
                 Log.e("ERROR", "Connection interupted, " + e.getMessage());
             } catch (IOException e){
                 disconnect();
-                connect(device.getAddress());
+                Thread connector = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connect(device.getAddress());
+                    }
+                });
+                connector.start();
                 reconnectAttempts++;
                 if(reconnectAttempts >= 5){
-                    reconnectAttempts = 0;
+                    Log.d("DEBUGGING", "Lost connection... sending stopped data");
                     TelematicsData stopped = new TelematicsData();
                     stopped.setSpeed(0);
                     stopped.setRpm(0);

@@ -4,21 +4,31 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
-import com.carriergistics.eld.commands.BluetoothCommand;
+import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.carriergistics.eld.dvir.AddVehicleFragment;
+import com.carriergistics.eld.dvir.Vehicle;
+import com.carriergistics.eld.dvir.VehicleFragment;
 import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.Driver;
 import com.carriergistics.eld.logging.HOSLogger;
@@ -59,12 +69,14 @@ public class MainActivity extends AppCompatActivity {
     public static Driver currentDriver;
     public static Driver secondaryDriver;
     public static ArrayList<Driver> drivers;
+    public static ArrayList<Vehicle> vehicles;
     private static Settings settings;
     private static boolean gotDisconnected = false;
     public static MainActivity instance;
     private static boolean shouldSendBt = true;
     private static Date currentTime;
     private static Fragment fragment = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -108,9 +120,13 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
         HOSLogger.init(currentDriver);
-        HOSLogger.startOnDuty();
         startLogging();
-
+        // Setup notifications
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("Carriergistics Notification", "Carriergistics Notification", NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     // Check if there is data to load
@@ -118,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
         Data.init(getApplicationContext()); 
         drivers = Data.loadDrivers();
         settings = Data.loadSettings();
+        vehicles = Data.loadVehicles();
+
         if(settings == null){
             settings = new Settings();
         }
@@ -143,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
         Data.saveDrivers(drivers);
+        Data.saveSettings(settings);
+        Data.saveVehicles(vehicles);
     }
 
     // Choose fragment based on what item is clicked in drawer
@@ -344,7 +364,12 @@ public class MainActivity extends AppCompatActivity {
 
                 gotDisconnected = false;
                 // TODO: Disconnected event
-                stoppedDriving();
+                TelematicsData stopped = new TelematicsData();
+                stopped.setRpm(0);
+                stopped.setSpeed(0);
+                Message msg = Message.obtain();
+                msg.obj = stopped;
+                HOSLogger.handler.sendMessage(msg);
 
             }
             HOSLogger.checkAlerts();
@@ -432,8 +457,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        notifyUser("Current driver is " + currentDriver.getStatus().toString());
         HOSLogger.save(currentDriver.getStatus());
-        Data.saveDrivers(drivers);
+        save();
+
     }
 
     // TODO: get time from api
@@ -457,6 +484,31 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    @Override
+    public void onBackPressed()
+    {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Class switchTo = null;
+        if(fragment.getClass() == VehicleFragment.class){
+            switchTo = DvirFragment.class;
+        }else if(fragment.getClass() == AddVehicleFragment.class){
+            switchTo = DvirFragment.class;
+        }else if(fragment.getClass() == LogFragment.class){
+            switchTo = LogViewerFragment.class;
+        }else{
+            switchTo = HomeFragment.class;
+        }
+        switchToFragment(switchTo);
+    }
+    private void notifyUser(String msg){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Carriergistics Notification")
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle("Carriergistics")
+                .setContentText(msg)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MainActivity.this);
+        managerCompat.notify(1, builder.build());
 
+    }
 }

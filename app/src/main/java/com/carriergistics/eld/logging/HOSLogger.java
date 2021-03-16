@@ -40,10 +40,11 @@ public class HOSLogger {
     private static int secsTillBreak;
     public static Handler handler;
     private static int secsLeftBreak;
+    private static int secsInShift;
 
     private static int lastSpeed = 0;
     private static int rpmGlitched = 0;
-
+    private static int lastRpm = 0;
     // This is called when a driver goes on duty
     public static void init(Driver driver){
         if(driver == null){
@@ -127,14 +128,15 @@ public class HOSLogger {
             log.add(driverStatus);
         }
 
-        if(data.getRpm() <= 0){
-            if(rpmGlitched < 4){
-                rpmGlitched++;
-                return;
-            }
-        }else{
-            rpmGlitched = 0;
-        }
+        //if(data.getRpm() <= 0){
+            //if(rpmGlitched < 4){
+             //   rpmGlitched++;
+             //   data.setRpm(lastRpm);
+           // }
+       // }else{
+         //   rpmGlitched = 0;
+         //   lastRpm = data.getRpm();
+       // }
 
 
         // Init variables that are not already set
@@ -184,7 +186,7 @@ public class HOSLogger {
 
                 //TODO: Prompt user to choose why they stopped
                 Log.d("DEBUGGING", "Stopped driving ----------------------");
-                sendOBDEvent(HOSEventCodes.OFF_DUTY);
+                //sendOBDEvent(HOSEventCodes.OFF_DUTY);
                 driverStatus.setEndTime(currentTime);
                 driverStatus = new TimePeriod();
                 driverStatus.setStatus(Status.ON_DUTY);
@@ -258,11 +260,7 @@ public class HOSLogger {
      */
     public static void checkAlerts(){
 
-        int hours = 0;
-        int mins = 0;
-        int secs = 0;
         Date dayAgo = addHoursToDate(currentTime, -24);
-        String timeTillBreak = "";
         // TODO: Constants
         // 8 hrs
         secsTillBreak = 28800;
@@ -273,14 +271,24 @@ public class HOSLogger {
         // TODO: Find what cycle the driver is on, and alert them accordingly
         //  Check for Day limit approaching
         secsDrivenToday = 0;
+        secsInShift = 0;
         for(TimePeriod period : log){
             // if the event started within 24hrs ago, then add it
             if(period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.DRIVING){
                 secsDrivenToday += period.getDuration();
+                secsInShift += period.getDuration();
             }else if(period.getStartTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
                 secsDrivenToday += (currentTime.getTime() - period.getStartTime().getTime())/1000;
+                secsInShift += (currentTime.getTime() - period.getStartTime().getTime())/1000;
             }else if(period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
                 secsDrivenToday += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
+                secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
+            }else if(period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.ON_DUTY){
+                secsInShift += period.getDuration();
+            }else if(period.getStartTime().after(dayAgo) && period.getStatus() == Status.ON_DUTY){
+                secsInShift += (currentTime.getTime() - period.getStartTime().getTime())/1000;
+            }else if(period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
+                secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
             }
         }
         if((double)(secsDrivenToday / 3600) >= 10.5){
@@ -347,6 +355,8 @@ public class HOSLogger {
         secsLeftDrivingToday = (secsLeftDrivingToday < 0) ? 0 : secsLeftDrivingToday;
         secsLeftBreak = (secsLeftBreak < 0) ? 0 : secsLeftBreak;
 
+        currentDriver.setSecsInShift(secsInShift);
+        currentDriver.setSecsLeftInShift(50400 - secsInShift);
         currentDriver.setSecsDrivenToday(secsDrivenToday);
         currentDriver.setConcurrentSecsDriven(concurrentSecsDriven);
         currentDriver.setSecsLeftDrivingToday(secsLeftDrivingToday);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.carriergistics.eld.dvir.Vehicle;
 import com.carriergistics.eld.logging.Driver;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,7 +24,6 @@ public class Data {
         String toSave = gson.toJson(drivers);
         SharedPreferences sharedPreference = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreference.edit();
-        //Log.d("DEBUGGING", "Saving........................" + toSave);
         editor.putString("Drivers", toSave);
         editor.commit();
     }
@@ -31,7 +31,6 @@ public class Data {
         String json = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).getString("Drivers", "");
         ArrayList<Driver> drivers = gson.fromJson(json, new TypeToken<List<Driver>>(){}.getType());
         if(drivers == null || drivers.isEmpty()){
-            //Log.d("DEBUGGING", "COULDNT FIND DATA.....................................................");
             return new ArrayList<Driver>();
         }else{
             return drivers;
@@ -54,6 +53,21 @@ public class Data {
         editor.putString("Company", gson.toJson(company));
         editor.commit();
     }
+    public static void saveVehicles(ArrayList<Vehicle> vehicles){
+        String toSave = gson.toJson(vehicles);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("Vehicles", toSave);
+        editor.commit();
+    }
+    public static ArrayList<Vehicle> loadVehicles(){
+        String json = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).getString("Vehicles", "");
+        ArrayList<Vehicle> vehicles = gson.fromJson(json, new TypeToken<List<Vehicle>>(){}.getType());
+        if(vehicles == null || vehicles.isEmpty()){
+            return new ArrayList<Vehicle>();
+        }
+        return vehicles;
+    }
     public static void saveSettings(Settings settings){
         SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -67,7 +81,6 @@ public class Data {
         SharedPreferences  sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
         settings = gson.fromJson(sharedPreferences.getString("SettingsSaved", ""), Settings.class);
         if(settings == null){
-            Log.d("DEBUGGING", "COULDNT FIND DATA.....................................................");
             return new Settings();
         }
         return settings;

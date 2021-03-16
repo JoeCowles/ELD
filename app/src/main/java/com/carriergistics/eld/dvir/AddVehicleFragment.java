@@ -1,5 +1,7 @@
 package com.carriergistics.eld.dvir;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.carriergistics.eld.MainActivity;
@@ -37,6 +40,9 @@ public class AddVehicleFragment extends Fragment {
 
     private ImageView getVinBtn;
     private EditText vinNum;
+    private Button saveBtn;
+    private EditText nameEt;
+    private Switch safeSw;
 
     public AddVehicleFragment() {
         // Required empty public constructor
@@ -90,6 +96,52 @@ public class AddVehicleFragment extends Fragment {
                 String vin = BluetoothConnector.getVinNum();
                 if(vin != null && !vin.isEmpty()){
                     vinNum.setText(vin);
+                }
+            }
+        });
+        safeSw = view.findViewById(R.id.vehicleSaveSw);
+        nameEt = view.findViewById(R.id.vehicleNameEt);
+        saveBtn = view.findViewById(R.id.vehicleSaveBtn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(vinNum.getText().toString().isEmpty()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("WARNING").setMessage("Vin cannot be empty!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            return;
+                        }
+                    }).create();
+                    AlertDialog warning = builder.create();
+                    warning.show();
+                }else if(nameEt.getText().toString().isEmpty()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("WARNING").setMessage("Name cannot be empty!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            return;
+                        }
+                    }).create();
+                    AlertDialog warning = builder.create();
+                    warning.show();
+                }else if(nameEt.getText().toString().equalsIgnoreCase("Name")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("WARNING").setMessage("Name cannot be \"Name\"").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            return;
+                        }
+                    }).create();
+                    AlertDialog warning = builder.create();
+                    warning.show();
+                }else{
+                    Vehicle vehicle = new Vehicle(nameEt.getText().toString(), vinNum.getText().toString(), safeSw.isChecked());
+                    MainActivity.vehicles.add(vehicle);
+                    MainActivity.instance.switchToFragment(DvirFragment.class);
                 }
             }
         });
