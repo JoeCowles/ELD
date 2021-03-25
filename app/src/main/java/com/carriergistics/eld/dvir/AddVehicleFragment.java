@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
+import com.google.android.gms.common.util.NumberUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +38,8 @@ public class AddVehicleFragment extends Fragment {
     private String mParam2;
 
     private Button backBtn;
-
+    private ImageView getOdoBtn;
+    private EditText odoEt;
     private ImageView getVinBtn;
     private EditText vinNum;
     private Button saveBtn;
@@ -81,27 +83,43 @@ public class AddVehicleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_vehicle, container, false);
         backBtn = view.findViewById(R.id.vehicleBackBtn);
+        vinNum = view.findViewById(R.id.vehicleVinET);
+        getVinBtn = view.findViewById(R.id.vehicleGetVinBtn);
+        safeSw = view.findViewById(R.id.vehicleSaveSw);
+        nameEt = view.findViewById(R.id.vehicleNameEt);
+        saveBtn = view.findViewById(R.id.vehicleSaveBtn);
+        odoEt = view.findViewById(R.id.addVehicleOdoEt);
+        getOdoBtn = view.findViewById(R.id.vehicleGetOdoBtn);
+
+
+        getVinBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String vin = BluetoothConnector.getVinNum();
+                if(vin != null && !vin.isEmpty() && !vin.equalsIgnoreCase("Couldn't retrieve")){
+                    vinNum.setText(vin);
+                }else{
+                    vinNum.setHint("Couldn't retrieve!");
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Warning!").setMessage("Please make sure that the VIN reading is correct\nit will cause errors if it is not correct!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.instance.switchToFragment(DvirFragment.class);
             }
         });
-        vinNum = view.findViewById(R.id.vehicleVinET);
-        getVinBtn = view.findViewById(R.id.vehicleGetVinBtn);
-        getVinBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("UI", "BUTTON CLICKED");
-                String vin = BluetoothConnector.getVinNum();
-                if(vin != null && !vin.isEmpty()){
-                    vinNum.setText(vin);
-                }
-            }
-        });
-        safeSw = view.findViewById(R.id.vehicleSaveSw);
-        nameEt = view.findViewById(R.id.vehicleNameEt);
-        saveBtn = view.findViewById(R.id.vehicleSaveBtn);
+
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,13 +156,66 @@ public class AddVehicleFragment extends Fragment {
                     }).create();
                     AlertDialog warning = builder.create();
                     warning.show();
+                }else if(odoEt.getText().toString().isEmpty()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("WARNING").setMessage("Odometer cannot be empty!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            return;
+                        }
+                    }).create();
+                    AlertDialog warning = builder.create();
+                    warning.show();
+                } else if(!isNumeric(odoEt.getText().toString())){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("WARNING").setMessage("Odometer must be numeric! (no commas or spaces)").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            return;
+                        }
+                    }).create();
+                    AlertDialog warning = builder.create();
+                    warning.show();
                 }else{
                     Vehicle vehicle = new Vehicle(nameEt.getText().toString(), vinNum.getText().toString(), safeSw.isChecked());
+                    vehicle.setOdo(Integer.parseInt(odoEt.getText().toString()));
                     MainActivity.vehicles.add(vehicle);
                     MainActivity.instance.switchToFragment(DvirFragment.class);
                 }
             }
         });
+        getOdoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String odo = BluetoothConnector.getOdo() + "";
+                if(odo != null && !odo.isEmpty()){
+                    odoEt.setText(odo);
+                }else{
+                    odoEt.setHint("Couldn't retrieve!");
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Warning!").setMessage("Please make sure that the odometer reading is correct\nit will cause errors if it is not!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
+
         return view;
+    }
+    private static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
     }
 }

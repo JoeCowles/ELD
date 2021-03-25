@@ -37,8 +37,8 @@ import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.dvir.DvirFragment;
 import com.carriergistics.eld.ui.HomeFragment;
-import com.carriergistics.eld.ui.LogFragment;
-import com.carriergistics.eld.ui.LogViewerFragment;
+import com.carriergistics.eld.editlog.LogFragment;
+import com.carriergistics.eld.editlog.LogViewerFragment;
 import com.carriergistics.eld.ui.RoutesFragment;
 import com.carriergistics.eld.settings.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
@@ -52,7 +52,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Timer;
 
 /************************************************************
    Copyright 2020 Unboxed Industries
@@ -70,12 +69,14 @@ public class MainActivity extends AppCompatActivity {
     public static Driver secondaryDriver;
     public static ArrayList<Driver> drivers;
     public static ArrayList<Vehicle> vehicles;
+    public static Vehicle currentVehicle;
     private static Settings settings;
     private static boolean gotDisconnected = false;
     public static MainActivity instance;
     private static boolean shouldSendBt = true;
     private static Date currentTime;
     private static Fragment fragment = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
         checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
 
         // Set a Toolbar to replace the ActionBar.
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        toolbar.setLogo(R.drawable.ic_dvir);
         // This will display an Up icon (<-),  will replace it with hamburger later
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -119,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
-        HOSLogger.init(currentDriver);
         startLogging();
         // Setup notifications
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -139,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
         if(settings == null){
             settings = new Settings();
         }
+        if(vehicles != null && vehicles.size() >= 1){
+            for(Vehicle v : vehicles){
+                if(v != null){
+                    currentVehicle = v;
+                    break;
+                }
+            }
+        }
         if(drivers != null && drivers.size() >= 1){
             currentDriver = drivers.get(0);
             if(drivers.size() >= 2 && drivers.get(1) != null){
@@ -146,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         }
+
         return false;
     }
 
@@ -302,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
+    //TODO: Clean up perms
     private boolean checkCameraPerms(){
 
         if (ContextCompat.checkSelfPermission(this.getBaseContext(),
@@ -386,6 +395,17 @@ public class MainActivity extends AppCompatActivity {
             if(dayChanged()){
                 Day today = new Day(DataConverter.removeTime(getTime()));
                 currentDriver.getDays().add(today);
+                // Remove any days that are 17 days old
+                for(Driver driver : drivers){
+                    for (int index = driver.getDays().size() -1; index >= 0; index--){
+                        Day d = driver.getDays().get(index);
+                        // If the day is 17 days old, remove it, there is no need to save it
+                        if(d.getDate().before(DataConverter.addHoursToDate(getTime(), (-24 * 17)))){
+                            driver.getDays().remove(d);
+                        }
+                    }
+
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -405,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void startLogging(){
 
-        Log.d("DEBUGGING", "LOGGING");
+        HOSLogger.init(currentDriver);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -502,7 +522,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void notifyUser(String msg){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Carriergistics Notification")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.logosmall)
                 .setContentTitle("Carriergistics")
                 .setContentText(msg)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -510,5 +530,13 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MainActivity.this);
         managerCompat.notify(1, builder.build());
 
+    }
+    public static Vehicle getVehicleFromVin(String vin){
+        for(Vehicle v : vehicles){
+            if(v.getVin().equalsIgnoreCase(vin)){
+                return v;
+            }
+        }
+        return null;
     }
 }

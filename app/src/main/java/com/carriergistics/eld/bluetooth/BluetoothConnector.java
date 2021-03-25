@@ -11,6 +11,7 @@ import android.util.Log;
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.commands.FuelEconCommand;
 import com.carriergistics.eld.commands.FuelLevelCommand;
+import com.carriergistics.eld.commands.OdoCommand;
 import com.carriergistics.eld.commands.SpeedCommand;
 import com.carriergistics.eld.commands.RPMCommand;
 import com.carriergistics.eld.commands.SetBluetoothNameCommand;
@@ -182,9 +183,9 @@ public class BluetoothConnector {
         } catch (IOException e) {
             return "Couldn't retrieve";
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            return "Couldn't retrieve";
         }
-        return vinCommand.getResult();
+        return vinCommand.getResult().substring(0,17);
     }
     public static String getFuelLevel(){
         FuelLevelCommand fuelCmd = new FuelLevelCommand();
@@ -207,5 +208,20 @@ public class BluetoothConnector {
             e.printStackTrace();
         }
         return fuelCmd.getResult();
+    }
+    public static int getOdo(){
+        OdoCommand command = new OdoCommand();
+        try {
+            command.run(socket.getInputStream(), socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            return Integer.parseInt(command.getResult());
+        }catch (NumberFormatException e){
+            return 0;
+        }
     }
 }

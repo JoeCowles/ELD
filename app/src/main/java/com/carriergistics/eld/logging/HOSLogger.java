@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.Ticker;
+import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.bluetooth.TelematicsData;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.ui.StoppedFragment;
@@ -24,7 +25,7 @@ import java.util.Timer;
 public class HOSLogger {
 
     static HOSLog currentHOSLog;
-    static ArrayList<TimePeriod> log;
+    public static  ArrayList<TimePeriod> log;
     static Day currentDay;
     private static Driver currentDriver;
     static TimePeriod driverStatus;
@@ -50,12 +51,11 @@ public class HOSLogger {
         if(driver == null){
             return;
         }
-        if(currentDriver != null && !driver.equals(currentDriver)){
-            // Current driver went off duty
-            // TODO: Current driver went off duty
-        }
-        if(driver != null && !driver.equals(currentDriver)) {
-
+        if(!driver.equals(currentDriver)) {
+            // Current driver went off duty.
+            if(currentDriver != null){
+                save(Status.OFF_DUTY);
+            }
             currentDriver = driver;
 
         }
@@ -78,8 +78,16 @@ public class HOSLogger {
             }else{
                 driverStatus = new TimePeriod();
                 driverStatus.setStartTime(getTime());
-                driverStatus.setStatus(Status.ON_DUTY);
+                driverStatus.setStatus(Status.OFF_DUTY);
                 log.add(driverStatus);
+            }
+            Date twoDaysAgo = addHoursToDate(MainActivity.getTime(), -48);
+            // TODO: Watch out for this
+            for(int i = log.size() -1; i >= 0; i--){
+                TimePeriod tp = log.get(i);
+                if(tp.getEndTime() != null && !tp.getEndTime().after(twoDaysAgo)){
+                    log.remove(tp);
+                }
             }
         }else{
             log = new ArrayList<TimePeriod>();
@@ -97,7 +105,6 @@ public class HOSLogger {
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
                 log((TelematicsData) msg.obj);
-                //checkAlerts();
             }
         };
         boolean sameDay = false;
@@ -178,6 +185,7 @@ public class HOSLogger {
 
                 }
             }
+            MainActivity.save();
         }else{
 
             //Truck turned off
@@ -193,11 +201,16 @@ public class HOSLogger {
                 driverStatus.setStartTime(currentTime);
                 currentDay.addTimePeriod(driverStatus);
                 log.add(driverStatus);
+                if(MainActivity.currentVehicle != null){
+                    MainActivity.currentVehicle.setOdo(BluetoothConnector.getOdo());
+                    Log.d("DEBUGGING", "ODO: " + MainActivity.currentVehicle.getOdo());
+                }
                 MainActivity.stoppedDriving();
                 currentDriver.setStatus(Status.ON_DUTY);
                 if(currentDriver.getDays() != null && currentDriver.getDays().size() > 0){
                     currentDriver.getDays().get(currentDriver.getDays().size() -1).addTimePeriod(driverStatus);
                 }
+                MainActivity.save();
             }
         }
     }
@@ -389,8 +402,6 @@ public class HOSLogger {
         currentDriver.setStatus(status);
         if(log != null){
             log.add(driverStatus);
-            currentDriver.setLog(log);
-            currentDriver.setHosLog(currentHOSLog);
         }
     }
 
@@ -447,7 +458,7 @@ public class HOSLogger {
         }
         return temp;
     }
-
+    // TODO: Not sure these are necessary, will delete later
     public static void startOnDuty(){
         save(Status.ON_DUTY);
     }

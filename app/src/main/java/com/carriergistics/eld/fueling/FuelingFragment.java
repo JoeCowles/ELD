@@ -72,6 +72,9 @@ public class FuelingFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_fueling, container, false);
         photoView = v.findViewById(R.id.photoView);
+        photoView.setImageResource(R.drawable.ic_baseline_receipt_24);
+        photoView.setMaxHeight(100);
+        photoView.setMaxWidth(100);
         takePhoto = v.findViewById(R.id.takePhotoBtn);
         submitPhoto = v.findViewById(R.id.submitPhotoBtn);
         takePhoto.setOnClickListener(new View.OnClickListener() {

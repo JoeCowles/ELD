@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.fueling.FuelingFragment;
+import com.carriergistics.eld.logging.HOSLogger;
+import com.carriergistics.eld.logging.Status;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +30,7 @@ public class StoppedFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    ImageView gasBtn;
+    private ImageView gasBtn, offBtn, onBtn, sleeperBtn;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -69,12 +71,36 @@ public class StoppedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stopped, container, false);
         // Inflate the layout for this fragment
-        gasBtn = view.findViewById(R.id.gasBtn);
+        gasBtn = view.findViewById(R.id.stoppedGasBtn);
         gasBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkCameraPerms();
                 ((MainActivity)getActivity()).switchToFragment(FuelingFragment.class);
+            }
+        });
+        offBtn = view.findViewById(R.id.stoppedOffBtn);
+        offBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HOSLogger.save(Status.OFF_DUTY);
+                ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
+            }
+        });
+        onBtn = view.findViewById(R.id.stoppedOnBtn);
+        onBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HOSLogger.save(Status.ON_DUTY);
+                ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
+            }
+        });
+        sleeperBtn = view.findViewById(R.id.stoppedSbBtn);
+        sleeperBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HOSLogger.save(Status.SLEEPING);
+                ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
             }
         });
         return view;

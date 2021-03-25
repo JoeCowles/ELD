@@ -84,7 +84,6 @@ public class DvirFragment extends Fragment {
         addVehicleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("UI", "BUTTON WAS CLICKED");
                 MainActivity.instance.switchToFragment(AddVehicleFragment.class);
             }
         });
@@ -95,48 +94,58 @@ public class DvirFragment extends Fragment {
 
                 final Vehicle vehicle = MainActivity.vehicles.get(i);
                 final CardView card = new CardView(getContext());
+                final ImageView truckIcon = new ImageView(getContext());
+                final TextView truckNum = new TextView(getContext());
+                ImageView deleteBtn = new ImageView(getContext());
+                TextView vin = new TextView(getContext());
+                ImageView warning = new ImageView(getContext());
+                TextView nameView = new TextView(getContext());
+                TextView odo = new TextView(getContext());
+
                 card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MainActivity.instance.switchToFragment(VehicleFragment.class);
+                        MainActivity.instance.switchToFragment(VehicleFragment.class, "vin", vehicle.getVin());
                     }
                 });
                 ConstraintLayout layout = new ConstraintLayout(getContext());
                 card.addView(layout);
                 layout.setId(getID());
 
-                final ImageView truckIcon = new ImageView(getContext());
+
                 truckIcon.setImageResource(R.drawable.carriergisticssemi);
                 truckIcon.setMaxHeight(100);
                 truckIcon.setMaxWidth(100);
                 layout.addView(truckIcon);
                 truckIcon.setId(getID());
 
-                TextView nameView = new TextView(getContext());
                 nameView.setText(vehicle.getName());
                 layout.addView(nameView);
                 nameView.setId(getID());
                 nameView.setTextSize(45f);
-                nameView.setPadding(0, 20, 0, 10);
+                nameView.setPadding(0, 0, 0, 0);
 
-                TextView vin = new TextView(getContext());
                 vin.setText(vehicle.getVin());
                 vin.setId(getID());
                 vin.setPadding(20, 10, 0, 0);
                 layout.addView(vin);
 
-                ImageView warning = new ImageView(getContext());
+
                 warning.setImageResource(R.drawable.ic_baseline_warning_24);
                 warning.setId(getID());
                 layout.addView(warning);
 
-                final TextView truckNum = new TextView(getContext());
                 truckNum.setText((i + 1) + "");
                 truckNum.setId(getID());
                 truckNum.setVisibility(View.INVISIBLE);
                 layout.addView(truckNum);
 
-                ImageView deleteBtn = new ImageView(getContext());
+                odo.setText("Odo: " + vehicle.getOdo() + " mi");
+                odo.setId(getID());
+                odo.setTextSize(28f);
+                odo.setPadding(0,0,0,0);
+                layout.addView(odo);
+
                 deleteBtn.setImageResource(R.drawable.ic_baseline_delete_24);
                 deleteBtn.setId(getID());
                 layout.addView(deleteBtn);
@@ -150,7 +159,7 @@ public class DvirFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 MainActivity.vehicles.remove(Integer.parseInt(truckNum.getText().toString())-1);
-                                //vehicleList.removeView(card);
+                                MainActivity.save();
                                 refresh();
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -163,7 +172,7 @@ public class DvirFragment extends Fragment {
                         dialog.show();
                     }
                 });
-                //warning.setMinimumWidth();
+
                 ConstraintSet set = new ConstraintSet();
                 set.clone(layout);
 
@@ -178,15 +187,19 @@ public class DvirFragment extends Fragment {
                 set.applyTo(layout);
 
                 set.connect(warning.getId(), ConstraintSet.BOTTOM, layout.getId(), ConstraintSet.BOTTOM);
-                set.connect(warning.getId(), ConstraintSet.LEFT, truckIcon.getId(), ConstraintSet.RIGHT);
+                set.connect(warning.getId(), ConstraintSet.RIGHT, deleteBtn.getId(), ConstraintSet.LEFT);
                 set.applyTo(layout);
 
-                set.connect(deleteBtn.getId(), ConstraintSet.LEFT, warning.getId(), ConstraintSet.RIGHT);
+                set.connect(deleteBtn.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
                 set.connect(deleteBtn.getId(), ConstraintSet.BOTTOM, layout.getId(), ConstraintSet.BOTTOM);
                 set.applyTo(layout);
 
                 set.connect(truckNum.getId(), ConstraintSet.LEFT, truckNum.getId(), ConstraintSet.LEFT);
                 set.connect(truckNum.getId(), ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
+                set.applyTo(layout);
+
+                set.connect(odo.getId(), ConstraintSet.TOP, nameView.getId(), ConstraintSet.BOTTOM);
+                set.connect(odo.getId(), ConstraintSet.LEFT, truckIcon.getId(), ConstraintSet.RIGHT);
                 set.applyTo(layout);
 
                 vehicleList.addView(card);

@@ -7,32 +7,41 @@
     tools:context=".ui.StoppedFragment">
 
     <ImageView
-        android:id="@+id/gasBtn"
+        android:id="@+id/stoppedGasBtn"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="175dp"
         android:src="@drawable/ic_baseline_local_gas_station_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="835dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="11dp"
+        android:id="@+id/stoppedSbBtn"
+        android:layout_width="0dp"
+        android:layout_height="175dp"
         android:src="@drawable/ic_baseline_local_hotel_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gasBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/stoppedGasBtn" />
 
     <ImageView
-        android:id="@+id/imageView7"
+        android:id="@+id/stoppedOnBtn"
         android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:src="@drawable/ic_baseline_snooze_24"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="175dp"
+        android:src="@drawable/onicon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stoppedSbBtn" />
+
+    <ImageView
+        android:id="@+id/stoppedOffBtn"
+        android:layout_width="0dp"
+        android:layout_height="175dp"
+        android:src="@drawable/officon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
+        app:layout_constraintTop_toBottomOf="@+id/stoppedOnBtn" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

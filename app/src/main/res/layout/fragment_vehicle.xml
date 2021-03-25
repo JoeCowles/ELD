@@ -6,37 +6,41 @@
     android:layout_height="match_parent"
     tools:context=".dvir.VehicleFragment">
 
-
-    <EditText
-        android:id="@+id/vehicleNameVehicleEt"
-        android:layout_width="343dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+    <TextView
+        android:id="@+id/vehicleNameTv"
+        android:layout_width="408dp"
+        android:layout_height="96dp"
         android:text="Name"
         android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="271dp"
-        android:layout_height="243dp"
-        android:src="@drawable/carriergisticssemi"
+        android:textSize="56dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/vehicleVinNum"
-        android:layout_width="362dp"
-        android:layout_height="46dp"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textSize="24sp"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vehicleCreateDvirBtn">
+
+        <LinearLayout
+            android:id="@+id/vehicleDvirList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/vehicleCreateDvirBtn"
+        android:layout_width="408dp"
+        android:layout_height="78dp"
+        android:layout_marginTop="100dp"
+        android:text="Create DVIR"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleNameVehicleEt" />
+        app:layout_constraintTop_toBottomOf="@+id/vehicleNameTv" />
 </androidx.constraintlayout.widget.ConstraintLayout>

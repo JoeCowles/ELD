@@ -167,8 +167,10 @@ public class HomeFragment extends Fragment {
                         checked = 2;
                     } else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
                         checked = 0;
+                    } else if(MainActivity.currentDriver.getStatus() == Status.SLEEPING){
+                        checked = 3;
                     }
-                    builder.setSingleChoiceItems(new String[]{"Off Duty", "On duty", "Driving", "Begin personal use"}, checked, new DialogInterface.OnClickListener() {
+                    builder.setSingleChoiceItems(new String[]{"Off Duty", "On duty", "Driving", "Sleeper Berth", "Begin personal use"}, checked, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
@@ -195,6 +197,10 @@ public class HomeFragment extends Fragment {
                                     alert.show();
                                     break;
                                 case 3:
+                                    HOSLogger.save(Status.SLEEPING);
+                                    break;
+                                case 4:
+
                                     break;
                             }
                             dialog.cancel();
@@ -242,6 +248,7 @@ public class HomeFragment extends Fragment {
                 timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsTillBreak() / 28800) * 100)));
             }else if(MainActivity.currentDriver.getStatus() == Status.ON_DUTY){
                 // 1800 = 30 mins
+                // TODO: Constants for these
                 Log.d("DEBUGGING", "Time Left in break: " + MainActivity.currentDriver.getSecsLeftInBreak());
                 if(MainActivity.currentDriver.getSecsLeftInBreak() > 0){
                     timeLabel.setText("Break:");
@@ -266,6 +273,15 @@ public class HomeFragment extends Fragment {
                     timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
                 }
                 timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
+            }else if(MainActivity.currentDriver.getStatus() == Status.SLEEPING){
+                // 1800 = 30 mins
+                timeLabel.setText("Break:");
+                if(MainActivity.currentDriver.getSecsLeftInBreak() <= 0){
+                    timeGuage.setValue(100);
+                }else{
+                    timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
+                }
+                timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
             }
             if (MainActivity.currentDriver.getStatus() == Status.DRIVING) {
                 statusBtn.setImageResource(R.drawable.drivingbutton);
@@ -274,6 +290,8 @@ public class HomeFragment extends Fragment {
                     statusBtn.setImageResource(R.drawable.onbutton);
                 }else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
                     statusBtn.setImageResource(R.drawable.offbutton);
+                }else if(MainActivity.currentDriver.getStatus() == Status.SLEEPING){
+                    statusBtn.setImageResource(R.drawable.sbbtn);
                 }
             }
         }

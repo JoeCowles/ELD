@@ -1,4 +1,4 @@
-package com.carriergistics.eld.ui;
+package com.carriergistics.eld.editlog;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,10 +20,12 @@ import android.widget.TextView;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
+import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.HOSEventCodes;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.logging.TimePeriod;
+import com.carriergistics.eld.utils.DataConverter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -67,15 +69,6 @@ public class LogFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LogFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static LogFragment newInstance(String param1, String param2) {
         LogFragment fragment = new LogFragment();
         Bundle args = new Bundle();
@@ -160,10 +153,20 @@ public class LogFragment extends Fragment {
         if(date != null && !date.isEmpty()){
 
             try {
-                setData(HOSLogger.getLog(date));
+                //TODO: Make this more reliable
+                SimpleDateFormat sdf = new SimpleDateFormat("  EEE MMM dd, yyyy");
+                Day retrieved = null;
+                for(Day d : MainActivity.currentDriver.getDays()){
+                    if(DataConverter.sameDayNoTime(d.getDate(), sdf.parse(date))){
+                        Log.d("DEBUGGING", "Matched to day: " + d.getDate().toString());
+                        retrieved =  d;
+                    }
+                }
+                setData(retrieved.getTimePeriods());
             } catch (ParseException e) {
                 setData(HOSLogger.getLog());
-                e.printStackTrace();
+            } catch(NullPointerException e){
+                setData(HOSLogger.getLog());
             }
         }
         else{
@@ -309,39 +312,55 @@ public class LogFragment extends Fragment {
             editBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     int checked = 0;
                     if(tp.getStatus() == Status.ON_DUTY){
                         checked = 1;
                     }
-                    builder.setTitle("Edit event").setSingleChoiceItems(new String[]{"Off duty", "On Duty", "Driving"}, checked, new DialogInterface.OnClickListener() {
+                    final EditLogView editView = new EditLogView(getContext(), checked);
+                    final int finalChecked = checked;
+                    builder.setTitle("Edit event").setPositiveButton("Save", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            switch(which){
-                                case 0:
-                                    eventLog.get(index).setStatus(Status.OFF_DUTY);
-                                    // If it is the current time period, then set the driver's status
-                                    if(tp.getEndTime() == null){
-                                        MainActivity.currentDriver.setStatus(Status.OFF_DUTY);
+                            if(!editView.getNote().isEmpty() && finalChecked != editView.getSelected()) {
+                                switch (editView.getSelected()) {
+                                    case 0:
+                                        eventLog.get(index).setStatus(Status.OFF_DUTY);
+                                        // If it is the current time period, then set the driver's status
+                                        if (tp.getEndTime() == null) {
+                                            MainActivity.currentDriver.setStatus(Status.OFF_DUTY);
+                                        }
+                                        break;
+                                    case 1:
+                                        eventLog.get(index).setStatus(Status.ON_DUTY);
+                                        if (tp.getEndTime() == null) {
+                                            MainActivity.currentDriver.setStatus(Status.ON_DUTY);
+                                        }
+                                        break;
+                                    case 2:
+                                        eventLog.get(index).setStatus(Status.DRIVING);
+                                        if (tp.getEndTime() == null) {
+                                            MainActivity.currentDriver.setStatus(Status.DRIVING);
+                                        }
+                                        break;
+                                }
+                                refresh();
+                                dialog.cancel();
+                            }else if(finalChecked == editView.getSelected()){
+                                dialog.cancel();
+                            }else{
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                                builder1.setTitle("Warning!").setMessage("Edits must have a note!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
                                     }
-                                break;
-                                case 1:
-                                    eventLog.get(index).setStatus(Status.ON_DUTY);
-                                    if(tp.getEndTime() == null){
-                                        MainActivity.currentDriver.setStatus(Status.ON_DUTY);
-                                    }
-                                break;
-                                case 2:
-                                    eventLog.get(index).setStatus(Status.DRIVING);
-                                    if(tp.getEndTime() == null){
-                                        MainActivity.currentDriver.setStatus(Status.DRIVING);
-                                    }
-                                break;
+                                });
+                                AlertDialog dialog1 = builder1.create();
+                                dialog1.show();
                             }
-                            refresh();
-                            dialog.cancel();
                         }
-                    });
+                    }).setView(editView);
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
@@ -373,6 +392,7 @@ public class LogFragment extends Fragment {
         }
 
     }
+
     public static void setDate(String _date){
         date = _date;
     }

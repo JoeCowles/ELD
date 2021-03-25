@@ -3,6 +3,7 @@ package com.carriergistics.eld.logging;
 import android.util.Log;
 
 import com.carriergistics.eld.MainActivity;
+import com.carriergistics.eld.editlog.Edit;
 import com.carriergistics.eld.utils.DataConverter;
 
 import java.text.ParseException;
@@ -15,18 +16,19 @@ public class Day {
     private Date date;
 
     private ArrayList<TimePeriod> timePeriods;
+    private ArrayList<Edit> edits;
 
     private int secsDrivenToday = -1;
 
-    public ArrayList<TimePeriod> getTimePeriods() {
-        return timePeriods;
-    }
+
     public Day(Date date){
         this.date = date;
         timePeriods = new ArrayList<>();
     }
-
-    // @param Date in mm-dd-yyyy
+    public ArrayList<TimePeriod> getTimePeriods() {
+        return timePeriods;
+    }
+    // @param Date follows mm-dd-yyy hh:mm:ss
     public Day(String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("mm-dd-yy HH:mm:ss");
         this.date = sdf.parse(date + " 00:00:00");
@@ -65,9 +67,15 @@ public class Day {
     public boolean updateTimePeriods(){
         if(date != null){
             try {
+                if(timePeriods != null && !timePeriods.isEmpty() && !DataConverter.sameDayNoTime(date, MainActivity.getTime())){
+                    return true;
+                }
+            } catch (ParseException e) {
+                return false;
+            }
+            try {
                 timePeriods = HOSLogger.getLog("  " + date.toString().substring(0,10) + ", " + date.toString().substring(24,28));
             } catch (ParseException e) {
-                Log.d("LOGGING", "The update didnt work");
                 return false;
             }
         }
@@ -79,5 +87,19 @@ public class Day {
     }
     public void addTimePeriod(TimePeriod t){
         timePeriods.add(t);
+    }
+
+    public ArrayList<Edit> getEdits() {
+        return edits;
+    }
+
+    public void setEdits(ArrayList<Edit> edits) {
+        this.edits = edits;
+    }
+
+    public void addEdit(Edit edit){
+        if(edits != null){
+            edits.add(edit);
+        }
     }
 }
