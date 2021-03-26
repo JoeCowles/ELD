@@ -1,6 +1,9 @@
 package com.carriergistics.eld.dvir;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -13,6 +16,7 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Switch;
 
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -31,7 +35,7 @@ public class CreateDvirView extends ConstraintLayout {
     private Switch safeSw;
     private static int id = 9213;
 
-    public CreateDvirView(final Context context) {
+    public CreateDvirView(Context context) {
         super(context);
 
         preTripBtn = new RadioButton(context);
@@ -58,7 +62,7 @@ public class CreateDvirView extends ConstraintLayout {
         addView(safeSw);
 
         scrollView.setMinimumHeight(200);
-        scrollView.setMinimumWidth(600);
+        scrollView.setMinimumWidth(1400);
 
         preTripBtn.setText("Pre-trip inspection");
         postTripBtn.setText("Post-trip inspection");
@@ -68,6 +72,8 @@ public class CreateDvirView extends ConstraintLayout {
         safeSw.setTextSize(24f);
 
         addBtn.setText("Add issue");
+        addBtn.setWidth(200);
+
 
         safeSw.setText("Truck is safe");
 
@@ -79,23 +85,28 @@ public class CreateDvirView extends ConstraintLayout {
         addBtn.setWidth(200);
 
         addBtn.setOnClickListener(new View.OnClickListener(){
+            private static final int PHOTO = 12345;
+
             @Override
             public void onClick(View v) {
 
-                CardView card = new CardView(context);
-                ConstraintLayout layout = new ConstraintLayout(context);
-                ImageView picture = new ImageView(context);
-                final EditText remarks = new EditText(context);
+                final CardView card = new CardView(getContext());
+                ConstraintLayout layout = new ConstraintLayout(getContext());
+                ImageView picture = new ImageView(getContext());
+                final EditText remarks = new EditText(getContext());
+                ImageView deleteBtn = new ImageView(getContext());
 
                 layout.setId(getID());
                 picture.setId(getID());
                 remarks.setId(getID());
+                deleteBtn.setId(getID());
 
                 layout.addView(picture);
                 layout.addView(remarks);
+                layout.addView(deleteBtn);
 
                 card.setMinimumHeight(100);
-
+                card.setMinimumWidth(1400);
                 layout.setMinWidth(600);
 
                 picture.setImageResource(R.drawable.ic_baseline_photo_camera_24);
@@ -103,18 +114,35 @@ public class CreateDvirView extends ConstraintLayout {
 
                 remarks.setHint("Remarks");
                 remarks.setPadding(0, 0, 10,0);
-                remarks.setWidth(350);
+                remarks.setWidth(450);
                 remarks.setMinHeight(75);
                 remarks.setTextSize(24f);
 
-
+                deleteBtn.setImageResource(R.drawable.ic_baseline_delete_24);
+                deleteBtn.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        list.removeView(card);
+                    }
+                });
+                picture.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        //startActivityForResult(i, PHOTO);
+                    }
+                });
                 ConstraintSet cardSet = new ConstraintSet();
                 cardSet.clone(layout);
 
                 cardSet.connect(picture.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
                 cardSet.applyTo(layout);
 
-                cardSet.connect(remarks.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+                cardSet.connect(remarks.getId(), ConstraintSet.LEFT, picture.getId(), ConstraintSet.RIGHT);
+                cardSet.applyTo(layout);
+
+                cardSet.connect(deleteBtn.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+                cardSet.connect(deleteBtn.getId(), ConstraintSet.BOTTOM, layout.getId(), ConstraintSet.BOTTOM);
                 cardSet.applyTo(layout);
 
                 card.addView(layout);

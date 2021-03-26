@@ -40,7 +40,7 @@ public class VehicleFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static int id = 10023;
     // TODO: Rename and change types of parameters
-    private String vinNum;
+    private static String vinNum;
     private String mParam2;
 
     public VehicleFragment() {
@@ -69,7 +69,9 @@ public class VehicleFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            vinNum = getArguments().getString(ARG_PARAM1);
+            if(getArguments().getString(ARG_PARAM1) != null && !getArguments().getString(ARG_PARAM1).isEmpty()){
+                vinNum = getArguments().getString(ARG_PARAM1);
+            }
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -90,25 +92,15 @@ public class VehicleFragment extends Fragment {
         addDvirBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Change from this
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Add a dvir event").setView(new CreateDvirView(getContext())).setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                dialog.show();
 
-                //editing.getDvirLog().add(new Dvir(Dvir.TripType.PRE_TRIP, MainActivity.getTime(), Dvir.Safety.UNSAFE));
+                MainActivity.instance.switchToFragment(CreateDvirFragment.class, "vinNum",vinNum);
                 refresh();
+
             }
         });
 
         for(int i = editing.getDvirLog().size() - 1; i >= 0; i--){
-            Dvir dvir = editing.getDvirLog().get(i);
+            final Dvir dvir = editing.getDvirLog().get(i);
             CardView card = new CardView(getContext());
             ConstraintLayout layout = new ConstraintLayout(getContext());
             TextView dateView = new TextView(getContext());
@@ -141,7 +133,12 @@ public class VehicleFragment extends Fragment {
             }
             //card.setMinimumHeight(150);
             //layout.setMinimumHeight(150);
-
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity.instance.switchToFragment(EditDvirFragment.class, "vin", vinNum, "dvirNum", editing.getDvirLog().indexOf(dvir) + "");
+                }
+            });
             ConstraintSet set = new ConstraintSet();
             set.clone(layout);
 

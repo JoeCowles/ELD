@@ -27,6 +27,8 @@ import android.view.MenuItem;
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
 import com.carriergistics.eld.bluetooth.TelematicsData;
 import com.carriergistics.eld.dvir.AddVehicleFragment;
+import com.carriergistics.eld.dvir.CreateDvirFragment;
+import com.carriergistics.eld.dvir.EditDvirFragment;
 import com.carriergistics.eld.dvir.Vehicle;
 import com.carriergistics.eld.dvir.VehicleFragment;
 import com.carriergistics.eld.logging.Day;
@@ -288,6 +290,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    public void switchToFragment(Class fragmentClass, String paramName, String param, String paramName2, String param2) {
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Bundle bundle = new Bundle();
+            bundle.putString(paramName, param);
+            bundle.putString(paramName2, param2);
+            fragment.setArguments(bundle);
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
+        } catch (Exception e) {
+
+            Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
+
+        }
+
+    }
     // Get the current fragment that is inflated
     public static String getFragment(){
 
@@ -397,6 +417,9 @@ public class MainActivity extends AppCompatActivity {
                 currentDriver.getDays().add(today);
                 // Remove any days that are 17 days old
                 for(Driver driver : drivers){
+                    if(driver == null){
+                        break;
+                    }
                     for (int index = driver.getDays().size() -1; index >= 0; index--){
                         Day d = driver.getDays().get(index);
                         // If the day is 17 days old, remove it, there is no need to save it
@@ -515,7 +538,11 @@ public class MainActivity extends AppCompatActivity {
             switchTo = DvirFragment.class;
         }else if(fragment.getClass() == LogFragment.class){
             switchTo = LogViewerFragment.class;
-        }else{
+        }else if(fragment.getClass() == CreateDvirFragment.class){
+            switchTo = VehicleFragment.class;
+        }else if(fragment.getClass() == EditDvirFragment.class) {
+            switchTo = VehicleFragment.class;
+        }else {
             switchTo = HomeFragment.class;
         }
         switchToFragment(switchTo);
@@ -529,7 +556,6 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MainActivity.this);
         managerCompat.notify(1, builder.build());
-
     }
     public static Vehicle getVehicleFromVin(String vin){
         for(Vehicle v : vehicles){

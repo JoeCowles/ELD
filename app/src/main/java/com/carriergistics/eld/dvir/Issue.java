@@ -1,11 +1,13 @@
 package com.carriergistics.eld.dvir;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 public class Issue {
 
     private String remarks;
-    private Bitmap picture;
+    private String picturePath;
+    private boolean safe;
 
     public String getRemarks() {
         return remarks;
@@ -15,11 +17,19 @@ public class Issue {
         this.remarks = remarks;
     }
 
-    public Bitmap getPicture() {
-        return picture;
+    public String getPicturePath() {
+        return picturePath;
     }
 
-    public void setPicture(Bitmap picture) {
-        this.picture = picture;
+    public void setPicturePath(String picture) {
+        this.picturePath = picture;
+    }
+
+    public boolean isSafe() {
+        return safe;
+    }
+
+    public void setSafe(boolean safe) {
+        this.safe = safe;
     }
 }

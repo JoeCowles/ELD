@@ -22,6 +22,7 @@ public class Dvir {
     private String remarks;
     private Safety safety;
     private ArrayList<Issue> issues;
+    private String driverName;
 
     public Dvir(TripType type, Date date, Safety safety){
         this.type = type;
@@ -68,5 +69,13 @@ public class Dvir {
 
     public void setIssues(ArrayList<Issue> issues) {
         this.issues = issues;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 }

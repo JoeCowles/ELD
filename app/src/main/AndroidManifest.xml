@@ -16,7 +16,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logosmall"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true">
         <activity android:name=".setup.InitActivity"></activity>
         <activity android:name=".setup.LoginActivity" />
         <activity
@@ -39,7 +40,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
 
+        </provider>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
