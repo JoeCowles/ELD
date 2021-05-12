@@ -2,6 +2,7 @@ package com.carriergistics.eld.commands;
 
 import android.util.Log;
 
+import com.carriergistics.eld.utils.Debugger;
 import com.github.pires.obd.exceptions.BusInitException;
 import com.github.pires.obd.exceptions.MisunderstoodCommandException;
 import com.github.pires.obd.exceptions.NoDataException;
@@ -78,6 +79,7 @@ public abstract class BluetoothCommand {
         synchronized (BluetoothCommand.class) {//Only one command can write and read a data in one time.
             start = System.currentTimeMillis();
             sendCommand(out);
+            Debugger.print("BTCMD","Sent the command via bluetooth: " + cmd);
             readResult(in);
             end = System.currentTimeMillis();
         }
@@ -216,6 +218,7 @@ public abstract class BluetoothCommand {
         String temp = "";
         if(!rawData.contains("!") && rawData.contains("OK")) {
             //TODO: Good acknowedgement
+            Debugger.print("BTCMD", "Good acknowledgement!");
             rawData = "";
             readRawData(in);
             return;
@@ -229,6 +232,7 @@ public abstract class BluetoothCommand {
                     temp += ch;
                 }
             }
+            Debugger.print("BTCMD","Command "+ cmd + " returned: " + temp);
             rawData = temp;
         }
     }

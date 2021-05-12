@@ -73,7 +73,7 @@ public class HOSLogger {
             log = driver.getLog();
 
             // The last time period was never terminated
-            if(log.get(log.size() - 1).getDuration() == 0){
+            if(log.size() > 0 && log.get(log.size() - 1).getDuration() == 0){
                 driverStatus = log.get(log.size() - 1);
             }else{
                 driverStatus = new TimePeriod();
@@ -285,23 +285,25 @@ public class HOSLogger {
         //  Check for Day limit approaching
         secsDrivenToday = 0;
         secsInShift = 0;
-        for(TimePeriod period : log){
-            // if the event started within 24hrs ago, then add it
-            if(period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.DRIVING){
-                secsDrivenToday += period.getDuration();
-                secsInShift += period.getDuration();
-            }else if(period.getStartTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
-                secsDrivenToday += (currentTime.getTime() - period.getStartTime().getTime())/1000;
-                secsInShift += (currentTime.getTime() - period.getStartTime().getTime())/1000;
-            }else if(period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
-                secsDrivenToday += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
-                secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
-            }else if(period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.ON_DUTY){
-                secsInShift += period.getDuration();
-            }else if(period.getStartTime().after(dayAgo) && period.getStatus() == Status.ON_DUTY){
-                secsInShift += (currentTime.getTime() - period.getStartTime().getTime())/1000;
-            }else if(period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING){
-                secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime())/ 1000;
+        if(log != null && log.size() >= 1) {
+            for (TimePeriod period : log) {
+                // if the event started within 24hrs ago, then add it
+                if (period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.DRIVING) {
+                    secsDrivenToday += period.getDuration();
+                    secsInShift += period.getDuration();
+                } else if (period.getStartTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
+                    secsDrivenToday += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
+                    secsInShift += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
+                } else if (period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
+                    secsDrivenToday += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
+                    secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
+                } else if (period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.ON_DUTY) {
+                    secsInShift += period.getDuration();
+                } else if (period.getStartTime().after(dayAgo) && period.getStatus() == Status.ON_DUTY) {
+                    secsInShift += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
+                } else if (period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
+                    secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
+                }
             }
         }
         if((double)(secsDrivenToday / 3600) >= 10.5){
@@ -378,7 +380,9 @@ public class HOSLogger {
     }
 
     public static Date addHoursToDate(Date date, int hours) {
-
+        if(date == null){
+            return MainActivity.getTime();
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, hours);
@@ -414,6 +418,7 @@ public class HOSLogger {
                     temp.add(t);
                 }
             }
+            Log.d("DEBUGGING", t.getStartTime() + "  " + t.getEndTime() + " " + t.getStatus());
         }
         return temp;
     }

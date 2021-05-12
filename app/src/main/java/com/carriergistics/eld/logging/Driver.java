@@ -34,12 +34,9 @@ public class Driver {
     private ArrayList<TimePeriod> log;
     private ArrayList<Day> days;
 
-    // Used to convert secs to time Strings
-    private int secs, mins, hrs;
-
     private Status status;
 
-    private Bitmap signature;
+    private String signaturePath;
 
     public Driver(){
         days = new ArrayList<Day>();
@@ -145,12 +142,12 @@ public class Driver {
         this.secsLeftDrivingToday = secsLeftDrivingToday;
     }
 
-    public Bitmap getSignature() {
-        return signature;
+    public String getSignaturePath() {
+        return signaturePath;
     }
 
-    public void setSignature(Bitmap signature) {
-        this.signature = signature;
+    public void setSignature(String signaturePath) {
+        this.signaturePath = signaturePath;
     }
 
     public int getSecsLeftInBreak() {

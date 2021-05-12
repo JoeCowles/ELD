@@ -70,7 +70,6 @@ public class CreateDvirFragment extends Fragment {
     private ScrollView scrollView;
     private LinearLayout list;
     private Button addBtn, saveBtn;
-    private Switch safeSw;
     private ArrayList<ImageView> pictureViews;
     private ArrayList<Issue> issues;
     private int selectedIssue = 0;
@@ -78,6 +77,7 @@ public class CreateDvirFragment extends Fragment {
     private String mCurrentPhotoPath;
     private Vehicle editing;
     private static int id = 9213;
+    private boolean safe = true;
     // TODO: Rename and change types of parameters
     private String vinNum;
     private String mParam2;
@@ -129,7 +129,6 @@ public class CreateDvirFragment extends Fragment {
         scrollView = new ScrollView(context);
         list = new LinearLayout(context);
         addBtn = new Button(context);
-        safeSw = new Switch(context);
         absLayout = view.findViewById(R.id.createDvirLayout);
         saveBtn = new Button(context);
 
@@ -137,7 +136,6 @@ public class CreateDvirFragment extends Fragment {
         scrollView.setId(getID());
         list.setId(getID());
         addBtn.setId(getID());
-        safeSw.setId(getID());
         saveBtn.setId(getID());
 
         group.addView(preTripBtn);
@@ -147,7 +145,6 @@ public class CreateDvirFragment extends Fragment {
         scrollView.addView(list);
         absLayout.addView(scrollView);
         absLayout.addView(addBtn);
-        absLayout.addView(safeSw);
         absLayout.addView(saveBtn);
 
         scrollView.setMinimumHeight(200);
@@ -158,7 +155,6 @@ public class CreateDvirFragment extends Fragment {
 
         preTripBtn.setTextSize(24f);
         postTripBtn.setTextSize(24f);
-        safeSw.setTextSize(24f);
 
         addBtn.setText("Add issue");
         addBtn.setWidth(200);
@@ -168,7 +164,6 @@ public class CreateDvirFragment extends Fragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean safe = safeSw.isChecked();
                 Dvir dvir = null;
                 if(group.getCheckedRadioButtonId() == preTripBtn.getId() && safe){
                     dvir = new Dvir(Dvir.TripType.PRE_TRIP, MainActivity.getTime(), Dvir.Safety.SAFE);
@@ -188,12 +183,10 @@ public class CreateDvirFragment extends Fragment {
                 MainActivity.instance.switchToFragment(VehicleFragment.class, "vin", vinNum);
             }
         });
-        safeSw.setText("Truck is safe");
 
         list.setOrientation(LinearLayout.VERTICAL);
 
         group.setPadding(0, 30, 0, 30);
-        safeSw.setPadding(0,0,0, 30);
 
 
         addBtn.setWidth(200);
@@ -237,10 +230,18 @@ public class CreateDvirFragment extends Fragment {
                 issueSafeSw.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!issueSafeSw.isChecked()){
-                            safeSw.setChecked(false);
-                        }
                         issue.setSafe(issueSafeSw.isChecked());
+                        if(!issueSafeSw.isChecked()){
+                            safe = false;
+                        }else{
+                            safe = true;
+                            for(Issue temp : issues){
+                                if(!temp.isSafe()){
+                                    safe = false;
+                                }
+                            }
+
+                        }
                     }
                 });
 
@@ -319,10 +320,8 @@ public class CreateDvirFragment extends Fragment {
         ConstraintSet set = new ConstraintSet();
         set.clone(absLayout);
 
-        set.connect(addBtn.getId(), ConstraintSet.TOP, safeSw.getId(), ConstraintSet.BOTTOM);
-        set.applyTo(absLayout);
 
-        set.connect(safeSw.getId(), ConstraintSet.TOP, group.getId(), ConstraintSet.BOTTOM);
+        set.connect(addBtn.getId(), ConstraintSet.TOP, group.getId(), ConstraintSet.BOTTOM);
         set.applyTo(absLayout);
 
         set.connect(scrollView.getId(), ConstraintSet.TOP, addBtn.getId(), ConstraintSet.BOTTOM);
@@ -374,7 +373,10 @@ public class CreateDvirFragment extends Fragment {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(MainActivity.getTime());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
+                Environment.DIRECTORY_PICTURES), "Camera");
+        if(!storageDir.exists()){
+            storageDir.mkdirs();
+        }
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */

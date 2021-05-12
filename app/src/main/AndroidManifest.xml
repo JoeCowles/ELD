@@ -33,7 +33,7 @@
             android:value="AIzaSyDN7LEcafb4xfOp0qsLUp2xO0AyD1INfYA" />
 
         <activity android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

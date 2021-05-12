@@ -97,10 +97,12 @@ public class LogViewerFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_log_viewer, container, false);
         LinearLayout list = view.findViewById(R.id.logList);
-        if (MainActivity.currentDriver.getDays() != null && MainActivity.currentDriver.getDays().size() > 0) {
+        if (MainActivity.currentDriver.getDays() != null && MainActivity.currentDriver.getDays().size() >= 0) {
+
             list.setPadding(30, 10, 30, 10);
             for (int i = MainActivity.currentDriver.getDays().size() - 1; i >= 0; i--) {
                 Day day = MainActivity.currentDriver.getDays().get(i);
+                Log.d("DEBUGGING", "Found day: " + day.getDate().toString());
                 day.updateTimePeriods();
                 // Card holds all the info
                 CardView card = new CardView(getContext());
@@ -115,7 +117,7 @@ public class LogViewerFragment extends Fragment {
                 final TextView dateView = new TextView(getContext());
                 dateView.setId(id);
                 id++;
-                dateView.setText("  " + day.getDate().toString().substring(0, 10) + ", " + day.getDate().toString().substring(24, 28));
+                dateView.setText("  " + day.getDate().toString().substring(0, 10)+", " + day.getDate().toString().substring(day.getDate().toString().length() -4));
                 dateView.setTextSize(35);
                 con.addView(dateView);
 
@@ -160,7 +162,7 @@ public class LogViewerFragment extends Fragment {
 
                 if(MainActivity.currentDriver.getDays().size() - i < 4){
                     card.setMinimumHeight(250);
-                    addGraph(con, dateView.getText().toString(), set, day, dateView);
+                    addGraph(con, set, day, dateView);
                 }
 
                 card.setCardElevation(1f);
@@ -173,12 +175,14 @@ public class LogViewerFragment extends Fragment {
                 list.addView(card);
             }
 
+        }else{
+            Log.d("DEBUGGING", "No days found");
         }
 
         return view;
     }
 
-    public void addGraph(ConstraintLayout con, String date, ConstraintSet set, Day day, TextView dateView) {
+    public void addGraph(ConstraintLayout con, ConstraintSet set, Day day, TextView dateView) {
         LineChart graph = new LineChart(getContext());
         graph.setMinimumWidth(400);
         graph.setMinimumHeight(200);

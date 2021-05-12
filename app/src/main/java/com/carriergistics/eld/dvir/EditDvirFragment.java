@@ -1,5 +1,7 @@
 package com.carriergistics.eld.dvir;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -86,7 +88,7 @@ public class EditDvirFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_dvir, container, false);
         Vehicle vehicle = MainActivity.getVehicleFromVin(vin);
-        Dvir dvir = vehicle.getDvirLog().get(Integer.parseInt(dvirNum));
+        final Dvir dvir = vehicle.getDvirLog().get(Integer.parseInt(dvirNum));
 
         nameTv = view.findViewById(R.id.dvirByNameView);
         typeTv = view.findViewById(R.id.dvirTypeView);
@@ -104,34 +106,129 @@ public class EditDvirFragment extends Fragment {
         }else if(dvir.getSafety() == Dvir.Safety.UNSAFE){
             safetyTv.setTextColor(Color.RED);
         }
-        for(Issue issue : dvir.getIssues()){
+        for(final Issue issue : dvir.getIssues()){
             Log.d("DEBUGGING", "Issue found: " + issue.getRemarks());
             CardView card = new CardView(getContext());
             ConstraintLayout layout = new ConstraintLayout(getContext());
             card.addView(layout);
 
             ImageView picture = new ImageView(getContext());
-            TextView remarks = new TextView(getContext());
-            Button resolve = new Button(getContext());
+            final TextView remarks = new TextView(getContext());
+            final Button resolve = new Button(getContext());
+            TextView safetyView = new TextView(getContext());
 
             layout.addView(picture);
             layout.addView(remarks);
             layout.addView(resolve);
+            layout.addView(safetyView);
 
             picture.setId(getID());
             remarks.setId(getID());
             resolve.setId(getID());
             layout.setId(getID());
+            safetyView.setId(getID());
 
             remarks.setText("Remarks:\n" + issue.getRemarks());
             remarks.setTextSize(30f);
+            remarks.setWidth(600);
 
-            resolve.setText("Resolve");
-            resolve.setTextSize(30f);
+            if(!issue.isResolved()){
+                resolve.setText("Resolve");
+                resolve.setTextSize(30f);
+                resolve.setWidth(200);
+                resolve.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        final ResolveView resolveView = new ResolveView(getContext());
+                        builder.setTitle("Resolve").setView(resolveView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                if (resolveView.getNotes().isEmpty()) {
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                                    builder1.setTitle("Warning").setMessage("Must include a note!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                                    AlertDialog dialog1 = builder1.create();
+                                    dialog1.show();
+                                }else if(resolveView.getResolverName().isEmpty()){
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                                    builder1.setTitle("Warning").setMessage("Must include name of resolver!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                                    AlertDialog dialog1 = builder1.create();
+                                    dialog1.show();
+                                }else{
+                                    issue.setResolved(true);
+                                    issue.setResolveNotes(resolveView.getNotes());
+                                    issue.setResolverName(resolveView.getResolverName());
+                                    dialog.cancel();
+                                    refresh();
+                                }
+
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+            }else if (!issue.isDriverSigned()){
+                resolve.setText("Sign");
+                resolve.setTextSize(30f);
+                resolve.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        final ResolveView resolveView = new ResolveView(getContext());
+                        builder.setTitle("Sign").setMessage("Driver signs off on resolution?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                issue.setDriverSigned(true);
+                                boolean safe = true;
+                                for(Issue i : dvir.getIssues()){
+                                    safe = (!i.isDriverSigned()) ? false : safe;
+                                }
+                                dvir.setSafety((safe) ? Dvir.Safety.RESOLVED : dvir.getSafety());
+                                refresh();
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+            }else{
+                resolve.setVisibility(View.INVISIBLE);
+            }
+            if(issue.isResolved() && issue.isDriverSigned()){
+                safetyView.setText("Resolved");
+                safetyView.setTextSize(30);
+                safetyView.setTextColor(Color.GREEN);
+            }else
+            if(issue.isSafe()){
+                safetyView.setText("Safe");
+                safetyView.setTextSize(30);
+                safetyView.setTextColor(Color.GREEN);
+            }else{
+                safetyView.setText("Unsafe");
+                safetyView.setTextSize(30);
+                safetyView.setTextColor(Color.RED);
+            }
+
+            safetyView.setPadding(0,0,30,0);
 
             Bitmap pictureBitmap = BitmapFactory.decodeFile(issue.getPicturePath());
-            pictureBitmap = Bitmap.createScaledBitmap(pictureBitmap, 200, 200, false);
-            picture.setImageBitmap(pictureBitmap);
+            if(pictureBitmap != null){
+                pictureBitmap = Bitmap.createScaledBitmap(pictureBitmap, 200, 200, false);
+                picture.setImageBitmap(pictureBitmap);
+            }
 
             remarks.setWidth(200);
 
@@ -146,6 +243,11 @@ public class EditDvirFragment extends Fragment {
             set.applyTo(layout);
 
             set.connect(resolve.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+            set.connect(resolve.getId(), ConstraintSet.TOP, safetyView.getId(), ConstraintSet.BOTTOM);
+            set.applyTo(layout);
+
+            set.connect(safetyView.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
+            set.connect(safetyView.getId(), ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
             set.applyTo(layout);
 
             list.addView(card);
@@ -154,5 +256,8 @@ public class EditDvirFragment extends Fragment {
     }
     private int getID(){
         return id++;
+    }
+    private void refresh(){
+        getFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 }

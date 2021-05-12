@@ -19,6 +19,7 @@ import com.carriergistics.eld.commands.SetTimeCommand;
 import com.carriergistics.eld.commands.VinCommand;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.utils.DataConverter;
+import com.carriergistics.eld.utils.Debugger;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -35,6 +36,7 @@ public class BluetoothConnector {
     private static int reconnectAttempts = 0;
     private static String name = "hc-05";
     private static String password = "1234";
+
     public static boolean connect(String deviceID){
         status = BlueToothStatus.CONNECTING;
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -177,14 +179,18 @@ public class BluetoothConnector {
         }
     }
     public static String getVinNum(){
+
         VinCommand vinCommand = new VinCommand();
         try {
             vinCommand.run(socket.getInputStream(),socket.getOutputStream());
         } catch (IOException e) {
+            Debugger.print("BT","Tried to read the vin, threw an IOException" + e.getMessage());
             return "Couldn't retrieve";
         } catch (InterruptedException e) {
+            Debugger.print("BT","Tried to read the vin, threw an Interrupted Exception" + e.getMessage());
             return "Couldn't retrieve";
         }
+        Debugger.print("BT","Tried to read the vin, the bluetooth command returned: " + vinCommand.getResult());
         return vinCommand.getResult().substring(0,17);
     }
     public static String getFuelLevel(){
@@ -199,6 +205,7 @@ public class BluetoothConnector {
         return fuelCmd.getResult();
     }
     public static String getFuelEcon(){
+
         FuelEconCommand fuelCmd = new FuelEconCommand();
         try {
             fuelCmd.run(socket.getInputStream(),socket.getOutputStream());
@@ -219,6 +226,11 @@ public class BluetoothConnector {
             e.printStackTrace();
         }
         try {
+            if(command.getResult() != null){
+                Debugger.print("BT", "Tried to read the odo, the bluetooth command returned: " + command.getResult());
+            }else{
+                Debugger.print("BT", "The BT command failed!");
+            }
             return Integer.parseInt(command.getResult());
         }catch (NumberFormatException e){
             return 0;

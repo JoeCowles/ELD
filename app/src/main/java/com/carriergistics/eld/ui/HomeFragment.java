@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
+import com.carriergistics.eld.bluetooth.BlueToothStatus;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.bluetooth.TelematicsData;
 import com.carriergistics.eld.logging.HOSLogger;
@@ -66,6 +67,7 @@ public class HomeFragment extends Fragment {
     private static CustomGauge timeGuage;
     private static ImageView statusBtn;
     private static TextView timeLabel;
+    private static ImageView connectedIcon;
 
     private MapView mMapView;
     private GoogleMap googleMap;
@@ -117,6 +119,8 @@ public class HomeFragment extends Fragment {
         timeDrivenTv = view.findViewById(R.id.timeTv);
         statusBtn = view.findViewById(R.id.homeStatusBtn);
         timeLabel = view.findViewById(R.id.homeTimeLabel);
+        connectedIcon = view.findViewById(R.id.connectedIcon);
+
         boolean perms = checkLocationPermission();
         while (!perms) {
             perms = checkLocationPermission();
@@ -294,6 +298,16 @@ public class HomeFragment extends Fragment {
                     statusBtn.setImageResource(R.drawable.sbbtn);
                 }
             }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
+                        connectedIcon.setImageResource(R.drawable.ic_dvir);
+                    }else{
+                        connectedIcon.setImageResource(0);
+                    }
+                }
+            });
         }
     }
 

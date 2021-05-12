@@ -63,8 +63,10 @@ public class DataConverter {
     }
 
     public static Date removeTime(Date date) throws ParseException {
+        String dateStr = date.toString().substring(0, 11);
+        dateStr += date.toString().substring(date.toString().length() - 4);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy");
-        return sdf.parse(date.toString().substring(0,10) + date.toString().substring(23, 28));
+        return sdf.parse(dateStr);
     }
 
     public static String secsToTime(int secs){

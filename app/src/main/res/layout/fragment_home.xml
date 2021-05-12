@@ -93,5 +93,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/homeTimeGuage" />
 
+    <ImageView
+        android:id="@+id/connectedIcon"
+        android:layout_width="86dp"
+        android:layout_height="74dp"
+        android:src="@drawable/ic_dvir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

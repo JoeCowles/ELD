@@ -106,15 +106,18 @@ public class VehicleFragment extends Fragment {
             TextView dateView = new TextView(getContext());
             TextView tripTypeView = new TextView(getContext());
             TextView safetyView = new TextView(getContext());
+            TextView issues = new TextView(getContext());
 
             dateView.setId(getID());
             tripTypeView.setId(getID());
             safetyView.setId(getID());
             layout.setId(getID());
+            issues.setId(getID());
 
             layout.addView(dateView);
             layout.addView(tripTypeView);
             layout.addView(safetyView);
+            layout.addView(issues);
 
             dateView.setText(dvir.getDate().toString());
             dateView.setTextSize(18f);
@@ -126,13 +129,16 @@ public class VehicleFragment extends Fragment {
             safetyView.setTextSize(30f);
             safetyView.setPadding(0,0,20, 0);
 
+            issues.setTextSize(18);
+            issues.setText("Issues: " + dvir.getIssues().size());
+            issues.setPadding(20,0,0,0);
+
             if(dvir.getSafety() == Dvir.Safety.SAFE){
                 safetyView.setTextColor(Color.GREEN);
             }else if(dvir.getSafety() == Dvir.Safety.UNSAFE){
                 safetyView.setTextColor(Color.RED);
             }
-            //card.setMinimumHeight(150);
-            //layout.setMinimumHeight(150);
+
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -152,6 +158,10 @@ public class VehicleFragment extends Fragment {
 
             set.connect(safetyView.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT);
             set.connect(safetyView.getId(), ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
+            set.applyTo(layout);
+
+            set.connect(issues.getId(), ConstraintSet.LEFT, dateView.getId(), ConstraintSet.RIGHT);
+            set.connect(issues.getId(), ConstraintSet.BOTTOM, layout.getId(), ConstraintSet.BOTTOM);
             set.applyTo(layout);
 
             card.addView(layout);

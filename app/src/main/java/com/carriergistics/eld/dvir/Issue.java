@@ -8,6 +8,10 @@ public class Issue {
     private String remarks;
     private String picturePath;
     private boolean safe;
+    private boolean resolved = false;
+    private String resolverName;
+    private String resolveNotes;
+    private boolean driverSigned;
 
     public String getRemarks() {
         return remarks;
@@ -31,5 +35,37 @@ public class Issue {
 
     public void setSafe(boolean safe) {
         this.safe = safe;
+    }
+
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public String getResolverName() {
+        return resolverName;
+    }
+
+    public void setResolverName(String resolverName) {
+        this.resolverName = resolverName;
+    }
+
+    public String getResolveNotes() {
+        return resolveNotes;
+    }
+
+    public void setResolveNotes(String resolveNotes) {
+        this.resolveNotes = resolveNotes;
+    }
+
+    public boolean isDriverSigned() {
+        return driverSigned;
+    }
+
+    public void setDriverSigned(boolean driverSigned) {
+        this.driverSigned = driverSigned;
     }
 }

@@ -41,15 +41,17 @@ import com.carriergistics.eld.dvir.DvirFragment;
 import com.carriergistics.eld.ui.HomeFragment;
 import com.carriergistics.eld.editlog.LogFragment;
 import com.carriergistics.eld.editlog.LogViewerFragment;
-import com.carriergistics.eld.ui.RoutesFragment;
+import com.carriergistics.eld.mapping.RoutesFragment;
 import com.carriergistics.eld.settings.SettingsFragment;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
 import com.carriergistics.eld.ui.StoppedFragment;
 import com.carriergistics.eld.utils.Data;
 import com.carriergistics.eld.utils.DataConverter;
+import com.carriergistics.eld.utils.Debugger;
 import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,7 +64,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawer;
-    private Toolbar toolbar;
+    public static Toolbar toolbar;
     private NavigationView navDrawer;
     private ActionBarDrawerToggle drawerToggle;
     private static Class currentlyInflated;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         // Set a Toolbar to replace the ActionBar.
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.drawable.ic_dvir);
+        //toolbar.setLogo(R.drawable.ic_dvir);
         // This will display an Up icon (<-),  will replace it with hamburger later
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -115,7 +117,15 @@ public class MainActivity extends AppCompatActivity {
         if(!load()){
 
             setup();
-
+            currentDriver.setDays(new ArrayList<Day>());
+            if(secondaryDriver != null){
+                secondaryDriver.setDays(new ArrayList<Day>());
+            }
+        }
+        try {
+            Debugger.init();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         drivers = new ArrayList<>();
@@ -129,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
+
     }
 
     // Check if there is data to load
@@ -168,9 +179,6 @@ public class MainActivity extends AppCompatActivity {
 
     //  Save all data that needs to be saved
     public static void save(){
-        ArrayList<Driver> drivers = new ArrayList<Driver>();
-        drivers.add(currentDriver);
-        drivers.add(secondaryDriver);
         Data.saveDrivers(drivers);
         Data.saveSettings(settings);
         Data.saveVehicles(vehicles);
@@ -380,7 +388,9 @@ public class MainActivity extends AppCompatActivity {
         updateTime();
         Log.d("DEBUGGING", "TICK---------------");
         if(fragment != null && fragment.getClass() == HomeFragment.class){
-            ((HomeFragment) fragment).update();
+            if(currentDriver != null) {
+                ((HomeFragment) fragment).update();
+            }
         }
         if(BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE){
             Log.d("DEBUGGING", "Device address is " + settings.getDeviceAddress());
@@ -390,7 +400,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(gotDisconnected){
-
                 gotDisconnected = false;
                 // TODO: Disconnected event
                 TelematicsData stopped = new TelematicsData();
@@ -415,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
             if(dayChanged()){
                 Day today = new Day(DataConverter.removeTime(getTime()));
                 currentDriver.getDays().add(today);
+                save();
                 // Remove any days that are 17 days old
                 for(Driver driver : drivers){
                     if(driver == null){
@@ -423,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int index = driver.getDays().size() -1; index >= 0; index--){
                         Day d = driver.getDays().get(index);
                         // If the day is 17 days old, remove it, there is no need to save it
-                        if(d.getDate().before(DataConverter.addHoursToDate(getTime(), (-24 * 17)))){
+                        if(!d.getDate().after(DataConverter.addHoursToDate(getTime(), (-24 * 17)))){
                             driver.getDays().remove(d);
                         }
                     }
@@ -500,10 +510,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        notifyUser("Current driver is " + currentDriver.getStatus().toString());
+        if(currentDriver.getStatus() != null){
+            notifyUser("Current driver is " + currentDriver.getStatus().toString());
+        }
         HOSLogger.save(currentDriver.getStatus());
         save();
-
+        try {
+            Debugger.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // TODO: get time from api

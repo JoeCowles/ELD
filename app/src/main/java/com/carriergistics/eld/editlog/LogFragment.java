@@ -172,7 +172,7 @@ public class LogFragment extends Fragment {
         else{
             setData(HOSLogger.getLog());
         }
-
+        //setData(HOSLogger.getLog());
         return view;
     }
     private void setData(final ArrayList<TimePeriod> eventLog) {
@@ -181,6 +181,7 @@ public class LogFragment extends Fragment {
         Date start = Calendar.getInstance().getTime();
         Date end = MainActivity.getTime();
         for(TimePeriod t : eventLog){
+            Log.d("DEBUGGING", t.getStartTime() + " - " + t.getEndTime() + " " + t.getStatus());
             if(t.getStartTime().before(start)){
                 start = t.getStartTime();
             }else if(t.getEndTime() != null && t.getEndTime().after(end)){

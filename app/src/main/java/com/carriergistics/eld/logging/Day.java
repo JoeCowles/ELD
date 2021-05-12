@@ -74,7 +74,7 @@ public class Day {
                 return false;
             }
             try {
-                timePeriods = HOSLogger.getLog("  " + date.toString().substring(0,10) + ", " + date.toString().substring(24,28));
+                timePeriods = HOSLogger.getLog("  " + date.toString().substring(0,10) + ", " + date.toString().substring(date.toString().length()-4));
             } catch (ParseException e) {
                 return false;
             }

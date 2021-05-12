@@ -2,6 +2,7 @@ package com.carriergistics.eld.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -122,8 +123,8 @@ public class DrawingView extends View {
         }
         return true;
     }
-    public void save(){
-        MainActivity.currentDriver.setSignature(mBitmap);
+    public Bitmap getSignature(){
+        return mBitmap;
     }
     public void clear(){
         mCanvas.drawColor(Color.WHITE);
