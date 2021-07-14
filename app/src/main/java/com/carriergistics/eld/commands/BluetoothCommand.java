@@ -219,6 +219,7 @@ public abstract class BluetoothCommand {
         if(!rawData.contains("!") && rawData.contains("OK")) {
             //TODO: Good acknowedgement
             Debugger.print("BTCMD", "Good acknowledgement!");
+            Log.d("BTCMD", "Good ack!");
             rawData = "";
             readRawData(in);
             return;
@@ -233,7 +234,11 @@ public abstract class BluetoothCommand {
                 }
             }
             Debugger.print("BTCMD","Command "+ cmd + " returned: " + temp);
+            Log.d("BTCMD", "Command " + cmd + " returned: " + rawData);
             rawData = temp;
+        }else{
+            Log.d("DEBUGGING", " ---------------------- Cmd " + cmd + " Unattatched data: " + rawData);
+            Debugger.print("BT", "Unattatched data: " + rawData);
         }
     }
 
