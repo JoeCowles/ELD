@@ -243,62 +243,14 @@ public class HomeFragment extends Fragment {
 
     public void update() {
         Log.d("DEBUGGING", "Update was called");
-        if (MainActivity.getFragment().equals(HomeFragment.class.getName())) {
+        try{
+            timeDrivenTv.setText(HOSLogger.getSpeed());
+        }catch(NullPointerException e){
+            timeDrivenTv.setText("Not connected!");
+        }
 
-            if (MainActivity.currentDriver.getStatus() == Status.DRIVING) {
-                timeLabel.setText("Time till break:");
-                timeDrivenTv.setText(MainActivity.currentDriver.getTimeTillBreak().substring(0,5));
-                // 28800 = 8 hrs
-                timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsTillBreak() / 28800) * 100)));
-            }else if(MainActivity.currentDriver.getStatus() == Status.ON_DUTY){
-                // 1800 = 30 mins
-                // TODO: Constants for these
-                Log.d("DEBUGGING", "Time Left in break: " + MainActivity.currentDriver.getSecsLeftInBreak());
-                if(MainActivity.currentDriver.getSecsLeftInBreak() > 0){
-                    timeLabel.setText("Break:");
-                    timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
-                    timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
-                }else{
-                    timeLabel.setText("Left in shift:");
-                    if(MainActivity.currentDriver.getSecsLeftInShift() > 0){
-                        timeGuage.setValue((int) (((double) MainActivity.currentDriver.getSecsLeftInShift()/50400) * 100));
-                    }else{
-                        timeGuage.setValue(0);
-                    }
-                    timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInShift().substring(0,5));
-                }
 
-            }else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
-                // 1800 = 30 mins
-                timeLabel.setText("Break:");
-                if(MainActivity.currentDriver.getSecsLeftInBreak() <= 0){
-                    timeGuage.setValue(100);
-                }else{
-                    timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
-                }
-                timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
-            }else if(MainActivity.currentDriver.getStatus() == Status.SLEEPING){
-                // 1800 = 30 mins
-                timeLabel.setText("Break:");
-                if(MainActivity.currentDriver.getSecsLeftInBreak() <= 0){
-                    timeGuage.setValue(100);
-                }else{
-                    timeGuage.setValue(((int) (((double) MainActivity.currentDriver.getSecsLeftInBreak()/1800) * 100)));
-                }
-                timeDrivenTv.setText(MainActivity.currentDriver.getTimeLeftInBreak().substring(3,5) + " mins");
-            }
-            if (MainActivity.currentDriver.getStatus() == Status.DRIVING) {
-                statusBtn.setImageResource(R.drawable.drivingbutton);
-            } else if (MainActivity.currentDriver.getStatus() != null) {
-                if(MainActivity.currentDriver.getStatus() == Status.ON_DUTY){
-                    statusBtn.setImageResource(R.drawable.onbutton);
-                }else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
-                    statusBtn.setImageResource(R.drawable.offbutton);
-                }else if(MainActivity.currentDriver.getStatus() == Status.SLEEPING){
-                    statusBtn.setImageResource(R.drawable.sbbtn);
-                }
-            }
-            getActivity().runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
@@ -308,7 +260,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
             });
-        }
+
     }
 
     private boolean checkCameraPerms() {

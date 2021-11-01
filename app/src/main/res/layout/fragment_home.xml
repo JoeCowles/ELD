@@ -90,8 +90,10 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/homeTimeGuage"
         app:layout_constraintEnd_toEndOf="@+id/homeTimeGuage"
+        app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/homeTimeGuage" />
+        app:layout_constraintTop_toTopOf="@+id/homeTimeGuage"
+        app:layout_constraintVertical_bias="0.485" />
 
     <ImageView
         android:id="@+id/connectedIcon"

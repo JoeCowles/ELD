@@ -46,6 +46,8 @@ public class HOSLogger {
     private static int lastSpeed = 0;
     private static int rpmGlitched = 0;
     private static int lastRpm = 0;
+
+    private static int speed;
     // This is called when a driver goes on duty
     public static void init(Driver driver){
         if(driver == null){
@@ -127,6 +129,7 @@ public class HOSLogger {
         
         currentTime = getTime();
         data = _data;
+        speed = data.getSpeed();
 
         if(driverStatus == null){
             driverStatus = new TimePeriod();
@@ -225,7 +228,9 @@ public class HOSLogger {
         currentHOSEvent.setStartTime(currentTime);
 
     }
-
+    public static int getSpeed(){
+        return speed;
+    }
     private static void sendOBDEvent(int code, long lat, long lon){
 
         Log.d("DEBUGGING", "Sending event with code: " + code);
