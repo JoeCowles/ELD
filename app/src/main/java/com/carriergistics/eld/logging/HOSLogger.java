@@ -223,7 +223,7 @@ public class HOSLogger {
         currentHOSEvent.setEndTime(currentTime);
         currentHOSEvent.setType(HOSEventCodes.CHANGE_EVENT_TYPE);
         currentHOSLog.getLog().add(currentHOSEvent);
-        // TODO: Send Event
+        // TODO: Send TelematicsEvent
         currentHOSEvent = new HOSEvent(code);
         currentHOSEvent.setStartTime(currentTime);
 
@@ -237,7 +237,7 @@ public class HOSLogger {
         currentHOSEvent.setEndTime(currentTime);
         currentHOSEvent.setType(HOSEventCodes.CHANGE_EVENT_TYPE);
         currentHOSLog.getLog().add(currentHOSEvent);
-        // TODO: Send Event
+        // TODO: Send TelematicsEvent
         currentHOSEvent = new HOSEvent(code);
         currentHOSEvent.setLat(lat);
         currentHOSEvent.setLong(lon);
@@ -293,19 +293,25 @@ public class HOSLogger {
         if(log != null && log.size() >= 1) {
             for (TimePeriod period : log) {
                 // if the event started within 24hrs ago, then add it
+                // Period is within 24hrs driving
                 if (period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.DRIVING) {
                     secsDrivenToday += period.getDuration();
                     secsInShift += period.getDuration();
+                    // Current period is driving and it is driving
                 } else if (period.getStartTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
                     secsDrivenToday += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
                     secsInShift += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
+                    // If a past period was spent driving that ended within 24 hrs, but started later
                 } else if (period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
                     secsDrivenToday += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
                     secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
+                    // If the period started within 24 hrs and the driver was on duty
                 } else if (period.getStartTime().after(dayAgo) && period.getDuration() > 0 && period.getStatus() == Status.ON_DUTY) {
                     secsInShift += period.getDuration();
+                    // If the period started outside 24 hrs, but ended within 24 hrs
                 } else if (period.getStartTime().after(dayAgo) && period.getStatus() == Status.ON_DUTY) {
                     secsInShift += (currentTime.getTime() - period.getStartTime().getTime()) / 1000;
+                    // If the period ended within 24 hrs, but started before 24 hrs ago
                 } else if (period.getEndTime() != null && period.getEndTime().after(dayAgo) && period.getStatus() == Status.DRIVING) {
                     secsInShift += Math.abs(currentTime.getTime() - dayAgo.getTime()) / 1000;
                 }

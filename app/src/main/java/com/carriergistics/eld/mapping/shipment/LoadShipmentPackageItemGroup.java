@@ -1,6 +1,5 @@
 package com.carriergistics.eld.mapping.shipment;
 
-import java.util.ArrayList;
 
 import main.java.com.carriergistics.eld.mapping.ItemGroup.PackageItemGroup;
 

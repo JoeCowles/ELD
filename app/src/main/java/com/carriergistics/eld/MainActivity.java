@@ -15,9 +15,12 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -58,8 +61,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /************************************************************
-   Copyright 2020 Unboxed Industries
-    Author - Joe Cowles
+ Copyright 2020 Unboxed Industries
+ Author - Joe Cowles
  ************************************************************/
 public class MainActivity extends AppCompatActivity {
 
@@ -109,16 +112,16 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
         mDrawer.addDrawerListener(drawerToggle);
         fragmentManager = getSupportFragmentManager();
-        fragment = HomeFragment.newInstance("","");
+        fragment = HomeFragment.newInstance("", "");
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
         instance = this;
         currentlyInflated = HomeFragment.class;
 
-        if(!load()){
+        if (!load()) {
 
             setup();
             currentDriver.setDays(new ArrayList<Day>());
-            if(secondaryDriver != null){
+            if (secondaryDriver != null) {
                 secondaryDriver.setDays(new ArrayList<Day>());
             }
         }
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         setCurrentDriver(currentDriver);
         startLogging();
         // Setup notifications
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("Carriergistics Notification", "Carriergistics Notification", NotificationManager.IMPORTANCE_HIGH);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
@@ -143,26 +146,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Check if there is data to load
-    private boolean load(){
-        Data.init(getApplicationContext()); 
+    private boolean load() {
+        Data.init(getApplicationContext());
         drivers = Data.loadDrivers();
         settings = Data.loadSettings();
         vehicles = Data.loadVehicles();
 
-        if(settings == null){
+        if (settings == null) {
             settings = new Settings();
         }
-        if(vehicles != null && vehicles.size() >= 1){
-            for(Vehicle v : vehicles){
-                if(v != null){
+        if (vehicles != null && vehicles.size() >= 1) {
+            for (Vehicle v : vehicles) {
+                if (v != null) {
                     currentVehicle = v;
                     break;
                 }
             }
         }
-        if(drivers != null && drivers.size() >= 1){
+        if (drivers != null && drivers.size() >= 1) {
             currentDriver = drivers.get(0);
-            if(drivers.size() >= 2 && drivers.get(1) != null){
+            if (drivers.size() >= 2 && drivers.get(1) != null) {
                 secondaryDriver = drivers.get(1);
             }
             return true;
@@ -172,13 +175,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Open the setup Activity
-    private void setup(){
+    private void setup() {
         Intent intent = new Intent(this, InitActivity.class);
         startActivity(intent);
     }
 
     //  Save all data that needs to be saved
-    public static void save(){
+    public static void save() {
         Data.saveDrivers(drivers);
         Data.saveSettings(settings);
         Data.saveVehicles(vehicles);
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Class fragmentClass;
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.nav_routes:
                 fragmentClass = RoutesFragment.class;
                 break;
@@ -240,9 +243,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle setupDrawerToggle() {
 
-        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
 
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
 
@@ -278,11 +282,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     public void switchToFragment(Class fragmentClass, String paramName, String param) {
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
-            if(fragmentClass == LogFragment.class){
+            if (fragmentClass == LogFragment.class) {
                 fragment = LogFragment.newInstance(param, "");
             }
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -298,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     public void switchToFragment(Class fragmentClass, String paramName, String param, String paramName2, String param2) {
 
         try {
@@ -316,8 +322,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     // Get the current fragment that is inflated
-    public static String getFragment(){
+    public static String getFragment() {
 
         return currentlyInflated.getName();
 
@@ -339,8 +346,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     //TODO: Clean up perms
-    private boolean checkCameraPerms(){
+    private boolean checkCameraPerms() {
 
         if (ContextCompat.checkSelfPermission(this.getBaseContext(),
                 Manifest.permission.CAMERA)
@@ -363,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setCurrentDriver(Driver driver){
+    public void setCurrentDriver(Driver driver) {
 
         if (driver != null && !currentDriver.equals(driver)) {
 
@@ -384,22 +392,22 @@ public class MainActivity extends AppCompatActivity {
     //
     // Method that is runs periodically. Calls everything that needs to be called periodically
     //
-    public static void tick(){
+    public static void tick() {
         updateTime();
         Log.d("DEBUGGING", "TICK---------------");
-        if(fragment != null && fragment.getClass() == HomeFragment.class){
-            if(currentDriver != null) {
+        if (fragment != null && fragment.getClass() == HomeFragment.class) {
+            if (currentDriver != null) {
                 ((HomeFragment) fragment).update();
             }
         }
-        if(BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE){
+        if (BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE) {
             Log.d("DEBUGGING", "Device address is " + settings.getDeviceAddress());
-            if(settings !=  null && !settings.getDeviceAddress().isEmpty()) {
+            if (settings != null && !settings.getDeviceAddress().isEmpty()) {
                 Log.d("DEBUGGING", "Connecting to the device with address: " + settings.getDeviceAddress());
                 connectBt();
             }
 
-            if(gotDisconnected){
+            if (gotDisconnected) {
                 gotDisconnected = false;
                 // TODO: Disconnected event
                 TelematicsData stopped = new TelematicsData();
@@ -411,29 +419,29 @@ public class MainActivity extends AppCompatActivity {
 
             }
             HOSLogger.checkAlerts();
-        }else if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
+        } else if (BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED) {
             HOSLogger.checkAlerts();
             gotDisconnected = true;
-            if(shouldSendBt){
+            if (shouldSendBt) {
                 BluetoothConnector.sendRequests();
                 //Log.d("DEBUGGING", BluetoothConnector.getFuelLevel());
             }
 
         }
         try {
-            if(dayChanged()){
+            if (dayChanged()) {
                 Day today = new Day(DataConverter.removeTime(getTime()));
                 currentDriver.getDays().add(today);
                 save();
                 // Remove any days that are 17 days old
-                for(Driver driver : drivers){
-                    if(driver == null){
+                for (Driver driver : drivers) {
+                    if (driver == null) {
                         break;
                     }
-                    for (int index = driver.getDays().size() -1; index >= 0; index--){
+                    for (int index = driver.getDays().size() - 1; index >= 0; index--) {
                         Day d = driver.getDays().get(index);
                         // If the day is 17 days old, remove it, there is no need to save it
-                        if(!d.getDate().after(DataConverter.addHoursToDate(getTime(), (-24 * 17)))){
+                        if (!d.getDate().after(DataConverter.addHoursToDate(getTime(), (-24 * 17)))) {
                             driver.getDays().remove(d);
                         }
                     }
@@ -456,13 +464,13 @@ public class MainActivity extends AppCompatActivity {
         connector.start();
     }
 
-    public static void startLogging(){
+    public static void startLogging() {
 
         HOSLogger.init(currentDriver);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
+                while (true) {
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
@@ -476,33 +484,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static Settings loadSettings(){
+    public static Settings loadSettings() {
 
         settings = Data.loadSettings();
         return settings;
 
     }
 
-    public static void saveSettings(Settings _settings){
+    public static void saveSettings(Settings _settings) {
 
         settings = _settings;
         Data.saveSettings(settings);
 
     }
 
-    public static void sendBt(){
+    public static void sendBt() {
 
         shouldSendBt = true;
 
     }
 
-    public static void dontSendBt(){
+    public static void dontSendBt() {
 
         shouldSendBt = false;
 
     }
 
-    public static void stoppedDriving(){
+    public static void stoppedDriving() {
         MainActivity.instance.checkCameraPerms();
         MainActivity.instance.switchToFragment(StoppedFragment.class);
     }
@@ -510,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(currentDriver.getStatus() != null){
+        if (currentDriver.getStatus() != null) {
             notifyUser("Current driver is " + currentDriver.getStatus().toString());
         }
         HOSLogger.save(currentDriver.getStatus());
@@ -523,47 +531,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // TODO: get time from api
-    public static Date getTime(){
+    public static Date getTime() {
         return currentTime;
     }
 
-    private static void updateTime(){
+    private static void updateTime() {
         currentTime = Calendar.getInstance().getTime();
     }
+
     public static boolean dayChanged() throws ParseException {
-        if(currentDriver.getDays() == null || currentDriver.getDays().size() <= 0){
+        if (currentDriver.getDays() == null || currentDriver.getDays().size() <= 0) {
             return true;
-        }else{
+        } else {
             // Get the last date logged
             Date date = currentDriver.getDays().get(currentDriver.getDays().size() - 1).getDate();
-            if(DataConverter.sameDayNoTime(date, getTime())){
+            if (DataConverter.sameDayNoTime(date, getTime())) {
                 return false;
-            }else{
+            } else {
                 return true;
             }
         }
     }
+
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Class switchTo = null;
-        if(fragment.getClass() == VehicleFragment.class){
+        if (fragment.getClass() == VehicleFragment.class) {
             switchTo = DvirFragment.class;
-        }else if(fragment.getClass() == AddVehicleFragment.class){
+        } else if (fragment.getClass() == AddVehicleFragment.class) {
             switchTo = DvirFragment.class;
-        }else if(fragment.getClass() == LogFragment.class){
+        } else if (fragment.getClass() == LogFragment.class) {
             switchTo = LogViewerFragment.class;
-        }else if(fragment.getClass() == CreateDvirFragment.class){
+        } else if (fragment.getClass() == CreateDvirFragment.class) {
             switchTo = VehicleFragment.class;
-        }else if(fragment.getClass() == EditDvirFragment.class) {
+        } else if (fragment.getClass() == EditDvirFragment.class) {
             switchTo = VehicleFragment.class;
-        }else {
+        } else {
             switchTo = HomeFragment.class;
         }
         switchToFragment(switchTo);
     }
-    private void notifyUser(String msg){
+
+    private void notifyUser(String msg) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Carriergistics Notification")
                 .setSmallIcon(R.mipmap.logosmall)
                 .setContentTitle("Carriergistics")
@@ -573,12 +583,22 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MainActivity.this);
         managerCompat.notify(1, builder.build());
     }
-    public static Vehicle getVehicleFromVin(String vin){
-        for(Vehicle v : vehicles){
-            if(v.getVin().equalsIgnoreCase(vin)){
+
+    public static Vehicle getVehicleFromVin(String vin) {
+        for (Vehicle v : vehicles) {
+            if (v.getVin().equalsIgnoreCase(vin)) {
                 return v;
             }
         }
         return null;
+    }
+
+    public Location getLocation() {
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        return location;
     }
 }

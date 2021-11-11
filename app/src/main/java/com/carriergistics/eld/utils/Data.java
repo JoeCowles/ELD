@@ -11,7 +11,11 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
+/*
 
+    Data saved in the app
+
+ */
 public class Data {
     static Gson gson;
     static Context context;

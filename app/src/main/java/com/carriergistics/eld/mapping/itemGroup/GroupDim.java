@@ -1,4 +1,4 @@
-package main.java.com.carriergistics.eld.mapping.itemGroup;
+package com.carriergistics.eld.mapping.itemGroup;
 
 public class GroupDim extends PackageAttribute{
 

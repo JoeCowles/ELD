@@ -1,4 +1,4 @@
-package main.java.com.carriergistics.eld.mapping.shipment;
+package com.carriergistics.eld.mapping.shipment;
 
 public class LoadShipmentPackageItemGroupDimension extends GroupDim{
     

@@ -10,7 +10,7 @@ public class HOSEventCodes {
     public static final int ENGINE_STATE_TYPE = 6;
     public static final int MALFUNCTION_TYPE = 7;
 
-    // ------------------ Event codes --------------------------
+    // ------------------ TelematicsEvent codes --------------------------
 
     // Change event
     public static final int OFF_DUTY = 1;
