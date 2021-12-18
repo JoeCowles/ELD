@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -38,6 +39,8 @@ import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.Driver;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
+import com.carriergistics.eld.mapping.MappingXMLParser;
+import com.carriergistics.eld.mapping.load.Load;
 import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.dvir.DvirFragment;
@@ -54,7 +57,12 @@ import com.carriergistics.eld.utils.Debugger;
 import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,13 +92,13 @@ public class MainActivity extends AppCompatActivity {
     private static Date currentTime;
     private static Fragment fragment = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         updateTime();
+
         // Has been changed to request all perms
         checkPermission(Manifest.permission.BLUETOOTH, 100);
         checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
@@ -136,6 +144,17 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
         startLogging();
+
+        // Test code
+        try {
+
+            Load load = MappingXMLParser.deserialize(R.raw.test_route);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         // Setup notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("Carriergistics Notification", "Carriergistics Notification", NotificationManager.IMPORTANCE_HIGH);

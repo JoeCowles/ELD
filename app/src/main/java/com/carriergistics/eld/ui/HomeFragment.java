@@ -244,7 +244,9 @@ public class HomeFragment extends Fragment {
     public void update() {
         Log.d("DEBUGGING", "Update was called");
         try{
-            timeDrivenTv.setText(HOSLogger.getSpeed());
+            if(HOSLogger.getSpeed() != 0){
+                timeDrivenTv.setText(HOSLogger.getSpeed() + "");
+            }
         }catch(NullPointerException e){
             timeDrivenTv.setText("Not connected!");
         }

@@ -1,0 +1,1188 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<load>
+  <id>2</id>
+  <billTo>
+    <id>10</id>
+    <type>Bill To</type>
+    <locationCode>LOC49</locationCode>
+    <name>Lear</name>
+    <line1>21557 Telegraph Rd</line1>
+    <line2 />
+    <city>Southfield</city>
+    <state>MI</state>
+    <postalCode>48033</postalCode>
+    <countryCode>US</countryCode>
+  </billTo>
+  <attributes>
+    <attribute>
+      <id>34</id>
+      <isPrimary>1</isPrimary>
+      <name>Load ID</name>
+      <value>LD246</value>
+    </attribute>
+    <attribute>
+      <id>35</id>
+      <isPrimary>0</isPrimary>
+      <name>Shipment ID</name>
+      <value>SN246</value>
+    </attribute>
+    <attribute>
+      <id>36</id>
+      <isPrimary>0</isPrimary>
+      <name>PRO</name>
+      <value>LD246</value>
+    </attribute>
+    <attribute>
+      <id>37</id>
+      <isPrimary>0</isPrimary>
+      <name>Cross Border</name>
+      <value>true</value>
+    </attribute>
+    <attribute>
+      <id>38</id>
+      <isPrimary>0</isPrimary>
+      <name>RateFriend Spot Index</name>
+      <value>rate:4.21,fuel:0.28,timePeriod:2021-10,mode:Per Mile</value>
+    </attribute>
+    <attribute>
+      <id>39</id>
+      <isPrimary>0</isPrimary>
+      <name>RateFriend Contract Index</name>
+      <value>rate:2.88,fuel:0.28,timePeriod:2021-10,mode:Per Mile</value>
+    </attribute>
+    <attribute>
+      <id>40</id>
+      <isPrimary>0</isPrimary>
+      <name>SCAC</name>
+      <value>FLOG</value>
+    </attribute>
+    <attribute>
+      <id>41</id>
+      <isPrimary>0</isPrimary>
+      <name>Driver Name</name>
+      <value>William Robert</value>
+    </attribute>
+    <attribute>
+      <id>42</id>
+      <isPrimary>0</isPrimary>
+      <name>Tractor Number</name>
+      <value>F1000F</value>
+    </attribute>
+    <attribute>
+      <id>43</id>
+      <isPrimary>0</isPrimary>
+      <name>Trailer Number</name>
+      <value>F1005F</value>
+    </attribute>
+    <attribute>
+      <id>44</id>
+      <isPrimary>0</isPrimary>
+      <name>Dispatch User</name>
+      <value>Mike Robak</value>
+    </attribute>
+  </attributes>
+  <loadPackages>
+    <loadPackage>
+      <id>2</id>
+      <loadPackageDimensions>
+        <loadPackageDimension>
+          <id>4</id>
+          <type />
+          <dim>Width</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+        <loadPackageDimension>
+          <id>5</id>
+          <type />
+          <dim>Length</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+        <loadPackageDimension>
+          <id>6</id>
+          <type />
+          <dim>Height</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+      </loadPackageDimensions>
+      <loadPackageWeights>
+        <loadPackageWeight>
+          <id>5</id>
+          <type>actual</type>
+          <weight>20000.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>6</id>
+          <type>planned</type>
+          <weight>20000.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>7</id>
+          <type>ordered</type>
+          <weight>0.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>8</id>
+          <type>delivered</type>
+          <weight>0.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+      </loadPackageWeights>
+      <loadPackageItemGroups>
+        <loadPackageItemGroup>
+          <id>2</id>
+          <description>Test Item</description>
+          <loadPackageItemGroupDimensions>
+            <loadPackageItemGroupDimension>
+              <id>7</id>
+              <type>actual</type>
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>9</id>
+              <type>actual</type>
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>11</id>
+              <type>actual</type>
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>13</id>
+              <type>planned</type>
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>15</id>
+              <type>planned</type>
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>17</id>
+              <type>planned</type>
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>19</id>
+              <type>actual</type>
+              <dim>Width</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>21</id>
+              <type>actual</type>
+              <dim>Length</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>23</id>
+              <type>actual</type>
+              <dim>Height</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>25</id>
+              <type>planned</type>
+              <dim>Width</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>27</id>
+              <type>planned</type>
+              <dim>Length</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>29</id>
+              <type>planned</type>
+              <dim>Height</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+          </loadPackageItemGroupDimensions>
+          <loadPackageItemGroupQuantities>
+            <loadPackageItemGroupQuantity>
+              <id>5</id>
+              <type>actual</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>7</id>
+              <type>planned</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>9</id>
+              <type>ordered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>11</id>
+              <type>delivered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>13</id>
+              <type>actual</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>15</id>
+              <type>planned</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>17</id>
+              <type>ordered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>19</id>
+              <type>delivered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+          </loadPackageItemGroupQuantities>
+          <loadPackageItemGroupWeights>
+            <loadPackageItemGroupWeight>
+              <id>5</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>7</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>9</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>11</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>13</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>15</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>17</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>19</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+          </loadPackageItemGroupWeights>
+          <loadPackageItemGroupLineItems>
+            <loadPackageItemGroupLineItem>
+              <id>2</id>
+              <itemId>123456</itemId>
+              <description>Test Item</description>
+              <freightClass>85.0</freightClass>
+              <nmfcCode />
+              <stccCode />
+              <customerPartNum />
+              <manufacturePartNum />
+              <distributorPartNum />
+              <hazardousMaterial>0</hazardousMaterial>
+            </loadPackageItemGroupLineItem>
+            <loadPackageItemGroupLineItem>
+              <id>4</id>
+              <itemId>654321</itemId>
+              <description>Test Item 2</description>
+              <freightClass>65.0</freightClass>
+              <nmfcCode />
+              <stccCode />
+              <customerPartNum />
+              <manufacturePartNum />
+              <distributorPartNum />
+              <hazardousMaterial>0</hazardousMaterial>
+            </loadPackageItemGroupLineItem>
+          </loadPackageItemGroupLineItems>
+        </loadPackageItemGroup>
+      </loadPackageItemGroups>
+    </loadPackage>
+    <loadPackage>
+      <id>3</id>
+      <loadPackageDimensions>
+        <loadPackageDimension>
+          <id>7</id>
+          <type />
+          <dim>Width</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+        <loadPackageDimension>
+          <id>8</id>
+          <type />
+          <dim>Length</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+        <loadPackageDimension>
+          <id>9</id>
+          <type />
+          <dim>Height</dim>
+          <dimension>0.0</dimension>
+          <uom> </uom>
+        </loadPackageDimension>
+      </loadPackageDimensions>
+      <loadPackageWeights>
+        <loadPackageWeight>
+          <id>9</id>
+          <type>actual</type>
+          <weight>20000.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>10</id>
+          <type>planned</type>
+          <weight>20000.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>11</id>
+          <type>ordered</type>
+          <weight>0.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+        <loadPackageWeight>
+          <id>12</id>
+          <type>delivered</type>
+          <weight>0.0</weight>
+          <uom>lb</uom>
+        </loadPackageWeight>
+      </loadPackageWeights>
+      <loadPackageItemGroups>
+        <loadPackageItemGroup>
+          <id>3</id>
+          <description>Test Item 2</description>
+          <loadPackageItemGroupDimensions>
+            <loadPackageItemGroupDimension>
+              <id>8</id>
+              <type>actual</type>
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>10</id>
+              <type>actual</type>
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>12</id>
+              <type>actual</type>
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>14</id>
+              <type>planned</type>
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>16</id>
+              <type>planned</type>
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>18</id>
+              <type>planned</type>
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>20</id>
+              <type>actual</type>
+              <dim>Width</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>22</id>
+              <type>actual</type>
+              <dim>Length</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>24</id>
+              <type>actual</type>
+              <dim>Height</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>26</id>
+              <type>planned</type>
+              <dim>Width</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>28</id>
+              <type>planned</type>
+              <dim>Length</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+            <loadPackageItemGroupDimension>
+              <id>30</id>
+              <type>planned</type>
+              <dim>Height</dim>
+              <dimension>15.0</dimension>
+              <uom>in</uom>
+            </loadPackageItemGroupDimension>
+          </loadPackageItemGroupDimensions>
+          <loadPackageItemGroupQuantities>
+            <loadPackageItemGroupQuantity>
+              <id>6</id>
+              <type>actual</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>8</id>
+              <type>planned</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>10</id>
+              <type>ordered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>12</id>
+              <type>delivered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>14</id>
+              <type>actual</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>16</id>
+              <type>planned</type>
+              <quantity>20.0</quantity>
+              <uom>PLT</uom>
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>18</id>
+              <type>ordered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+            <loadPackageItemGroupQuantity>
+              <id>20</id>
+              <type>delivered</type>
+              <quantity>0.0</quantity>
+              <uom />
+            </loadPackageItemGroupQuantity>
+          </loadPackageItemGroupQuantities>
+          <loadPackageItemGroupWeights>
+            <loadPackageItemGroupWeight>
+              <id>6</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>8</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>10</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>12</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>14</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>16</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>18</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+            <loadPackageItemGroupWeight>
+              <id>20</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadPackageItemGroupWeight>
+          </loadPackageItemGroupWeights>
+          <loadPackageItemGroupLineItems>
+            <loadPackageItemGroupLineItem>
+              <id>3</id>
+              <itemId>123456</itemId>
+              <description>Test Item</description>
+              <freightClass>85.0</freightClass>
+              <nmfcCode />
+              <stccCode />
+              <customerPartNum />
+              <manufacturePartNum />
+              <distributorPartNum />
+              <hazardousMaterial>0</hazardousMaterial>
+            </loadPackageItemGroupLineItem>
+            <loadPackageItemGroupLineItem>
+              <id>5</id>
+              <itemId>654321</itemId>
+              <description>Test Item 2</description>
+              <freightClass>65.0</freightClass>
+              <nmfcCode />
+              <stccCode />
+              <customerPartNum />
+              <manufacturePartNum />
+              <distributorPartNum />
+              <hazardousMaterial>0</hazardousMaterial>
+            </loadPackageItemGroupLineItem>
+          </loadPackageItemGroupLineItems>
+        </loadPackageItemGroup>
+      </loadPackageItemGroups>
+    </loadPackage>
+  </loadPackages>
+  <loadEvents>
+    <loadEvent>
+      <id>3</id>
+      <sequenceNumber>1</sequenceNumber>
+      <type>Pickup</type>
+      <addressId>11</addressId>
+      <earliest>2021-03-05T08:00:00</earliest>
+      <latest>2021-03-05T08:00:00</latest>
+      <planned>2021-03-05T08:00:00</planned>
+      <actual>2021-03-05T09:36:00</actual>
+      <appointment>2021-03-05T08:00:00</appointment>
+      <appointmentEarly>2021-03-05T08:00:00</appointmentEarly>
+      <appointmentLate>2021-03-05T08:00:00</appointmentLate>
+      <appointmentType />
+      <lateReason>Accident</lateReason>
+      <weightType>firstAvail</weightType>
+      <weight>40000.0</weight>
+      <weightUom>lb</weightUom>
+      <loadEventAttributes>
+        <loadEventAttribute>
+          <id>50</id>
+          <isPrimary>1</isPrimary>
+          <name>Shipment ID</name>
+          <value>SN246</value>
+        </loadEventAttribute>
+      </loadEventAttributes>
+    </loadEvent>
+    <loadEvent>
+      <id>4</id>
+      <sequenceNumber>2</sequenceNumber>
+      <type>Drop</type>
+      <addressId>12</addressId>
+      <earliest>2021-03-09T17:00:00</earliest>
+      <latest>2021-03-09T17:00:00</latest>
+      <planned>2021-03-09T17:00:00</planned>
+      <actual>2021-03-05T09:37:00</actual>
+      <appointment>2021-03-09T17:00:00</appointment>
+      <appointmentEarly>2021-03-09T17:00:00</appointmentEarly>
+      <appointmentLate>2021-03-09T17:00:00</appointmentLate>
+      <appointmentType />
+      <lateReason />
+      <weightType>firstAvail</weightType>
+      <weight>40000.0</weight>
+      <weightUom>lb</weightUom>
+      <loadEventAttributes>
+        <loadEventAttribute>
+          <id>51</id>
+          <isPrimary>1</isPrimary>
+          <name>Shipment ID</name>
+          <value>SN246</value>
+        </loadEventAttribute>
+      </loadEventAttributes>
+    </loadEvent>
+  </loadEvents>
+  <loadShipments>
+    <loadShipment>
+      <id>2</id>
+      <consigneeAddress>
+        <id>14</id>
+        <type>ShipTo/From</type>
+        <locationCode>LOC30</locationCode>
+        <name>Lear Ajax</name>
+        <line1>660 Monarch Ave</line1>
+        <line2 />
+        <city>Ajax</city>
+        <state>ON</state>
+        <postalCode>L1S 2G9</postalCode>
+        <countryCode>CA</countryCode>
+      </consigneeAddress>
+      <shipperAddress>
+        <id>13</id>
+        <type>ShipTo/From</type>
+        <locationCode>LOC29</locationCode>
+        <name>3LC - Detroit (Universal Linc)</name>
+        <line1>29129 Ecorse Rd</line1>
+        <line2 />
+        <city>Romulus</city>
+        <state>MI</state>
+        <postalCode>48174</postalCode>
+        <countryCode>US</countryCode>
+      </shipperAddress>
+      <actualWeight>40000.0</actualWeight>
+      <actualWeightUom>lb</actualWeightUom>
+      <deliveryWeight>0.0</deliveryWeight>
+      <deliveryWeightUom>lb</deliveryWeightUom>
+      <dropActual>2021-03-05T09:37:00</dropActual>
+      <dropEarliest>2021-03-09T17:00:00</dropEarliest>
+      <dropLatest>2021-03-09T17:00:00</dropLatest>
+      <linearFeet>0.0</linearFeet>
+      <linearFeetUom>ft</linearFeetUom>
+      <orderedWeight>0.0</orderedWeight>
+      <orderedWeightUom>lb</orderedWeightUom>
+      <owner>Carriergistics ezVision Admin</owner>
+      <pickupActual>2021-03-05T09:36:00</pickupActual>
+      <pickupEarliest>2021-03-05T08:00:00</pickupEarliest>
+      <pickupLatest>2021-03-05T08:00:00</pickupLatest>
+      <plannedWeight>40000.0</plannedWeight>
+      <plannedWeightUom>lb</plannedWeightUom>
+      <quantityType>package</quantityType>
+      <quantity>40.0</quantity>
+      <quantityUom>PLT</quantityUom>
+      <ratingCount>0.0</ratingCount>
+      <ratingCountUom>ct</ratingCountUom>
+      <specialInstructions />
+      <status>Delivered</status>
+      <loadShipmentAttributes>
+        <loadEventAttribute>
+          <id>52</id>
+          <isPrimary>1</isPrimary>
+          <name>Shipment ID</name>
+          <value>SN246</value>
+        </loadEventAttribute>
+        <loadEventAttribute>
+          <id>53</id>
+          <isPrimary>0</isPrimary>
+          <name>Shipping Order</name>
+          <value>SO246</value>
+        </loadEventAttribute>
+        <loadEventAttribute>
+          <id>54</id>
+          <isPrimary>0</isPrimary>
+          <name>Cross Border</name>
+          <value>true</value>
+        </loadEventAttribute>
+        <loadEventAttribute>
+          <id>55</id>
+          <isPrimary>0</isPrimary>
+          <name>Load ID</name>
+          <value>LD246</value>
+        </loadEventAttribute>
+        <loadEventAttribute>
+          <id>56</id>
+          <isPrimary>0</isPrimary>
+          <name>PRO</name>
+          <value>LD246</value>
+        </loadEventAttribute>
+        <loadEventAttribute>
+          <id>57</id>
+          <isPrimary>0</isPrimary>
+          <name>Customer Acct Number</name>
+          <value>CarezVAdm</value>
+        </loadEventAttribute>
+      </loadShipmentAttributes>
+      <loadShipmentPackages>
+        <loadShipmentPackage>
+          <id>2</id>
+          <loadShipmentId>2</loadShipmentId>
+          <loadShipmentPackageDimensions>
+            <loadShipmentPackageDimension>
+              <id>4</id>
+              <type />
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+            <loadShipmentPackageDimension>
+              <id>5</id>
+              <type />
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+            <loadShipmentPackageDimension>
+              <id>6</id>
+              <type />
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+          </loadShipmentPackageDimensions>
+          <loadShipmentPackageWeights>
+            <loadShipmentPackageWeight>
+              <id>5</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>6</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>7</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>8</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+          </loadShipmentPackageWeights>
+          <loadShipmentPackageItemGroups>
+            <loadShipmentPackageItemGroup>
+              <id>2</id>
+              <description>Test Item</description>
+              <loadShipmentPackageItemGroupDimensions>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>7</id>
+                  <type>actual</type>
+                  <dim>Width</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>8</id>
+                  <type>actual</type>
+                  <dim>Length</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>9</id>
+                  <type>actual</type>
+                  <dim>Height</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>10</id>
+                  <type>planned</type>
+                  <dim>Width</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>11</id>
+                  <type>planned</type>
+                  <dim>Length</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>12</id>
+                  <type>planned</type>
+                  <dim>Height</dim>
+                  <dimension>0.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+              </loadShipmentPackageItemGroupDimensions>
+              <loadShipmentPackageItemGroupQuantities>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>5</id>
+                  <type>actual</type>
+                  <quantity>20.0</quantity>
+                  <uom>PLT</uom>
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>6</id>
+                  <type>planned</type>
+                  <quantity>20.0</quantity>
+                  <uom>PLT</uom>
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>7</id>
+                  <type>ordered</type>
+                  <quantity>0.0</quantity>
+                  <uom />
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>8</id>
+                  <type>delivered</type>
+                  <quantity>0.0</quantity>
+                  <uom />
+                </loadShipmentPackageItemGroupQuantity>
+              </loadShipmentPackageItemGroupQuantities>
+              <loadShipmentPackageItemGroupWeights>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>5</id>
+                  <type>actual</type>
+                  <weight>20000.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>6</id>
+                  <type>planned</type>
+                  <weight>20000.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>7</id>
+                  <type>ordered</type>
+                  <weight>0.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>8</id>
+                  <type>delivered</type>
+                  <weight>0.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+              </loadShipmentPackageItemGroupWeights>
+              <loadShipmentPackageItemGroupLineItems>
+                <loadShipmentPackageItemGroupLineItem>
+                  <id>2</id>
+                  <itemId>123456</itemId>
+                  <description>Test Item</description>
+                  <freightClass>85.0</freightClass>
+                  <nmfcCode />
+                  <stccCode />
+                  <customerPartNum />
+                  <manufacturePartNum />
+                  <distributorPartNum />
+                  <hazardousMaterial>0</hazardousMaterial>
+                </loadShipmentPackageItemGroupLineItem>
+              </loadShipmentPackageItemGroupLineItems>
+            </loadShipmentPackageItemGroup>
+          </loadShipmentPackageItemGroups>
+        </loadShipmentPackage>
+        <loadShipmentPackage>
+          <id>3</id>
+          <loadShipmentId>2</loadShipmentId>
+          <loadShipmentPackageDimensions>
+            <loadShipmentPackageDimension>
+              <id>7</id>
+              <type />
+              <dim>Width</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+            <loadShipmentPackageDimension>
+              <id>8</id>
+              <type />
+              <dim>Length</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+            <loadShipmentPackageDimension>
+              <id>9</id>
+              <type />
+              <dim>Height</dim>
+              <dimension>0.0</dimension>
+              <uom> </uom>
+            </loadShipmentPackageDimension>
+          </loadShipmentPackageDimensions>
+          <loadShipmentPackageWeights>
+            <loadShipmentPackageWeight>
+              <id>9</id>
+              <type>actual</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>10</id>
+              <type>planned</type>
+              <weight>20000.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>11</id>
+              <type>ordered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+            <loadShipmentPackageWeight>
+              <id>12</id>
+              <type>delivered</type>
+              <weight>0.0</weight>
+              <uom>lb</uom>
+            </loadShipmentPackageWeight>
+          </loadShipmentPackageWeights>
+          <loadShipmentPackageItemGroups>
+            <loadShipmentPackageItemGroup>
+              <id>3</id>
+              <description>Test Item 2</description>
+              <loadShipmentPackageItemGroupDimensions>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>13</id>
+                  <type>actual</type>
+                  <dim>Width</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>14</id>
+                  <type>actual</type>
+                  <dim>Length</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>15</id>
+                  <type>actual</type>
+                  <dim>Height</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>16</id>
+                  <type>planned</type>
+                  <dim>Width</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>17</id>
+                  <type>planned</type>
+                  <dim>Length</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+                <loadShipmentPackageItemGroupDimension>
+                  <id>18</id>
+                  <type>planned</type>
+                  <dim>Height</dim>
+                  <dimension>15.0</dimension>
+                  <uom>in</uom>
+                </loadShipmentPackageItemGroupDimension>
+              </loadShipmentPackageItemGroupDimensions>
+              <loadShipmentPackageItemGroupQuantities>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>9</id>
+                  <type>actual</type>
+                  <quantity>20.0</quantity>
+                  <uom>PLT</uom>
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>10</id>
+                  <type>planned</type>
+                  <quantity>20.0</quantity>
+                  <uom>PLT</uom>
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>11</id>
+                  <type>ordered</type>
+                  <quantity>0.0</quantity>
+                  <uom />
+                </loadShipmentPackageItemGroupQuantity>
+                <loadShipmentPackageItemGroupQuantity>
+                  <id>12</id>
+                  <type>delivered</type>
+                  <quantity>0.0</quantity>
+                  <uom />
+                </loadShipmentPackageItemGroupQuantity>
+              </loadShipmentPackageItemGroupQuantities>
+              <loadShipmentPackageItemGroupWeights>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>9</id>
+                  <type>actual</type>
+                  <weight>20000.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>10</id>
+                  <type>planned</type>
+                  <weight>20000.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>11</id>
+                  <type>ordered</type>
+                  <weight>0.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+                <loadShipmentPackageItemGroupWeight>
+                  <id>12</id>
+                  <type>delivered</type>
+                  <weight>0.0</weight>
+                  <uom>lb</uom>
+                </loadShipmentPackageItemGroupWeight>
+              </loadShipmentPackageItemGroupWeights>
+              <loadShipmentPackageItemGroupLineItems>
+                <loadShipmentPackageItemGroupLineItem>
+                  <id>3</id>
+                  <itemId>654321</itemId>
+                  <description>Test Item 2</description>
+                  <freightClass>65.0</freightClass>
+                  <nmfcCode />
+                  <stccCode />
+                  <customerPartNum />
+                  <manufacturePartNum />
+                  <distributorPartNum />
+                  <hazardousMaterial>0</hazardousMaterial>
+                </loadShipmentPackageItemGroupLineItem>
+              </loadShipmentPackageItemGroupLineItems>
+            </loadShipmentPackageItemGroup>
+          </loadShipmentPackageItemGroups>
+        </loadShipmentPackage>
+      </loadShipmentPackages>
+    </loadShipment>
+  </loadShipments>
+  <loadPricesheets>
+    <loadPriceSheet>
+      <id>4</id>
+      <type>Charge</type>
+      <isSelected>1</isSelected>
+      <accessorialTotal>0.00</accessorialTotal>
+      <subTotal>438.62</subTotal>
+      <total>438.62</total>
+      <normalizedTotal>438.62</normalizedTotal>
+      <loadPricesheetCharges>
+        <loadPriceSheetCharge>
+          <id>7</id>
+          <sequenceNumber>1</sequenceNumber>
+          <description>total weight and volume based</description>
+          <ediCode />
+          <amount>438.62</amount>
+          <rate>1.49</rate>
+          <rateQualifier>PM</rateQualifier>
+          <quantity>294.3725</quantity>
+          <weight>40000.0</weight>
+          <dimWeight>0.0</dimWeight>
+          <freightClass>85.0</freightClass>
+        </loadPriceSheetCharge>
+        <loadPriceSheetCharge>
+          <id>9</id>
+          <sequenceNumber>1</sequenceNumber>
+          <description>total weight and volume based</description>
+          <ediCode />
+          <amount>438.62</amount>
+          <rate>1.49</rate>
+          <rateQualifier>PM</rateQualifier>
+          <quantity>294.3725</quantity>
+          <weight>40000.0</weight>
+          <dimWeight>0.0</dimWeight>
+          <freightClass>85.0</freightClass>
+        </loadPriceSheetCharge>
+      </loadPricesheetCharges>
+    </loadPriceSheet>
+    <loadPriceSheet>
+      <id>5</id>
+      <type>Billed</type>
+      <isSelected>0</isSelected>
+      <accessorialTotal>0.00</accessorialTotal>
+      <subTotal>438.62</subTotal>
+      <total>438.62</total>
+      <normalizedTotal>438.62</normalizedTotal>
+      <loadPricesheetCharges>
+        <loadPriceSheetCharge>
+          <id>8</id>
+          <sequenceNumber>1</sequenceNumber>
+          <description>total weight and volume based</description>
+          <ediCode />
+          <amount>438.62</amount>
+          <rate>1.49</rate>
+          <rateQualifier>PM</rateQualifier>
+          <quantity>294.3725</quantity>
+          <weight>40000.0</weight>
+          <dimWeight>0.0</dimWeight>
+          <freightClass>85.0</freightClass>
+        </loadPriceSheetCharge>
+        <loadPriceSheetCharge>
+          <id>10</id>
+          <sequenceNumber>1</sequenceNumber>
+          <description>total weight and volume based</description>
+          <ediCode />
+          <amount>438.62</amount>
+          <rate>1.49</rate>
+          <rateQualifier>PM</rateQualifier>
+          <quantity>294.3725</quantity>
+          <weight>40000.0</weight>
+          <dimWeight>0.0</dimWeight>
+          <freightClass>85.0</freightClass>
+        </loadPriceSheetCharge>
+      </loadPricesheetCharges>
+    </loadPriceSheet>
+  </loadPricesheets>
+</load>

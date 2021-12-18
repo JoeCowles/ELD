@@ -23,6 +23,10 @@ android {
     repositories{
         maven { url 'https://jitpack.io' }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -47,4 +51,9 @@ dependencies {
     implementation 'com.github.pires:obd-java-api:1.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.jd-alexander:library:1.1.0'
+    implementation('org.simpleframework:simple-xml:2.7.1') {
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+
 }
