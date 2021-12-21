@@ -1,5 +1,6 @@
 package com.carriergistics.eld.mapping.load;
 
+import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -13,20 +14,29 @@ public class LineItem {
     String description;
     @Element
     double freightClass;
-    @Element
+    @Element(required = false)
     String nmfcCode;
-    @Element
+    @Element(required = false)
     String stccCode;
-    @Element
+    @Element(required = false)
     String customerPartNum;
-    @Element
+    @Element(required = false)
     String manufacturePartNum;
-    @Element
-    String distibutorPartNum;
+    @Element(required = false)
+    String distributorPartNum;
     @Element
     int hazardousMaterial;
 
-    public LineItem(@Element(name = "id")int id, @Element(name = "itemId") int itemId, @Element(name = "description") String description, @Element(name = "freightClass") double freightClass, @Element(name = "nmfcCode") String nmfcCode, @Element(name = "stccCode") String stccCode, @Element(name = "customerPartNum") String customerPartNum, @Element(name = "manufacturePartNum") String manufacturePartNum, @Element(name = "distributorPartNum") String distributorPartNum, @Element(name = "hazardousMaterial") int hazardousMaterial) {
+    public LineItem(@Element(name="id")int id,
+                    @Element(name="itemId")int itemId,
+                    @Element(name="description")String description,
+                    @Element(name="freightClass")double freightClass,
+                    @Element(name="nmfcCode")String nmfcCode,
+                    @Element(name="stccCode")String stccCode,
+                    @Element(name="customerPartNum")String customerPartNum,
+                    @Element(name="manufacturePartNum")String manufacturePartNum,
+                    @Element(name="distributorPartNum")String distributorPartNum,
+                    @Element(name="hazardousPartNum")int hazardousMaterial) {
         this.id = id;
         this.itemId = itemId;
         this.description = description;
@@ -35,7 +45,7 @@ public class LineItem {
         this.stccCode = stccCode;
         this.customerPartNum = customerPartNum;
         this.manufacturePartNum = manufacturePartNum;
-        this.distibutorPartNum = distributorPartNum;
+        this.distributorPartNum = distributorPartNum;
         this.hazardousMaterial = hazardousMaterial;
     }
 
@@ -104,11 +114,11 @@ public class LineItem {
     }
 
     public String getDistibutorPartNum() {
-        return distibutorPartNum;
+        return distributorPartNum;
     }
 
     public void setDistibutorPartNum(String distibutorPartNum) {
-        this.distibutorPartNum = distibutorPartNum;
+        this.distributorPartNum = distibutorPartNum;
     }
 
     public int getHazardousMaterial() {

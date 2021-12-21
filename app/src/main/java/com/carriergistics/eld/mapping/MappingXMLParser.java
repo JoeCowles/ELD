@@ -24,13 +24,13 @@ public class MappingXMLParser {
     public static Load deserialize(int resID) throws Exception {
 
         Serializer serializer = new Persister();
-        Log.d("DEBUGGING", "THE FILE WAS VALIDATED: " + serializer.validate(Load.class,
-                MainActivity.instance.getResources().openRawResource(resID)));
+       // Log.d("DEBUGGING", "THE FILE WAS VALIDATED: " + serializer.validate(Load.class,
+       //         MainActivity.instance.getResources().openRawResource(resID)));
 
 
         //return (Load) serializer.read(Load.class, new StringReader(xml));
-        //return (Load) serializer.read(Load.class, MainActivity.instance.getResources().openRawResource(resID));
-        return null;
+        return (Load) serializer.read(Load.class, MainActivity.instance.getResources().openRawResource(resID));
+        //return null;
     }
 
     public static Load deserialize(String xml) throws Exception {
@@ -42,6 +42,7 @@ public class MappingXMLParser {
 
     }
 
+    // TODO: Change this so that it doesn't use a String (it isn't big enough)
     public static String serialize(Load load) throws Exception {
 
         Serializer serializer = new Persister();

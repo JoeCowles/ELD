@@ -4,29 +4,34 @@ import com.carriergistics.eld.mapping.loadShipment.itemGroup.LoadShipmentPackage
 
 import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 //@Root
-@Default
+@Root
 public class LoadShipmentPackage{
-    //@Element
+    @Element
     int id;
-    //@Element
+    @Element
     int loadShipmentId;
-    //@Element
+    @ElementList
     ArrayList<LoadShipmentPackageDimension> loadShipmentPackageDimensions;
-    //@Element
+    @ElementList
     ArrayList<LoadShipmentPackageWeight> loadShipmentPackageWeights;
-    //@Element
-    ArrayList<LoadShipmentPackageItemGroup> LoadShipmentPackageItemGroup;
+    @ElementList
+    ArrayList<LoadShipmentPackageItemGroup> loadShipmentPackageItemGroups;
 
-    public LoadShipmentPackage(int id,  int loadShipmentId,  ArrayList<LoadShipmentPackageDimension> loadShipmentPackageDimensions,  ArrayList<LoadShipmentPackageWeight> loadShipmentPackageWeights, ArrayList<LoadShipmentPackageItemGroup> loadShipmentPackageItemGroup) {
+    public LoadShipmentPackage(@Element(name="id")int id,
+                               @Element(name="loadShipmentId")int loadShipmentId,
+                               @ElementList(name="loadShipmentPackageDimensions") ArrayList<LoadShipmentPackageDimension> loadShipmentPackageDimensions,
+                               @ElementList(name="loadShipmentPackageWeights") ArrayList<LoadShipmentPackageWeight> loadShipmentPackageWeights,
+                               @ElementList(name="loadShipmentPackageItemGroups") ArrayList<LoadShipmentPackageItemGroup> loadShipmentPackageItemGroups) {
         this.id = id;
         this.loadShipmentId = loadShipmentId;
         this.loadShipmentPackageDimensions = loadShipmentPackageDimensions;
         this.loadShipmentPackageWeights = loadShipmentPackageWeights;
-        LoadShipmentPackageItemGroup = loadShipmentPackageItemGroup;
+        this.loadShipmentPackageItemGroups = loadShipmentPackageItemGroups;
     }
 
     public int getId() {
@@ -61,11 +66,11 @@ public class LoadShipmentPackage{
         this.loadShipmentPackageWeights = loadShipmentPackageWeights;
     }
 
-    public ArrayList<com.carriergistics.eld.mapping.loadShipment.itemGroup.LoadShipmentPackageItemGroup> getLoadShipmentPackageItemGroup() {
-        return LoadShipmentPackageItemGroup;
+    public ArrayList<LoadShipmentPackageItemGroup> getLoadShipmentPackageItemGroup() {
+        return loadShipmentPackageItemGroups;
     }
 
-    public void setLoadShipmentPackageItemGroup(ArrayList<com.carriergistics.eld.mapping.loadShipment.itemGroup.LoadShipmentPackageItemGroup> loadShipmentPackageItemGroup) {
-        LoadShipmentPackageItemGroup = loadShipmentPackageItemGroup;
+    public void setLoadShipmentPackageItemGroup(ArrayList<LoadShipmentPackageItemGroup> loadShipmentPackageItemGroups) {
+        this.loadShipmentPackageItemGroups = loadShipmentPackageItemGroups;
     }
 }

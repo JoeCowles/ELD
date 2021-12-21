@@ -1,24 +1,35 @@
 package com.carriergistics.eld.mapping.loadPackage.ItemGroup;
 
+import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 @Root
 public class LoadPackageItemGroup {
+
     @Element
     int id;
     @Element
+    String description;
+    @ElementList
     ArrayList<LoadPackageItemGroupDimension> loadPackageItemGroupDimensions;
-    @Element
+    @ElementList
     ArrayList<LoadPackageItemGroupQuantity> loadPackageItemGroupQuantities;
-    @Element
+    @ElementList
     ArrayList<LoadPackageItemGroupWeight> loadPackageItemGroupWeights;
-    @Element
+    @ElementList
     ArrayList<LoadPackageItemGroupLineItem> loadPackageItemGroupLineItems;
 
-    public LoadPackageItemGroup(@Element(name="id")int id, @Element(name="loadPackageItemGroupDimensions") ArrayList<LoadPackageItemGroupDimension> loadPackageItemGroupDimensions, @Element(name="loadPackageItemGroupQuantities") ArrayList<LoadPackageItemGroupQuantity> loadPackageItemGroupQuantities, @Element(name="loadPackageItemGroupWeights") ArrayList<LoadPackageItemGroupWeight> loadPackageItemGroupWeights, @Element(name="loadPackageItemGroupLineItems") ArrayList<LoadPackageItemGroupLineItem> loadPackageItemGroupLineItems) {
+    public LoadPackageItemGroup(@Element(name="id")int id,
+                                @Element(name="description")String description,
+                                @ElementList(name="loadPackageItemGroupDimensions")ArrayList<LoadPackageItemGroupDimension> loadPackageItemGroupDimensions,
+                                @ElementList(name="loadPackageItemGroupQuantities")ArrayList<LoadPackageItemGroupQuantity> loadPackageItemGroupQuantities,
+                                @ElementList(name="loadPackageItemGroupWeights")ArrayList<LoadPackageItemGroupWeight> loadPackageItemGroupWeights,
+                                @ElementList(name="loadPackageItemGroupLineItems")ArrayList<LoadPackageItemGroupLineItem> loadPackageItemGroupLineItems) {
         this.id = id;
+        this.description = description;
         this.loadPackageItemGroupDimensions = loadPackageItemGroupDimensions;
         this.loadPackageItemGroupQuantities = loadPackageItemGroupQuantities;
         this.loadPackageItemGroupWeights = loadPackageItemGroupWeights;

@@ -3,6 +3,7 @@ package com.carriergistics.eld.mapping.loadShipment;
 import com.carriergistics.eld.mapping.loadEvent.LoadEventAttribute;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
@@ -11,70 +12,69 @@ import java.util.ArrayList;
 public class LoadShipment {
     @Element
     int id;
-    @Element
+    @Element(required = false)
     ConsigneeAddress consigneeAddress;
-    @Element
+    @Element(required = false)
     ShipperAddress shipperAddress;
-
-    @Element
+    @Element(required = false)
     double actualWeight;
-    @Element
+    @Element(required = false)
     String actualWeightUom;
-    @Element
+    @Element(required = false)
     double deliveryWeight;
-    @Element
+    @Element(required = false)
     String deliveryWeightUom;
-    @Element
+    @Element(required = false)
     String dropActual;
-    @Element
+    @Element(required = false)
     String dropEarliest;
-    @Element
+    @Element(required = false)
     String dropLatest;
 
-    @Element
+    @Element(required = false)
     double linearFeet;
-    @Element
+    @Element(required = false)
     String linearFeetUom = "ft";
 
-    @Element
+    @Element(required = false)
     double orderedWeight;
-    @Element
-    double orderedWeightUom;
-    @Element
+    @Element(required = false)
+    String orderedWeightUom;
+    @Element(required = false)
     String owner;
-    @Element
-    String pickupAcutal;
-    @Element
+    @Element(required = false)
+    String pickupActual;
+    @Element(required = false)
     String pickupEarliest;
-    @Element
+    @Element(required = false)
     String pickupLatest;
 
-    @Element
+    @Element(required = false)
     double plannedWeight;
-    @Element
+    @Element(required = false)
     String plannedWeightUom;
-    @Element
+    @Element(required = false)
     String quantityType;
-    @Element
+    @Element(required = false)
     double quantity;
-    @Element
+    @Element(required = false)
     String quantityUom = "PLT";
-    @Element
+    @Element(required = false)
     double ratingCount;
-    @Element
+    @Element(required = false)
     String ratingCountUom;
-    @Element
+    @Element(required = false)
     String specialInstructions;
-    @Element
+    @Element(required = false)
     String status;
-    @Element
+    @ElementList(required = false)
     ArrayList<LoadEventAttribute> loadShipmentAttributes;
-    @Element
+    @ElementList
     ArrayList<LoadShipmentPackage> loadShipmentPackages;
 
     public LoadShipment(@Element(name = "id")int id, @Element(name = "consigneeAddress") ConsigneeAddress consigneeAddress, @Element(name = "shipperAddress") ShipperAddress shipperAddress, @Element(name = "actualWeight") double actualWeight, @Element(name = "actualWeightUom") String actualWeightUom, @Element(name = "deliveryWeight") double deliveryWeight, @Element(name = "deliveryWeightUom") String deliveryWeightUom, @Element(name = "dropActual") String dropActual, @Element(name = "dropEarliest") String dropEarliest, @Element(name = "dropLatest") String dropLatest, @Element(name = "linearFeet") double linearFeet, @Element(name = "linearFeetUom") String linearFeetUom,
-                        @Element(name = "orderedWeight") double orderedWeight, @Element(name = "orderedWeightUom") double orderedWeightUom, @Element(name = "owner") String owner, @Element(name = "pickupActual") String pickupAcutal, @Element(name = "pickupEarliest") String pickupEarliest, @Element(name = "pickupLatest") String pickupLatest, @Element(name = "plannedWeight") double plannedWeight, @Element(name = "plannedWeightUom") String plannedWeightUom, @Element(name = "quantityType") String quantityType, @Element(name = "quantity") double quantity, @Element(name = "quantityUom") String quantityUom, @Element(name = "ratingCount") double ratingCount,
-                        @Element(name = "ratingCountUom") String ratingCountUom, @Element(name = "specialInstructions") String specialInstructions, @Element(name = "status") String status, @Element(name = "loadShipmentAttributes") ArrayList<LoadEventAttribute> loadShipmentAttributes, @Element(name = "loadShipmentPackages") ArrayList<LoadShipmentPackage> loadShipmentPackages) {
+                        @Element(name = "orderedWeight") double orderedWeight, @Element(name = "orderedWeightUom") String orderedWeightUom, @Element(name = "owner") String owner, @Element(name = "pickupActual") String pickupActual, @Element(name = "pickupEarliest") String pickupEarliest, @Element(name = "pickupLatest") String pickupLatest, @Element(name = "plannedWeight") double plannedWeight, @Element(name = "plannedWeightUom") String plannedWeightUom, @Element(name = "quantityType") String quantityType, @Element(name = "quantity") double quantity, @Element(name = "quantityUom") String quantityUom, @Element(name = "ratingCount") double ratingCount,
+                        @Element(name = "ratingCountUom") String ratingCountUom, @Element(name = "specialInstructions") String specialInstructions, @Element(name = "status") String status, @ElementList(name = "loadShipmentAttributes") ArrayList<LoadEventAttribute> loadShipmentAttributes, @ElementList(name = "loadShipmentPackages") ArrayList<LoadShipmentPackage> loadShipmentPackages) {
         this.id = id;
         this.consigneeAddress = consigneeAddress;
         this.shipperAddress = shipperAddress;
@@ -90,7 +90,7 @@ public class LoadShipment {
         this.orderedWeight = orderedWeight;
         this.orderedWeightUom = orderedWeightUom;
         this.owner = owner;
-        this.pickupAcutal = pickupAcutal;
+        this.pickupActual = pickupActual;
         this.pickupEarliest = pickupEarliest;
         this.pickupLatest = pickupLatest;
         this.plannedWeight = plannedWeight;
@@ -210,11 +210,11 @@ public class LoadShipment {
         this.orderedWeight = orderedWeight;
     }
 
-    public double getOrderedWeightUom() {
+    public String getOrderedWeightUom() {
         return orderedWeightUom;
     }
 
-    public void setOrderedWeightUom(double orderedWeightUom) {
+    public void setOrderedWeightUom(String orderedWeightUom) {
         this.orderedWeightUom = orderedWeightUom;
     }
 
@@ -227,11 +227,11 @@ public class LoadShipment {
     }
 
     public String getPickupAcutal() {
-        return pickupAcutal;
+        return pickupActual;
     }
 
     public void setPickupAcutal(String pickupAcutal) {
-        this.pickupAcutal = pickupAcutal;
+        this.pickupActual = pickupAcutal;
     }
 
     public String getPickupEarliest() {
@@ -310,7 +310,7 @@ public class LoadShipment {
         return specialInstructions;
     }
 
-    public void setSpecialIntructions(String specialInstructions) {
+    public void setSpecialInstructions(String specialInstructions) {
         this.specialInstructions = specialInstructions;
     }
 

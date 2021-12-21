@@ -1,10 +1,12 @@
 package com.carriergistics.eld.mapping.load;
 
+import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-@Root(name = "attribute")
+@Root(name="attribute")
 public class Attribute {
+
     @Element
     int id;
     @Element
@@ -14,7 +16,10 @@ public class Attribute {
     @Element
     String value;
 
-    public Attribute(@Element(name = "id")int id,@Element(name = "isPrimary") int isPrimary,@Element(name = "name") String name, @Element(name = "value")String value) {
+    public Attribute(@Element(name="id") int id,
+                     @Element(name="isPrimary") int isPrimary,
+                     @Element(name="name") String name,
+                     @Element(name="value") String value) {
         this.id = id;
         this.isPrimary = isPrimary;
         this.name = name;

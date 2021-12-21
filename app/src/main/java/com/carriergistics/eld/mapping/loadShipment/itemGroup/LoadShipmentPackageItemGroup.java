@@ -1,27 +1,35 @@
 package com.carriergistics.eld.mapping.loadShipment.itemGroup;
 
+import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 
 @Root
 public class LoadShipmentPackageItemGroup{
+
     @Element
     int id;
     @Element
     String description;
-    @Element
+    @ElementList
     ArrayList<LoadShipmentPackageItemGroupDimension> loadShipmentPackageItemGroupDimensions;
-    @Element
+    @ElementList
     ArrayList<LoadShipmentPackageItemGroupQuantity> loadShipmentPackageItemGroupQuantities;
-    @Element
+    @ElementList
     ArrayList<LoadShipmentPackageItemGroupWeight> loadShipmentPackageItemGroupWeights;
-    @Element
+    @ElementList
     ArrayList<LoadShipmentPackageItemGroupLineItem> loadShipmentPackageItemGroupLineItems;
 
 
-    public LoadShipmentPackageItemGroup(@Element(name ="id")int id, @Element(name ="description") String description, @Element(name ="loadShipmentItemGroupDimensions") ArrayList<LoadShipmentPackageItemGroupDimension> loadShipmentPackageItemGroupDimensions, @Element(name ="loadShipmentPackageItemGroupQuantities") ArrayList<LoadShipmentPackageItemGroupQuantity> loadShipmentPackageItemGroupQuantities, @Element(name ="loadShipmentPackageItemGroupWeights") ArrayList<LoadShipmentPackageItemGroupWeight> loadShipmentPackageItemGroupWeights, @Element(name ="loadShipmentPackageItemGroupLineItems") ArrayList<LoadShipmentPackageItemGroupLineItem> loadShipmentPackageItemGroupLineItems) {
+    public LoadShipmentPackageItemGroup(@Element(name="id") int id,
+                                        @Element(name="description")String description,
+                                        @ElementList(name="loadShipmentPackageItemGroupDimensions")ArrayList<LoadShipmentPackageItemGroupDimension> loadShipmentPackageItemGroupDimensions,
+                                        @ElementList(name="loadShipmentPackageItemGroupQuantities")ArrayList<LoadShipmentPackageItemGroupQuantity> loadShipmentPackageItemGroupQuantities,
+                                        @ElementList(name="loadShipmentPackageItemGroupWeights")ArrayList<LoadShipmentPackageItemGroupWeight> loadShipmentPackageItemGroupWeights,
+                                        @ElementList(name="loadShipmentPackageItemGroupLineItems")ArrayList<LoadShipmentPackageItemGroupLineItem> loadShipmentPackageItemGroupLineItems) {
         this.id = id;
         this.description = description;
         this.loadShipmentPackageItemGroupDimensions = loadShipmentPackageItemGroupDimensions;

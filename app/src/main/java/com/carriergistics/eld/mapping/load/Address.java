@@ -15,16 +15,69 @@ public class Address {
     String name;
     @Element
     String line1;
-    @Element
+    @Element(required = false)
     String line2;
+    @Element
+    String city;
+    @Element
+    String state;
+    @Element
+    String postalCode;
+    @Element
+    String countryCode;
 
-    public Address(@Element(name="id") int id, @Element(name="type")String type, @Element(name="locationCode")String locationCode, @Element(name="name")String name, @Element(name="line1") String line1, @Element(name="line2")String line2) {
+    public Address(@Element(name="id") int id,
+                   @Element(name="type") String type,
+                   @Element(name="locationCode") String locationCode,
+                   @Element(name="name") String name,
+                   @Element(name="line1") String line1,
+                   @Element(name="line2") String line2,
+                   @Element(name="city") String city,
+                   @Element(name="state") String state,
+                   @Element(name="postalCode") String postalCode,
+                   @Element(name="countryCode") String countryCode) {
         this.id = id;
         this.type = type;
         this.locationCode = locationCode;
         this.name = name;
         this.line1 = line1;
         this.line2 = line2;
+        this.city = city;
+        this.state = state;
+        this.postalCode = postalCode;
+        this.countryCode = countryCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public int getId() {

@@ -4,24 +4,28 @@ import com.carriergistics.eld.mapping.loadPackage.ItemGroup.LoadPackageItemGroup
 
 import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
-@Default
+@Root
 public class LoadPackage {
-    //@Element
+    @Element
     int id;
     // Load package dims
-    //@Element
+    @ElementList
     ArrayList<LoadPackageDimension> loadPackageDimensions;
     // Load package weights
-    @Element
+    @ElementList
     ArrayList<LoadPackageWeight> loadPackageWeights;
     // Load package Item groups
-    @Element
+    @ElementList
     ArrayList<LoadPackageItemGroup> loadPackageItemGroups;
 
-    public LoadPackage(@Element(name="id") int id, @Element(name="loadPackageDimensions") ArrayList<LoadPackageDimension> loadPackageDimensions, @Element(name="loadPackageWeights") ArrayList<LoadPackageWeight> loadPackageWeights, @Element(name="loadPackageItemGroups") ArrayList<LoadPackageItemGroup> loadPackageItemGroups) {
+    public LoadPackage(@Element(name="id") int id,
+                       @ElementList(name="loadPackageDimensions") ArrayList<LoadPackageDimension> loadPackageDimensions,
+                       @ElementList(name="loadPackageWeights") ArrayList<LoadPackageWeight> loadPackageWeights,
+                       @ElementList(name="loadPackageItemGroups") ArrayList<LoadPackageItemGroup> loadPackageItemGroups) {
         this.id = id;
         this.loadPackageDimensions = loadPackageDimensions;
         this.loadPackageWeights = loadPackageWeights;

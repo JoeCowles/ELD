@@ -1,12 +1,13 @@
 package com.carriergistics.eld.mapping.priceSheet;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 
 @Root
-public class PriceSheet {
+public class LoadPriceSheet {
     @Element
     int id;
     @Element
@@ -14,7 +15,7 @@ public class PriceSheet {
     @Element
     int isSelected;
     @Element
-    double accessorialATotal;
+    double accessorialTotal;
     @Element
     double subTotal;
     @Element
@@ -22,18 +23,18 @@ public class PriceSheet {
     @Element
     double normalizedTotal;
 
-    @Element
-    ArrayList<PriceSheetCharge> loadPriceSheetCharges;
+    @ElementList
+    ArrayList<LoadPriceSheetCharge> loadPricesheetCharges;
 
-    public PriceSheet(@Element(name="id") int id, @Element(name="type") String type, @Element(name="isSelected") int isSelected, @Element(name="accessorialTotal") double accessorialATotal, @Element(name="subTotal") double subTotal, @Element(name="total") double total, @Element(name="normalizedTotal") double normalizedTotal, @Element(name="loadPriceSheetCharges") ArrayList<PriceSheetCharge> loadPriceSheetCharges) {
+    public LoadPriceSheet(@Element(name="id") int id, @Element(name="type") String type, @Element(name="isSelected") int isSelected, @Element(name="accessorialTotal") double accessorialTotal, @Element(name="subTotal") double subTotal, @Element(name="total") double total, @Element(name="normalizedTotal") double normalizedTotal, @ElementList(name="loadPricesheetCharges") ArrayList<LoadPriceSheetCharge> loadPricesheetCharges) {
         this.id = id;
         this.type = type;
         this.isSelected = isSelected;
-        this.accessorialATotal = accessorialATotal;
+        this.accessorialTotal = accessorialTotal;
         this.subTotal = subTotal;
         this.total = total;
         this.normalizedTotal = normalizedTotal;
-        this.loadPriceSheetCharges = loadPriceSheetCharges;
+        this.loadPricesheetCharges = loadPricesheetCharges;
     }
 
     public int getId() {
@@ -60,12 +61,12 @@ public class PriceSheet {
         this.isSelected = isSelected;
     }
 
-    public double getAccessorialATotal() {
-        return accessorialATotal;
+    public double getAccessorialTotal() {
+        return accessorialTotal;
     }
 
-    public void setAccessorialATotal(double accessorialATotal) {
-        this.accessorialATotal = accessorialATotal;
+    public void setAccessorialTotal(double accessorialTotal) {
+        this.accessorialTotal = accessorialTotal;
     }
 
     public double getSubTotal() {
@@ -92,11 +93,11 @@ public class PriceSheet {
         this.normalizedTotal = normalizedTotal;
     }
 
-    public ArrayList<PriceSheetCharge> getLoadPriceSheetCharges() {
-        return loadPriceSheetCharges;
+    public ArrayList<LoadPriceSheetCharge> getLoadPricesheetCharges() {
+        return loadPricesheetCharges;
     }
 
-    public void setLoadPriceSheetCharges(ArrayList<PriceSheetCharge> loadPriceSheetCharges) {
-        this.loadPriceSheetCharges = loadPriceSheetCharges;
+    public void setLoadPricesheetCharges(ArrayList<LoadPriceSheetCharge> loadPricesheetCharges) {
+        this.loadPricesheetCharges = loadPricesheetCharges;
     }
 }

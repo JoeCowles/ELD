@@ -1,9 +1,10 @@
 package com.carriergistics.eld.mapping.loadEvent;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
-
 import java.util.ArrayList;
+import java.util.List;
 
 @Root
 public class LoadEvent {
@@ -15,34 +16,52 @@ public class LoadEvent {
     String type;
     @Element
     int addressId;
-    @Element
+    @Element(required = false)
     String earliest;
-    @Element
+    @Element(required = false)
     String latest;
-    @Element
+    @Element(required = false)
     String planned;
-    @Element
+    @Element(required = false)
     String actual;
-    @Element
+    @Element(required = false)
     String appointment;
-    @Element
+    @Element(required = false)
     String appointmentEarly;
-    @Element
+    @Element(required = false)
     String appointmentLate;
-    @Element
+    @Element(required = false)
     String appointmentType;
-    @Element
+    @Element(required = false)
     String lateReason;
-    @Element
+    @Element(required = false)
     String weightType;
     @Element
     double weight;
     @Element
     String weightUom;
-    @Element
-    ArrayList<LoadEventAttribute> loadEventAttributes;
 
-    public LoadEvent(@Element(name="id")int id, @Element(name="sequenceNumber")int sequenceNumber, @Element(name="type") String type, @Element(name="addressId") int addressId, @Element(name="earliest") String earliest, @Element(name="latest")String latest, @Element(name="planned")String planned, @Element(name="actual") String actual, @Element(name="appointment")String appointment, @Element(name="appointmentEarly") String appointmentEarly, @Element(name="appointmentLate") String appointmentLate, @Element(name="appointmentType") String appointmentType, @Element(name="lateReason") String lateReason, @Element(name="weightType") String weightType, @Element(name="weight") double weight, @Element(name="weightUom") String weightUom, @Element(name="loadEventAttributes") ArrayList<LoadEventAttribute> loadEventAttributes) {
+    @ElementList
+    ArrayList<LoadEventAttribute> loadEventAttributes;
+    //@Element
+    //LoadEventAttributes loadEventAttributes;
+    public LoadEvent(@Element(name="id") int id,
+                     @Element(name="sequenceNumber")int sequenceNumber,
+                     @Element(name="type")String type,
+                     @Element(name="addressId")int addressId,
+                     @Element(name="earliest")String earliest,
+                     @Element(name="latest")String latest,
+                     @Element(name="planned")String planned,
+                     @Element(name="actual")String actual,
+                     @Element(name="appointment")String appointment,
+                     @Element(name="appointmentEarly")String appointmentEarly,
+                     @Element(name="appointmentLate")String appointmentLate,
+                     @Element(name="appointmentType")String appointmentType,
+                     @Element(name="lateReason")String lateReason,
+                     @Element(name="weightType")String weightType,
+                     @Element(name="weight")double weight,
+                     @Element(name="weightUom")String weightUom,
+                     @ElementList(name="loadEventAttributes")ArrayList<LoadEventAttribute> loadEventAttributes) {
         this.id = id;
         this.sequenceNumber = sequenceNumber;
         this.type = type;

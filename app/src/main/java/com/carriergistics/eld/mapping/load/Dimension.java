@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
 public abstract class Dimension {
     @Element
     int id;
-    @Element
+    @Element(required = false)
     String type;
     @Element
     String dim;

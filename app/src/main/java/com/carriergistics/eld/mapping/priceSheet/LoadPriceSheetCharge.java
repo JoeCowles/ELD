@@ -4,31 +4,41 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 @Root
-public class PriceSheetCharge {
+public class LoadPriceSheetCharge {
     @Element
     int id;
     @Element
     int sequenceNumber;
-    @Element
+    @Element(required = false)
     String description;
-    @Element
+    @Element(required = false)
     String ediCode;
-    @Element
+    @Element(required = false)
     double amount;
-    @Element
+    @Element(required = false)
     double rate;
-    @Element
-    double rateQualifier;
-    @Element
+    @Element(required = false)
+    String rateQualifier;
+    @Element(required = false)
     double quantity;
-    @Element
+    @Element(required = false)
     double weight;
-    @Element
+    @Element(required = false)
     double dimWeight;
-    @Element
+    @Element(required = false)
     double freightClass;
 
-    public PriceSheetCharge(@Element(name ="id")int id, @Element(name ="sequenceNumber") int sequenceNumber, @Element(name ="description") String description, @Element(name ="ediCode") String ediCode, @Element(name ="amount") double amount, @Element(name ="rate") double rate, @Element(name ="rateQualifier") double rateQualifier, @Element(name ="quantity") double quantity, @Element(name ="weight") double weight, @Element(name ="dimWeight") double dimWeight, @Element(name ="freightClass") double freightClass) {
+    public LoadPriceSheetCharge(@Element(name ="id")int id,
+                                @Element(name ="sequenceNumber") int sequenceNumber,
+                                @Element(name ="description") String description,
+                                @Element(name ="ediCode") String ediCode,
+                                @Element(name ="amount") double amount,
+                                @Element(name ="rate") double rate,
+                                @Element(name ="rateQualifier") String rateQualifier,
+                                @Element(name ="quantity") double quantity,
+                                @Element(name ="weight") double weight,
+                                @Element(name ="dimWeight") double dimWeight,
+                                @Element(name ="freightClass") double freightClass) {
         this.id = id;
         this.sequenceNumber = sequenceNumber;
         this.description = description;
@@ -90,11 +100,11 @@ public class PriceSheetCharge {
         this.rate = rate;
     }
 
-    public double getRateQualifier() {
+    public String getRateQualifier() {
         return rateQualifier;
     }
 
-    public void setRateQualifier(double rateQualifier) {
+    public void setRateQualifier(String rateQualifier) {
         this.rateQualifier = rateQualifier;
     }
 

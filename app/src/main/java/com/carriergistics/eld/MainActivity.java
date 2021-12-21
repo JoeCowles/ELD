@@ -41,6 +41,7 @@ import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.mapping.MappingXMLParser;
 import com.carriergistics.eld.mapping.load.Load;
+import com.carriergistics.eld.mapping.loadEvent.LoadEvent;
 import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.dvir.DvirFragment;
@@ -143,12 +144,15 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
         setCurrentDriver(currentDriver);
-        startLogging();
+
 
         // Test code
         try {
 
             Load load = MappingXMLParser.deserialize(R.raw.test_route);
+            Log.d("DEBUGGING", MappingXMLParser.serialize(load));
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-
+        startLogging();
     }
 
     // Check if there is data to load

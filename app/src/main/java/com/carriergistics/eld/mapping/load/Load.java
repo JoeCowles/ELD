@@ -3,42 +3,49 @@ package com.carriergistics.eld.mapping.load;
 import com.carriergistics.eld.mapping.loadEvent.LoadEvent;
 import com.carriergistics.eld.mapping.loadPackage.LoadPackage;
 import com.carriergistics.eld.mapping.loadShipment.LoadShipment;
-import com.carriergistics.eld.mapping.priceSheet.PriceSheet;
+import com.carriergistics.eld.mapping.priceSheet.LoadPriceSheet;
 
 import org.simpleframework.xml.Default;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 
-@Default
-//@Root
+//@Default
+@Root
 public class Load {
 
-    //@Element
+    @Element
     int id;
-    //@Element
+    @Element
     BillTo billTo;
-    //@Element
+    @ElementList
     ArrayList<Attribute> attributes;
-    //@Element
+    @ElementList
     ArrayList<LoadPackage> loadPackages;
-    //@Element
+    @ElementList
     ArrayList<LoadEvent> loadEvents;
-    //@Element
-    ArrayList<LoadShipment> loadShipment;
-    //@Element
-    ArrayList<PriceSheet>  priceSheets;
+    @ElementList
+    ArrayList<LoadShipment> loadShipments;
+    @ElementList
+    ArrayList<LoadPriceSheet>  loadPricesheets;
 
-    public Load(int id, BillTo billToInfo,ArrayList<Attribute> attributes, ArrayList<LoadPackage> loadPackages, ArrayList<LoadEvent> loadEvents,ArrayList<LoadShipment> loadShipment,ArrayList<PriceSheet> priceSheets) {
+    public Load(@Element(name="id") int id,
+                @Element(name="billTo")BillTo billToInfo,
+                @ElementList(name="attributes")ArrayList<Attribute> attributes,
+                @ElementList(name="loadPackages")ArrayList<LoadPackage> loadPackages,
+                @ElementList(name="loadEvents") ArrayList<LoadEvent> loadEvents,
+                @ElementList(name="loadShipments") ArrayList<LoadShipment> loadShipments,
+                @ElementList(name="loadPricesheets") ArrayList<LoadPriceSheet> loadPricesheets) {
 
         this.id = id;
         this.billTo = billToInfo;
         this.attributes = attributes;
         this.loadPackages = loadPackages;
         this.loadEvents = loadEvents;
-        this.loadShipment = loadShipment;
-        this.priceSheets = priceSheets;
+        this.loadShipments = loadShipments;
+        this.loadPricesheets = loadPricesheets;
 
 
     }
@@ -76,18 +83,18 @@ public class Load {
     }
 
     public ArrayList<LoadShipment> getLoadShipment() {
-        return loadShipment;
+        return loadShipments;
     }
 
     public void setLoadShipment(ArrayList<LoadShipment> loadShipment) {
-        this.loadShipment = loadShipment;
+        this.loadShipments = loadShipment;
     }
 
-    public ArrayList<PriceSheet> getPriceSheet() {
-        return priceSheets;
+    public ArrayList<LoadPriceSheet> getPriceSheet() {
+        return loadPricesheets;
     }
 
-    public void setPriceSheet(ArrayList<PriceSheet> priceSheets) {
-        this.priceSheets = priceSheets;
+    public void setPriceSheet(ArrayList<LoadPriceSheet> loadPricesheets) {
+        this.loadPricesheets = loadPricesheets;
     }
 }

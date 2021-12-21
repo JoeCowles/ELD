@@ -11,7 +11,7 @@ public abstract class Quantity {
     String type;
     @Element
     double quantity;
-    @Element
+    @Element(required = false)
     String uom;
 
     public Quantity(@Element(name = "id") int id, @Element(name = "type") String type, @Element(name = "quantity") double quantity, @Element(name = "uom") String uom) {

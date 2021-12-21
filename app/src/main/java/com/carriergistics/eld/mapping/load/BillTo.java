@@ -15,7 +15,7 @@ public class BillTo {
     String name;
     @Element
     String line1;
-    @Element
+    @Element(required = false)
     String line2;
     @Element
     String city;
