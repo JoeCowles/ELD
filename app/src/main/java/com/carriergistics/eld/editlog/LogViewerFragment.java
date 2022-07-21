@@ -23,6 +23,7 @@ import com.carriergistics.eld.R;
 import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.HOSEventCodes;
 import com.carriergistics.eld.logging.HOSLogger;
+import com.carriergistics.eld.logging.Status;
 import com.carriergistics.eld.logging.TimePeriod;
 import com.carriergistics.eld.utils.DataConverter;
 import com.github.mikephil.charting.charts.LineChart;
@@ -103,7 +104,6 @@ public class LogViewerFragment extends Fragment {
             for (int i = MainActivity.currentDriver.getDays().size() - 1; i >= 0; i--) {
                 Day day = MainActivity.currentDriver.getDays().get(i);
                 Log.d("DEBUGGING", "Found day: " + day.getDate().toString());
-                day.updateTimePeriods();
                 // Card holds all the info
                 CardView card = new CardView(getContext());
                 card.setForegroundGravity(Gravity.CENTER);
@@ -146,14 +146,14 @@ public class LogViewerFragment extends Fragment {
                 id++;
                 int mins = 0;
                 if (day != null) {
-                    mins = day.getSecsDrivenToday() / 60;
+                    mins = day.getSecsPerformed(Status.DRIVING) / 60;
                 }
                 int hours = mins / 60;
                 mins %= 60;
 
                 String time = (hours > 9) ? hours + ":" : "0" + hours + ":";
                 time += (mins > 9) ? mins + ":" : "0" + mins + ":";
-                time += (day.getSecsDrivenToday() % 60 > 9) ? day.getSecsDrivenToday() % 60 : "0" + day.getSecsDrivenToday() % 60;
+                time += (day.getSecsPerformed(Status.DRIVING) % 60 > 9) ? day.getSecsPerformed(Status.DRIVING) % 60 : "0" + day.getSecsPerformed(Status.DRIVING)% 60;
 
                 timeView.setText(time);
                 timeView.setTextSize(30f);
@@ -241,16 +241,9 @@ public class LogViewerFragment extends Fragment {
         con.addView(graph);
 
         ArrayList<TimePeriod> eventLog = new ArrayList<>();
-        try {
-            if (DataConverter.sameDayNoTime(day.getDate(), MainActivity.getTime())) {
-                eventLog = HOSLogger.getLog();
-            } else {
-                eventLog = day.getTimePeriods();
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            eventLog = day.getTimePeriods();
-        }
+
+        eventLog = day.getTimePeriods();
+
         ArrayList<Entry> values = new ArrayList<>();
         graph.disableScroll();
         graph.setTouchEnabled(false);

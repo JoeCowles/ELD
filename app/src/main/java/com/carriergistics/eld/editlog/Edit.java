@@ -11,6 +11,24 @@ public class Edit {
     private Status fromStatus;
     private Status toStatus;
     private String note;
+    private Date editDate;
+
+    public Edit(Date startDate, Date endDate, Status fromStatus, Status toStatus, String note, Date editDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.fromStatus = fromStatus;
+        this.toStatus = toStatus;
+        this.note = note;
+        this.editDate = editDate;
+    }
+
+    public Date getEditDate() {
+        return editDate;
+    }
+
+    public void setEditDate(Date editDate) {
+        this.editDate = editDate;
+    }
 
     public Date getStartDate() {
         return startDate;

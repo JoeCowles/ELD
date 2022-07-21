@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,9 +127,10 @@ public class BluetoothSettingsFragment extends Fragment {
                 int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
                 String deviceAddress = devices.get(position).toString();
                 device = deviceAddress;
+                Log.d("DEBUGGING", "THE ADDRESS of device: " + device);
+                setDevice(names.get(position).toString(), device);
                 if(BluetoothConnector.connect(device)){
                     makeText("Connected");
-                    setDevice(names.get(position).toString(), device);
                 }else{
                     makeText("Couldn't connect!");
                 }

@@ -164,20 +164,34 @@ public class LogFragment extends Fragment {
                 }
                 setData(retrieved.getTimePeriods());
             } catch (ParseException e) {
-                setData(HOSLogger.getLog());
+                try {
+                    setData(MainActivity.currentDriver.getDay(MainActivity.getTime()).getTimePeriods());
+                } catch (ParseException parseException) {
+                    parseException.printStackTrace();
+                }
             } catch(NullPointerException e){
-                setData(HOSLogger.getLog());
+                try {
+                    setData(MainActivity.currentDriver.getDay(MainActivity.getTime()).getTimePeriods());
+                } catch (ParseException parseException) {
+                    parseException.printStackTrace();
+                }
             }
         }
         else{
-            setData(HOSLogger.getLog());
+            try {
+                setData(MainActivity.currentDriver.getDay(MainActivity.getTime()).getTimePeriods());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         //setData(HOSLogger.getLog());
         return view;
     }
     private void setData(final ArrayList<TimePeriod> eventLog) {
         ArrayList<Entry> values = new ArrayList<>();
-
+        for(TimePeriod period : eventLog){
+            Log.d("DEBUGGING", "Found event:  " + period.getStatus() + " " + period.getStartTime());
+        }
         Date start = Calendar.getInstance().getTime();
         Date end = MainActivity.getTime();
         for(TimePeriod t : eventLog){

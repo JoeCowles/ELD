@@ -1,25 +1,62 @@
 package com.carriergistics.eld.apiData;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+
 import java.util.Date;
 
+@Root(name="GeoUpdate")
 public class ApiGeolocationUpdate {
-    String eldID;
-    String driverID;
-    Date timeStamp;
 
+    @Element
+    String eldID;
+    @Element
+    String driverID;
+    @Element
+    Date timeStamp;
+    @Element
     GeoLocation location;
-    public ApiGeolocationUpdate(String eldID, String driverID, Date timestamp, GeoLocation location){
+
+    public ApiGeolocationUpdate(@Element(name="ELD-ID")String eldID,
+                                @Element(name="Driver-ID")String driverID,
+                                @Element(name="Timestamp")Date timestamp,
+                                @Element(name="Geolocation")GeoLocation location){
         this.eldID = eldID;
         this.driverID = driverID;
         this.timeStamp = timestamp;
+        this.location = location;
 
     }
-    @Override
-    public String toString(){
-        return String.format("<GeoUpdate>\n\t<ELD-ID=\"%s\"/>" +
-                "\n\t <Driver-ID=\"%s\">" +
-                "\n\t <Timestamp> %s </Timestamp>" +
-                "\n\t\t %s " +
-                "\n</GeoUpdate>", eldID, driverID, ApiDataFormatter.formatTimestamp(timeStamp), location.toString());
+
+    public String getEldID() {
+        return eldID;
+    }
+
+    public void setEldID(String eldID) {
+        this.eldID = eldID;
+    }
+
+    public String getDriverID() {
+        return driverID;
+    }
+
+    public void setDriverID(String driverID) {
+        this.driverID = driverID;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public GeoLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(GeoLocation location) {
+        this.location = location;
     }
 }

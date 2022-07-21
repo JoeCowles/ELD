@@ -31,7 +31,7 @@ public class Day {
     // @param Date follows mm-dd-yyy hh:mm:ss
     public Day(String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("mm-dd-yy HH:mm:ss");
-        this.date = sdf.parse(date + " 00:00:00");
+        this.date = DataConverter.removeTime(sdf.parse(date + " 00:00:00"));
         timePeriods = new ArrayList<>();
     }
 
@@ -47,11 +47,12 @@ public class Day {
         this.date = date;
     }
 
-    public int getSecsDrivenToday() {
+    // Changed from secs driven today
+    public int getSecsPerformed(Status status) {
         secsDrivenToday = 0;
         if(timePeriods != null){
             for(TimePeriod t : timePeriods){
-                if(t.getStatus() == Status.DRIVING){
+                if(t.getStatus() == status){
                     secsDrivenToday += t.getDuration();
                     if(t.getDuration() <= 0){
                         Log.d("LOGGING", "The current time period has length: " + ((MainActivity.getTime().getTime()/1000) - (t.getStartTime().getTime()/1000)));
@@ -63,27 +64,6 @@ public class Day {
            return 0;
         }
         return secsDrivenToday;
-    }
-    public boolean updateTimePeriods(){
-        if(date != null){
-            try {
-                if(timePeriods != null && !timePeriods.isEmpty() && !DataConverter.sameDayNoTime(date, MainActivity.getTime())){
-                    return true;
-                }
-            } catch (ParseException e) {
-                return false;
-            }
-            try {
-                timePeriods = HOSLogger.getLog("  " + date.toString().substring(0,10) + ", " + date.toString().substring(date.toString().length()-4));
-            } catch (ParseException e) {
-                return false;
-            }
-        }
-        Log.d("LOGGING", "Got new times: " + timePeriods.toString());
-        return true;
-    }
-    public void setSecsDrivenToday(int secsDrivenToday) {
-        this.secsDrivenToday = secsDrivenToday;
     }
     public void addTimePeriod(TimePeriod t){
         timePeriods.add(t);

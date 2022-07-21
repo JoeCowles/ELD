@@ -52,6 +52,7 @@ public class RoutesFragment extends Fragment implements OnMapReadyCallback, Rout
     //google map object
     private GoogleMap mMap;
 
+
     //current and destination location objects
     Location myLocation= null;
     Location destinationLocation=null;

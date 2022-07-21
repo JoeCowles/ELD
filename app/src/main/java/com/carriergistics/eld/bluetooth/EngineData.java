@@ -2,7 +2,7 @@ package com.carriergistics.eld.bluetooth;
 
 import java.util.Date;
 
-public class TelematicsData {
+public class EngineData {
     private int speed;
     private int milesDriven;
     private float mpg;
@@ -11,10 +11,10 @@ public class TelematicsData {
     private String runTime;
     private String time;
     private int timeSecs;
-    public TelematicsData(){
+    public EngineData(){
 
     }
-    public TelematicsData(int speed, int rpm, int milesDriven, float mpg, String runTime){
+    public EngineData(int speed, int rpm, int milesDriven, float mpg, String runTime){
         this.rpm = rpm;
         this.speed = speed;
         this.milesDriven = milesDriven;

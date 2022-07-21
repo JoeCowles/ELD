@@ -4,7 +4,6 @@ package com.carriergistics.eld.bluetooth;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
@@ -38,6 +37,7 @@ public class BluetoothConnector {
     private static String password = "1234";
 
     public static boolean connect(String deviceID){
+        MainActivity.instance.notifyUser("Device: " + deviceID + " connecting");
         status = BlueToothStatus.CONNECTING;
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         device  = btAdapter.getRemoteDevice(deviceID);
@@ -53,12 +53,12 @@ public class BluetoothConnector {
     }
 
     public static void sendRequests() {
-        TelematicsData data;
+        EngineData data;
         if (getStatus() == BlueToothStatus.CONNECTED){
             try {
                 speedCommand.run(socket.getInputStream(), socket.getOutputStream());
                 rpmCommand.run(socket.getInputStream(), socket.getOutputStream());
-                data = new TelematicsData();
+                data = new EngineData();
 
                 int speed = DataConverter.speedMPH(speedCommand.getResult());
                 int rpm = DataConverter.convertRPM(rpmCommand.getResult());
@@ -83,7 +83,7 @@ public class BluetoothConnector {
                 reconnectAttempts++;
                 if(reconnectAttempts >= 5){
                     Log.d("DEBUGGING", "Lost connection... sending stopped data");
-                    TelematicsData stopped = new TelematicsData();
+                    EngineData stopped = new EngineData();
                     stopped.setSpeed(0);
                     stopped.setRpm(0);
                     Message message = Message.obtain();

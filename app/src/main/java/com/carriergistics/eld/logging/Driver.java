@@ -3,8 +3,10 @@ package com.carriergistics.eld.logging;
 import android.graphics.Bitmap;
 
 import com.carriergistics.eld.MainActivity;
+import com.carriergistics.eld.logging.limits.TimeLimit;
 import com.carriergistics.eld.utils.DataConverter;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,8 +18,6 @@ public class Driver {
     private String last_name;
     private String email;
 
-    // Might eliminate this, and use time periods, or might use this and eliminate time periods
-    private HOSLog hosLog;
 
     private boolean currentDriver;
 
@@ -31,8 +31,13 @@ public class Driver {
     private int secsInShift;
     private int secsLeftInShift;
 
-    private ArrayList<TimePeriod> log;
+    private Trip trip;
+
+
+    private TimePeriod currentTimePeriod;
+    // Is a stack, meaning that the current day is at index = 0 and the latest day is at the last index
     private ArrayList<Day> days;
+    private ArrayList<TimeLimit> timeLimits;
 
     private Status status;
 
@@ -40,7 +45,7 @@ public class Driver {
 
     public Driver(){
         days = new ArrayList<Day>();
-        log = new ArrayList<TimePeriod>();
+        timeLimits = new ArrayList<TimeLimit>();
     }
     public void setLicenseNum(String licenseNum){
         this.licenseNum = licenseNum;
@@ -51,7 +56,6 @@ public class Driver {
     public void setLast_name(String last_name){
         this.last_name = last_name;
     }
-    public void setHosLog(HOSLog hosLog){this.hosLog = hosLog;}
     public void setEmail(String email){this.email = email;}
 
     public String getLicenseNum(){
@@ -65,27 +69,35 @@ public class Driver {
     }
     public String getEmail(){return email;}
 
-    public HOSLog getHosLog(){return hosLog;}
     public Status getStatus(){return status;}
     public void setStatus(){this.status = status;}
 
-    public ArrayList<TimePeriod> getLog() {
-        return log;
-    }
-
-    public void setLog(ArrayList<TimePeriod> log) {
-        this.log = log;
-    }
-
-    protected Date getTime(){
-        // TODO: get time from api
-        return MainActivity.getTime();
-    }
 
     public ArrayList<Day> getDays() {
         return days;
     }
 
+    public void addDay(Day day){
+        days.add(0, day);
+    }
+    public Day getYesterday() throws ParseException {
+        if(days.size() < 2){
+            return null;
+        }
+        if(DataConverter.sameDayNoTime(DataConverter.addHoursToDate(DataConverter.removeTime(MainActivity.getTime()), -24), days.get(1).getDate())){
+            return days.get(1);
+        }
+        return null;
+    }
+    // Searches for a day by its date and returns it
+    public Day getDay(Date date) throws ParseException {
+        for(Day day : days){
+            if(DataConverter.sameDayNoTime(day.getDate(), date)){
+                return day;
+            }
+        }
+        return null;
+    }
     public void setDays(ArrayList<Day> days) {
         this.days = days;
     }
@@ -199,4 +211,27 @@ public class Driver {
         return DataConverter.secsToTime(secsInShift);
     }
 
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
+
+    public TimePeriod getCurrentTimePeriod() {
+        return currentTimePeriod;
+    }
+
+    public void setCurrentTimePeriod(TimePeriod currentTimePeriod) {
+        this.currentTimePeriod = currentTimePeriod;
+    }
+
+    public ArrayList<TimeLimit> getTimeLimits() {
+        return timeLimits;
+    }
+
+    public void setTimeLimits(ArrayList<TimeLimit> timeLimits) {
+        this.timeLimits = timeLimits;
+    }
 }

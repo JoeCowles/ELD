@@ -2,6 +2,7 @@ package com.carriergistics.eld.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.GpsStatus;
 import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
@@ -18,6 +19,7 @@ import com.carriergistics.eld.R;
 import com.carriergistics.eld.fueling.FuelingFragment;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
+import com.carriergistics.eld.mapping.Gps;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,7 +85,8 @@ public class StoppedFragment extends Fragment {
         offBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HOSLogger.save(Status.OFF_DUTY);
+                //TODO: Change these
+                HOSLogger.log(Status.OFF_DUTY, Gps.getReading());
                 ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
             }
         });
@@ -91,7 +94,7 @@ public class StoppedFragment extends Fragment {
         onBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HOSLogger.save(Status.ON_DUTY);
+                HOSLogger.log(Status.ON_DUTY, Gps.getReading());
                 ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
             }
         });
@@ -99,7 +102,7 @@ public class StoppedFragment extends Fragment {
         sleeperBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HOSLogger.save(Status.SLEEPING);
+                HOSLogger.log(Status.SLEEPING, Gps.getReading());
                 ((MainActivity)getActivity()).switchToFragment(HomeFragment.class);
             }
         });

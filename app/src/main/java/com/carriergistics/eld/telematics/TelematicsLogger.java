@@ -4,7 +4,8 @@ import android.location.Location;
 
 import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.apiData.GeoLocation;
-import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.carriergistics.eld.bluetooth.EngineData;
+import com.carriergistics.eld.mapping.Gps;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class TelematicsLogger {
         totalSpeedMph = 0;
     }
     // Logs events
-    public static void log(TelematicsData data){
+    public static void log(EngineData data){
         // going to change the braking and accel events to be the ELD's responsibility.
         if(checkBraking(data.getSpeed(), data.getRunTime())){
             brakingEvent();
@@ -69,24 +70,18 @@ public class TelematicsLogger {
     }
     private static void brakingEvent(){
         Date timestamp = MainActivity.getTime();
-        Location location = MainActivity.instance.getLocation();
         double lat = 0, lon = 0;
-        if(location != null){
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-        }
-        GeoLocation geoLoc = new GeoLocation(lat, lon, new Date(location .getTime()));
+        lat = Gps.getReading().getLat();
+        lon = Gps.getReading().getLon();
+        GeoLocation geoLoc = new GeoLocation(lat, lon, MainActivity.getTime());
         TelematicsEvent event = new TelematicsEvent("EB", "", geoLoc, timestamp);
     }
     private static void accelEvent(){
         Date timestamp = MainActivity.getTime();
-        Location location = MainActivity.instance.getLocation();
         double lat = 0, lon = 0;
-        if(location != null){
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-        }
-        GeoLocation geoLoc = new GeoLocation(lat, lon, new Date(location .getTime()));
+        lat = Gps.getReading().getLat();
+        lon = Gps.getReading().getLon();
+        GeoLocation geoLoc = new GeoLocation(lat, lon, MainActivity.getTime());
         TelematicsEvent event = new TelematicsEvent("EA", "", geoLoc, timestamp);
     }
 

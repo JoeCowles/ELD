@@ -5,8 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Icon;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,14 +12,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,9 +24,10 @@ import com.carriergistics.eld.MainActivity;
 import com.carriergistics.eld.R;
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
 import com.carriergistics.eld.bluetooth.BluetoothConnector;
-import com.carriergistics.eld.bluetooth.TelematicsData;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
+import com.carriergistics.eld.logging.limits.TimeLimit;
+import com.carriergistics.eld.mapping.Gps;
 import com.carriergistics.eld.utils.DataConverter;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -150,7 +146,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder builder;
-                if (speed > 5) {
+                if (MainActivity.currentDriver.getStatus() == Status.DRIVING) {
                     builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage("You must stop the truck to change your status!")
                             .setCancelable(false)
@@ -166,8 +162,7 @@ public class HomeFragment extends Fragment {
                 } else {
                     builder = new AlertDialog.Builder(getActivity());
                     int checked = 1;
-                    // Todo: find a better way of determining if the driver is driving
-                    if (speed > 5) {
+                    if (MainActivity.currentDriver.getStatus() == Status.DRIVING) {
                         checked = 2;
                     } else if(MainActivity.currentDriver.getStatus() == Status.OFF_DUTY){
                         checked = 0;
@@ -182,11 +177,14 @@ public class HomeFragment extends Fragment {
                             switch(which){
                                 case 0:
                                     //timeLabel.setText("Break:");
-                                    HOSLogger.startOffDuty();
+                                    // TODO: this is temporary, there will be a screen that allows you to enter your location
+                                    HOSLogger.log(Status.OFF_DUTY, Gps.getReading());
+                                    MainActivity.instance.switchToFragment(StatusFragment.class);
                                     break;
                                 case 1:
                                     //timeLabel.setText("Break:");
-                                    HOSLogger.startOnDuty();
+                                    // TODO: this is temporary, there will be a screen that allows you to enter your location
+                                    HOSLogger.log(Status.ON_DUTY, Gps.getReading());
                                     break;
                                 case 2:
                                     AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
@@ -201,12 +199,13 @@ public class HomeFragment extends Fragment {
                                     alert.show();
                                     break;
                                 case 3:
-                                    HOSLogger.save(Status.SLEEPING);
+                                    HOSLogger.log(Status.SLEEPING, Gps.getReading());
                                     break;
                                 case 4:
-
+                                    HOSLogger.log(Status.PERSONAL_CONV, Gps.getReading());
                                     break;
                             }
+                            MainActivity.instance.switchToFragment(StatusFragment.class);
                             dialog.cancel();
                         }
                     });
@@ -216,7 +215,7 @@ public class HomeFragment extends Fragment {
 
             }
         });
-        update();
+        //update();
         return view;
     }
 
@@ -242,48 +241,84 @@ public class HomeFragment extends Fragment {
     }
 
     public void update() {
-        Log.d("DEBUGGING", "Update was called");
-        try{
-            if(HOSLogger.getSpeed() != 0){
-                timeDrivenTv.setText(HOSLogger.getSpeed() + "");
-            }
-        }catch(NullPointerException e){
-            timeDrivenTv.setText("Not connected!");
-        }
 
 
-        getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED){
-                        connectedIcon.setImageResource(R.drawable.ic_dvir);
-                    }else{
-                        connectedIcon.setImageResource(0);
-                    }
+        boolean onBreak = false;
+        TimeLimit displayedLimit = null;
+
+        // Check if the driver is on break
+        for (TimeLimit limit : MainActivity.currentDriver.getTimeLimits()) {
+
+            // If the driver is renewing a time period
+            if (limit.getRenewingStatuses().contains(MainActivity.currentDriver.getStatus())
+                    && limit.getSecsToRenew() - limit.getSecsRenewed() > 0) {
+
+                // Then show the limit that is the closest to being renewed that hasn't been renewed yet:
+                if (displayedLimit == null ||
+                        displayedLimit.getSecsToRenew() - limit.getSecsRenewed() >
+                                limit.getSecsToRenew() - limit.getSecsRenewed()
+                ) {
+                    displayedLimit = limit;
+                    onBreak = true;
                 }
-            });
 
-    }
-
-    private boolean checkCameraPerms() {
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.CAMERA)) {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
-        } else {
-            return true;
         }
+        if (!onBreak) {
+
+            for (TimeLimit limit : MainActivity.currentDriver.getTimeLimits()) {
+                // Find limits that are being approached
+                if (limit.getDepletingStatuses().contains(MainActivity.currentDriver.getStatus())) {
+
+                    // Find the limit that is the closest to being expired
+                    if (displayedLimit == null ||
+                            displayedLimit.getSecsToPerform() - displayedLimit.getSecsToPerform() >
+                                    limit.getSecsToPerform() - limit.getSecsToPerform()
+                    ) {
+                        displayedLimit = limit;
+                    }
+
+                }
+
+            }
+        }
+
+        if (displayedLimit != null) {
+
+            if (onBreak) {
+                timeDrivenTv.setText(DataConverter.secsToTime(displayedLimit.getSecsToRenew() - displayedLimit.getSecsRenewed()));
+                timeGuage.setValue((int) (((double) (displayedLimit.getSecsToRenew() - displayedLimit.getSecsRenewed()) / displayedLimit.getSecsToRenew()) * 100));
+            } else {
+                timeDrivenTv.setText(DataConverter.secsToTime(displayedLimit.getSecsToPerform() - displayedLimit.getSecsPerformed()));
+                timeGuage.setValue((int) (((double) (displayedLimit.getSecsToPerform() - displayedLimit.getSecsPerformed()) / displayedLimit.getSecsToPerform()) * 100));
+            }
+
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (BluetoothConnector.getStatus() == BlueToothStatus.CONNECTED) {
+                    connectedIcon.setImageResource(R.drawable.ic_dvir);
+                } else {
+                    connectedIcon.setImageResource(0);
+                }
+                switch (MainActivity.currentDriver.getStatus()){
+
+                    case DRIVING:
+                        statusBtn.setImageResource(R.drawable.drivingbutton);
+                        break;
+                    case ON_DUTY:
+                        statusBtn.setImageResource(R.drawable.onbutton);
+                        break;
+                    case OFF_DUTY:
+                        statusBtn.setImageResource(R.drawable.offbutton);
+                        break;
+
+                }
+
+            }
+        });
+
     }
     private void focusCamera(){
         final LocationRequest locationRequest = new LocationRequest();
@@ -294,8 +329,9 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onLocationResult(@NonNull LocationResult locationResult) {
                         super.onLocationResult(locationResult);
-                        LocationServices.getFusedLocationProviderClient(getActivity()).removeLocationUpdates(this);
+                        //LocationServices.getFusedLocationProviderClient(getActivity()).removeLocationUpdates(this);
                         if(locationResult != null && locationResult.getLocations().size() > 0){
+                            // TODO: use the gps class
                             int latestLocationIndx = locationResult.getLocations().size() - 1;
                             double latitude = locationResult.getLocations().get(latestLocationIndx).getLatitude();
                             double longitude = locationResult.getLocations().get(latestLocationIndx).getLongitude();
@@ -304,6 +340,7 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 }, Looper.getMainLooper());
+
     }
     @Override
     public void onResume() {
@@ -326,7 +363,5 @@ public class HomeFragment extends Fragment {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
-    //public static void offDuty(){
-    //    statusBtn.setVisibility(View.INVISIBLE);
-    //}
+
 }

@@ -82,7 +82,7 @@ public class Load {
         this.loadEvents = loadEvents;
     }
 
-    public ArrayList<LoadShipment> getLoadShipment() {
+    public ArrayList<LoadShipment> getLoadShipments() {
         return loadShipments;
     }
 

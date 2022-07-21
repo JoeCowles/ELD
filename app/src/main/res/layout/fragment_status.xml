@@ -6,13 +6,91 @@
     android:layout_height="match_parent"
     tools:context=".ui.StatusFragment">
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="228dp"
-        android:layout_height="193dp"
-        android:src="@drawable/onbutton"
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="181dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Status"
+        android:textSize="45sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/statusSpinner"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="178dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Note"
+        android:textSize="45sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <EditText
+        android:id="@+id/statusNoteET"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="208dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/aldrich"
+        android:text="Location"
+        android:textSize="45sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusNoteET" />
+
+    <EditText
+        android:id="@+id/statusLocationEt"
+        android:layout_width="244dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        android:ems="10"
+        android:inputType="textPostalAddress"
+        app:layout_constraintBottom_toBottomOf="@+id/textView11"
+        app:layout_constraintStart_toEndOf="@+id/textView11"
+        app:layout_constraintTop_toTopOf="@+id/textView11" />
+
+    <ImageView
+        android:id="@+id/statusLocationBtn"
+        android:layout_width="83dp"
+        android:layout_height="83dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_baseline_vin"
+        app:layout_constraintBottom_toBottomOf="@+id/statusLocationEt"
+        app:layout_constraintStart_toEndOf="@+id/statusLocationEt"
+        app:layout_constraintTop_toTopOf="@+id/statusLocationEt" />
+
+    <Button
+        android:id="@+id/statusSaveBtn"
+        android:layout_width="203dp"
+        android:layout_height="81dp"
+        android:text="Save"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/statusLocationEt" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -28,8 +27,10 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.carriergistics.eld.bluetooth.BlueToothStatus;
-import com.carriergistics.eld.bluetooth.TelematicsData;
+import com.carriergistics.eld.bluetooth.EngineData;
 import com.carriergistics.eld.dvir.AddVehicleFragment;
 import com.carriergistics.eld.dvir.CreateDvirFragment;
 import com.carriergistics.eld.dvir.EditDvirFragment;
@@ -39,9 +40,9 @@ import com.carriergistics.eld.logging.Day;
 import com.carriergistics.eld.logging.Driver;
 import com.carriergistics.eld.logging.HOSLogger;
 import com.carriergistics.eld.logging.Status;
+import com.carriergistics.eld.mapping.Gps;
 import com.carriergistics.eld.mapping.MappingXMLParser;
 import com.carriergistics.eld.mapping.load.Load;
-import com.carriergistics.eld.mapping.loadEvent.LoadEvent;
 import com.carriergistics.eld.setup.InitActivity;
 import com.carriergistics.eld.ui.DriversFragment;
 import com.carriergistics.eld.dvir.DvirFragment;
@@ -58,12 +59,7 @@ import com.carriergistics.eld.utils.Debugger;
 import com.carriergistics.eld.utils.Settings;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -121,17 +117,21 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
         mDrawer.addDrawerListener(drawerToggle);
         fragmentManager = getSupportFragmentManager();
-        fragment = HomeFragment.newInstance("", "");
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
         instance = this;
         currentlyInflated = HomeFragment.class;
 
         if (!load()) {
 
             setup();
+            currentDriver = drivers.get(0);
+            if(drivers.size() > 1) secondaryDriver = drivers.get(1);
+            if(currentDriver == null) currentDriver = new Driver();
             currentDriver.setDays(new ArrayList<Day>());
+            currentDriver.setStatus(Status.OFF_DUTY);
             if (secondaryDriver != null) {
                 secondaryDriver.setDays(new ArrayList<Day>());
+                secondaryDriver.setStatus(Status.OFF_DUTY);
             }
         }
         try {
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         drivers = new ArrayList<>();
         drivers.add(currentDriver);
         drivers.add(secondaryDriver);
+        if(currentDriver.getStatus() == null) currentDriver.setStatus(Status.OFF_DUTY);
         setCurrentDriver(currentDriver);
 
 
@@ -165,6 +166,9 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
+        fragment = HomeFragment.newInstance("", "");
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        Gps.init();
         startLogging();
     }
 
@@ -297,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
             fragment = (Fragment) fragmentClass.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
+            currentlyInflated = fragmentClass;
         } catch (Exception e) {
 
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
@@ -318,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString(paramName, param);
             fragment.setArguments(bundle);
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
+            currentlyInflated = fragmentClass;
         } catch (Exception e) {
 
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
@@ -337,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString(paramName2, param2);
             fragment.setArguments(bundle);
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
+            currentlyInflated = fragmentClass;
         } catch (Exception e) {
 
             Log.d("DEBUGGING", fragmentClass.toString() + " could not be inflated");
@@ -386,6 +390,9 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA},
                         100);
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.BLUETOOTH},
+                        101);
             }
             return false;
         } else {
@@ -404,7 +411,6 @@ public class MainActivity extends AppCompatActivity {
             drivers.set(1, secondaryDriver);
             currentDriver.setCurrentDriver(true);
             secondaryDriver.setCurrentDriver(false);
-            HOSLogger.save(Status.ON_DUTY);
             Data.saveDrivers(drivers);
             HOSLogger.init(driver);
 
@@ -417,23 +423,23 @@ public class MainActivity extends AppCompatActivity {
     //
     public static void tick() {
         updateTime();
-        Log.d("DEBUGGING", "TICK---------------");
         if (fragment != null && fragment.getClass() == HomeFragment.class) {
             if (currentDriver != null) {
                 ((HomeFragment) fragment).update();
             }
         }
         if (BluetoothConnector.getStatus() == BlueToothStatus.AVAILABLE) {
-            Log.d("DEBUGGING", "Device address is " + settings.getDeviceAddress());
             if (settings != null && !settings.getDeviceAddress().isEmpty()) {
                 Log.d("DEBUGGING", "Connecting to the device with address: " + settings.getDeviceAddress());
-                connectBt();
+                connectBt(settings.getDeviceAddress());
             }
 
             if (gotDisconnected) {
                 gotDisconnected = false;
                 // TODO: Disconnected event
-                TelematicsData stopped = new TelematicsData();
+
+                // Tell the HOS logger that the truck just turned off
+                EngineData stopped = new EngineData();
                 stopped.setRpm(0);
                 stopped.setSpeed(0);
                 Message msg = Message.obtain();
@@ -454,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (dayChanged()) {
                 Day today = new Day(DataConverter.removeTime(getTime()));
-                currentDriver.getDays().add(today);
+                currentDriver.getDays().add(0,today);
                 save();
                 // Remove any days that are 17 days old
                 for (Driver driver : drivers) {
@@ -477,11 +483,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private static void connectBt() {
-        Thread connector = new Thread(new Runnable() {
+    private static void connectBt(String address) {
+        Thread connector = new Thread();
+        Thread finalConnector = connector;
+        connector = new Thread(new Runnable() {
             @Override
             public void run() {
-                BluetoothConnector.connect(settings.getDeviceAddress());
+                BluetoothConnector.connect(address);
             }
         });
         connector.start();
@@ -514,9 +522,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void saveSettings(Settings _settings) {
+    public static void saveSettings(Settings msettings) {
+        Log.d("DEBUGGING", "Address here: " +msettings.getDeviceAddress());
+        settings = msettings;
+        settings.setDeviceAddress(msettings.getDeviceAddress());
+        settings.setDeviceName(msettings.getDeviceName());
+        settings.setDevicePassword(msettings.getDevicePassword());
 
-        settings = _settings;
         Data.saveSettings(settings);
 
     }
@@ -544,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentDriver.getStatus() != null) {
             notifyUser("Current driver is " + currentDriver.getStatus().toString());
         }
-        HOSLogger.save(currentDriver.getStatus());
+        //HOSLogger.save(currentDriver.getStatus());
         save();
         try {
             Debugger.close();
@@ -566,13 +578,12 @@ public class MainActivity extends AppCompatActivity {
         if (currentDriver.getDays() == null || currentDriver.getDays().size() <= 0) {
             return true;
         } else {
-            // Get the last date logged
-            Date date = currentDriver.getDays().get(currentDriver.getDays().size() - 1).getDate();
-            if (DataConverter.sameDayNoTime(date, getTime())) {
-                return false;
-            } else {
-                return true;
+            for(Day day : currentDriver.getDays()) {
+                if (DataConverter.sameDayNoTime(day.getDate(), getTime())) {
+                    return false;
+                }
             }
+            return true;
         }
     }
 
@@ -596,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
         switchToFragment(switchTo);
     }
 
-    private void notifyUser(String msg) {
+    public void notifyUser(String msg) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Carriergistics Notification")
                 .setSmallIcon(R.mipmap.logosmall)
                 .setContentTitle("Carriergistics")
@@ -616,12 +627,11 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public Location getLocation() {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        return location;
+
+    // Used to make a new request
+    public static RequestQueue newRequest(){
+
+        return Volley.newRequestQueue(instance);
+
     }
 }

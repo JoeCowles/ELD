@@ -79,6 +79,7 @@ public abstract class BluetoothCommand {
         synchronized (BluetoothCommand.class) {//Only one command can write and read a data in one time.
             start = System.currentTimeMillis();
             sendCommand(out);
+            if(cmd == null) return;
             Debugger.print("BTCMD","Sent the command via bluetooth: " + cmd);
             readResult(in);
             end = System.currentTimeMillis();
